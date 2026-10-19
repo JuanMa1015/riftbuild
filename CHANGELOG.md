@@ -5,6 +5,26 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.7] - 2026-10-19
+
+### Añadido
+- Builds propias para 28 campeones muy jugados (tiradores, luchadores, asesinos y magos): ítems, botas y runa principal distintos a los de su clase. Es un primer lote: se revisa tras cada parche.
+- "Tus números": tu porcentaje de victorias por campeón y contra cada clase de rival, en Ajustes, y una línea en la build ("Con Ahri contra asesinos: 7 de 10"). Solo aparece con 3 partidas o más.
+- Las sugerencias de campeón tienen en cuenta tus resultados con él (con muy poco peso y solo desde 3 partidas).
+- Aviso en Ajustes si las notificaciones de RiftBuild están desactivadas (sin ellas no hay forma de volver a abrir la burbuja).
+- `PLAY_STORE.md`: lista de pasos para publicar en Google Play.
+
+### Corregido
+- La burbuja no volvía al cerrar la ventana de la app o al salir de ella: ahora se muestra y oculta según el ciclo de vida nativo de la app, no según JavaScript.
+- Android 13+ ocultaba la notificación de la burbuja por falta del permiso de notificaciones: ahora se pide la primera vez y se explica en Ajustes si se negó.
+- Si abres la app, una ✕ anterior de la burbuja ya no la deja oculta.
+- Con texto grande del sistema, la cabecera y el selector de IA ya no se cortan.
+- Las runas exclusivas de Wild Rift sin ícono muestran sus iniciales en lugar de un "?".
+- El idioma de la página (`lang`) sigue al idioma de la app para los lectores de pantalla.
+
+### Calidad
+- La actualización automática de datos y el CI comprueban que `game.json` pasa la misma validación que la app antes de publicarlo; ahora también hay pruebas de las builds por campeón y de tus estadísticas.
+
 ## [0.8.6] - 2026-10-19
 
 ### Añadido

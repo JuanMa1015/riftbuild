@@ -10,6 +10,11 @@ export const useLang = create(
   persist((set) => ({ lang: 'es', setLang: (lang) => set({ lang }) }), { name: 'wr-lang' })
 )
 
+// screen readers pick their voice from <html lang>
+const syncLang = ({ lang }) => { if (typeof document !== 'undefined') document.documentElement.lang = lang }
+syncLang(useLang.getState())
+useLang.subscribe(syncLang)
+
 // Game content (items, runes, tips…) is stored in Spanish; game.json holds the English counterpart of each string.
 export const makeTr = (lang) => (s) => (lang === 'en' ? GAME.en[s] ?? s : s)
 

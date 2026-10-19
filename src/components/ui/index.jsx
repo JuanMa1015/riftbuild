@@ -3,6 +3,11 @@ import { GAME, REPO_RAW } from '../../data/game'
 
 const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><text x='24' y='32' text-anchor='middle' font-size='20' fill='%23a9c0b0'>?</text></svg>`
 const FB_ITEM = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><path d='M24 9l12 4v10c0 8-5 13-12 16C17 36 12 31 12 23V13z' fill='none' stroke='%23a9c0b0' stroke-width='2.5' stroke-linejoin='round'/></svg>`
+// Wild Rift-only runes have no Data Dragon icon: show their initials instead of a bare "?"
+const monogram = name => {
+  const ini = name.replace(/[^A-Za-z ]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || '?'
+  return `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><circle cx='24' cy='24' r='22' fill='%231b4631' stroke='%23a9c0b0' stroke-width='2'/><text x='24' y='30' text-anchor='middle' font-size='17' font-weight='700' font-family='sans-serif' fill='%23ffd23f'>${ini}</text></svg>`
+}
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 // Images ship inside the app (public/champs, items, runes, spells). Anything added by a data update
@@ -10,7 +15,9 @@ const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 const onErr = e => {
   const t = e.target
   if (!t.dataset.retried && t.dataset.path) { t.dataset.retried = '1'; t.src = REPO_RAW + t.dataset.path; return }
-  t.onerror = null; t.src = t.dataset.path?.startsWith('items/') ? FB_ITEM : FB
+  t.onerror = null
+  const path = t.dataset.path || ''
+  t.src = path.startsWith('items/') ? FB_ITEM : path.startsWith('runes/') ? monogram(t.alt) : FB
 }
 
 function Img({ path, alt, size, className = '' }) {

@@ -1,6 +1,6 @@
 // Shrinks the bundled PNG icons (palette + max compression, same file names and size). Safe to run repeatedly.
 //   node scripts/optimize-images.mjs
-import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import sharp from 'sharp'
 
 export const shrink = buf => sharp(buf).png({ palette: true, quality: 85, compressionLevel: 9, effort: 10 }).toBuffer()

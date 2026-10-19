@@ -9,19 +9,21 @@ import { testKey } from '../lib/aiService'
 import { analyticsAvailable, useConsent } from '../lib/analytics'
 import LegalDoc from '../components/LegalDoc'
 import { useTheme } from '../lib/theme'
+import { TYPE_LABEL } from '../data/champions'
+import { champTable, classTable, pct, MIN_GAMES } from '../lib/stats'
 import { CONTACT } from '../i18n/legal'
-import { bubbleSupported, useBubble } from '../lib/bubble'
+import { bubbleSupported, useBubble, Overlay } from '../lib/bubble'
 import { SectionTitle } from '../components/ui'
 import { version } from '../../package.json'
 
 const seg = on => `h-11 rounded-lg px-3 text-sm font-semibold ${on ? 'bg-marker text-marker-ink' : 'text-chalk-dim'}`
 
 export default function SettingsPage() {
-  const { t } = useT()
+  const { t, tr } = useT()
   const setView = useMatchStore(s => s.setView)
   const { lang, setLang } = useLang()
   const { provider, key, model, auto, keyError, setAuto, setProvider, setKey, setModel } = useAIStore()
-  const { on, toggle } = useBubble()
+  const { on, toggle, notif } = useBubble()
   const [done, setDone] = useState(false)
   const { mode, setMode } = useTheme()
   const [doc, setDoc] = useState(null)         // 'privacy' | 'terms'
@@ -72,12 +74,18 @@ export default function SettingsPage() {
             className={`h-12 w-full rounded-xl font-semibold ${on ? 'border border-line bg-felt-2' : 'bg-marker text-marker-ink'}`}>
             {on ? t('bubbleOn') : t('bubbleOff')}
           </button>
+          {on && !notif && (
+            <div role="alert" className="mt-3 rounded-xl border border-foe p-3">
+              <p className="mb-2 text-sm">{t('notifOffHelp')}</p>
+              <button type="button" onClick={() => Overlay.openNotificationSettings()} className="h-11 w-full rounded-lg bg-marker font-bold text-marker-ink">{t('notifOffBtn')}</button>
+            </div>
+          )}
         </section>
       )}
 
       <section className="mb-8">
         <SectionTitle>{t('ai')}</SectionTitle>
-        <div role="radiogroup" className="mb-3 grid grid-cols-4 gap-1 rounded-xl border border-line bg-felt-2 p-1">
+        <div role="radiogroup" className="mb-3 grid grid-cols-[repeat(auto-fit,minmax(5.5rem,1fr))] gap-1 rounded-xl border border-line bg-felt-2 p-1">
           {Object.entries(AI_PROVIDERS).map(([k, p]) => (
             <button key={k} type="button" role="radio" aria-checked={provider === k} onClick={() => setProvider(k)}
               className={`${seg(provider === k)} px-1 text-xs`}>{p.label.split(' ')[0]}</button>
@@ -151,6 +159,16 @@ export default function SettingsPage() {
         {entries.length === 0 ? <p className="text-sm text-chalk-dim">{t('historyEmpty')}</p> : (
           <>
             <p className="mb-3 text-lg font-semibold">{won} {t('wins')} · {entries.length - won} {t('losses')} · {Math.round((100 * won) / entries.length)}%</p>
+            {(champTable(entries).length > 0 || classTable(entries).length > 0) && (
+              <div className="mb-4 rounded-xl border border-line p-3">
+                <p className="mb-1 font-semibold">{t('myNumbers')}</p>
+                <p className="mb-2 text-sm text-chalk-dim">{t('myNumbersHint', { n: MIN_GAMES })}</p>
+                <ul className="flex flex-col gap-1 text-sm">
+                  {champTable(entries).slice(0, 5).map(x => <li key={x.champ} className="flex justify-between"><span>{x.champ}</span><span className="text-chalk-dim">{x.w}/{x.n} · {pct(x)}%</span></li>)}
+                  {classTable(entries).map(x => <li key={x.klass} className="flex justify-between"><span>{t('vsKlass', { klass: tr(TYPE_LABEL[x.klass]) })}</span><span className="text-chalk-dim">{x.w}/{x.n} · {pct(x)}%</span></li>)}
+                </ul>
+              </div>
+            )}
             <ul className="flex flex-col gap-1.5">
               {entries.slice(0, 8).map(e => (
                 <li key={e.id} className="flex items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 py-2 text-sm">

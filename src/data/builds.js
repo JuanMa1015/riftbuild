@@ -1,4 +1,4 @@
-import { ITEMS, BUILDS } from './game'
+import { ITEMS, BUILDS, OVERRIDES } from './game'
 export { ITEMS, BUILDS }
 
 // ── Threat/synergy analysis ────────────────────────────
@@ -40,10 +40,26 @@ export function analyzeSynergies(allies, tr = s => s) {
   return syns
 }
 
+// A champion entry only says what differs from its class template: core items, a win-more item, boots, keystone.
+export function withOverride(base, ov) {
+  if (!ov) return base
+  const sameKs = !ov.ks || ov.ks === base.ks
+  // the keystone's explanation is borrowed from any template that already uses that keystone
+  const ksn = sameKs ? base.ksn : Object.values(BUILDS).find(b => b.ks === ov.ks)?.ksn || base.ksn
+  return {
+    ...base,
+    core: ov.core || base.core,
+    sit: { ...base.sit, ...(ov.win ? { win: ov.win } : {}) },
+    boots: { ...base.boots, ...(ov.boots ? { def: ov.boots } : {}) },
+    ks: ov.ks || base.ks, ksn,
+  }
+}
+
 export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s => s) {
   const isSupp0 = role.toLowerCase().includes("support")
   const key = isSupp0 && cData?.t === "tank" ? "tank_support" : cData ? `${cData.t}_${cData.d}` : "fighter_ad"
-  const tpl  = BUILDS[key] || BUILDS.fighter_ad
+  const base = BUILDS[key] || BUILDS.fighter_ad
+  const tpl  = withOverride(base, OVERRIDES[cData?.n])
   const {threats,apCount,adCount,tankCount,healCount,assCount,ccCount} = analyzeThreats(enemies, hints, tr)
   const syns   = analyzeSynergies(allies, tr)
   const isJg    = role.toLowerCase().includes("jungla")

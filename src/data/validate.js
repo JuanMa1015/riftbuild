@@ -18,6 +18,18 @@ export function isValidGame(g) {
       if (!isObj(b) || !Array.isArray(b.core) || b.core.length !== 4 || !isObj(b.sit) || !isObj(b.boots) || !Array.isArray(b.runas)) return false
       if (![...b.core, ...Object.values(b.sit), ...Object.values(b.boots)].every(n => known.has(n))) return false
     }
+    // optional per-champion overrides: only known champions, known items (four core), a keystone some template already uses
+    if (g.overrides !== undefined) {
+      if (!isObj(g.overrides)) return false
+      const champs = new Set(g.champions.map(c => c.n)), keystones = new Set(Object.values(g.builds).map(b => b.ks))
+      for (const [n, o] of Object.entries(g.overrides)) {
+        if (!champs.has(n) || !isObj(o)) return false
+        if (o.core !== undefined && !(Array.isArray(o.core) && o.core.length === 4 && new Set(o.core).size === 4 && o.core.every(i => known.has(i)))) return false
+        if (o.win !== undefined && !known.has(o.win)) return false
+        if (o.boots !== undefined && !known.has(o.boots)) return false
+        if (o.ks !== undefined && !keystones.has(o.ks)) return false
+      }
+    }
     if (g.timers !== undefined && !(Array.isArray(g.timers) && g.timers.every(t => isObj(t) && str(t.id) && str(t.es) && str(t.en) && Number.isFinite(t.secs) && t.secs >= 10 && t.secs <= 900))) return false
     return true
   } catch { return false }

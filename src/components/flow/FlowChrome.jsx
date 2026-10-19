@@ -20,12 +20,14 @@ export function TopBar() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
   return (
-    <header className="pt-safe flex items-center gap-3 px-4 pb-2 tiny:hidden">
+    <header className="pt-safe flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2 tiny:hidden">
       <span className="flex items-center gap-2 text-marker"><Mark /><span className="text-lg font-bold tracking-tight text-chalk">{t('appName')}</span></span>
       <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden whitespace-nowrap"><span className="max-[400px]:hidden">{t('patch')} </span>{GAME.patch}</span>
-      <span className="ml-auto"><LangToggle /></span>
-      <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
-        className="flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
+      <span className="ml-auto flex items-center gap-1">
+        <LangToggle />
+        <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
+          className="flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
+      </span>
     </header>
   )
 }

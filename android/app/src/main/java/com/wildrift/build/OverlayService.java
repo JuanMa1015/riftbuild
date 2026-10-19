@@ -63,6 +63,13 @@ public class OverlayService extends Service {
     private boolean userHidden = false;
     private String lastTitle = "", notifText = "";
 
+    /** Called by MainActivity: on screen = hide the bubble and forget a manual dismissal; off screen = show it. */
+    public static void appForeground(boolean fg) {
+        hiddenWanted = fg;
+        OverlayService s = instance;
+        if (s != null) s.handler.post(() -> { if (fg) s.userHidden = false; s.applyHidden(); });
+    }
+
     private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted || userHidden ? View.GONE : View.VISIBLE); }
 
     private static final int BUBBLE_DP = 40, ICON_DP = 34, FOLD_MS = 7000;

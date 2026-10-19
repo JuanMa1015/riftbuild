@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Lock } from 'lucide-react'
-import { useMatchStore, usePoolStore, useRecentStore } from '../../store'
+import { useMatchStore, usePoolStore, useRecentStore, useMatchLog } from '../../store'
 import { LANES } from '../../data/champions'
 import { evaluatePick } from '../../lib/recommend'
 import { chooseChampion } from '../../lib/pick'
@@ -14,11 +14,12 @@ export default function PickStatus() {
   const { myChamp, myRole, enemies, allies, locked, setLocked } = useMatchStore()
   const pool = usePoolStore(s => s.pool)
   const recents = useRecentStore(s => s.mine)
+  const history = useMatchLog(s => s.entries)
   if (!myChamp) return null
 
   const lane = ROLE_LANE[myRole] || 'all'
   const ev = evaluatePick({
-    name: myChamp.n, lane, pool: pool[lane] || [], recents,
+    name: myChamp.n, lane, pool: pool[lane] || [], recents, history,
     enemies: LANES.map(l => enemies[l.id]).filter(Boolean),
     allies: LANES.map(l => allies[l.id]).filter(Boolean),
   })
@@ -33,7 +34,7 @@ export default function PickStatus() {
   if (locked) return <div className="mb-3 flex justify-end">{lockBtn}</div>
 
   // the verdict text: why my pick suffers (if it does) and why the alternative is better
-  const say = x => (x && t(x.key) !== x.key ? t(x.key, { vs: tr(x.vs || '') }) : null)
+  const say = x => (x && t(x.key) !== x.key ? t(x.key, { vs: tr(x.vs || ''), w: x.w, n: x.n }) : null)
 
   if (!ev.switchNow) return (
     <div className="mb-3 flex items-center gap-2">

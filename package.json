@@ -1,7 +1,7 @@
 {
   "name": "wildrift-build",
   "private": true,
-  "version": "0.8.6",
+  "version": "0.8.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,8 @@
     "android": "vite build && cap sync android",
     "preview": "vite preview",
     "test": "vitest run",
-    "optimize:images": "node scripts/optimize-images.mjs"
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "check:game": "node scripts/check-game.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",

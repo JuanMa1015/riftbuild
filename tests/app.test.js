@@ -6,6 +6,7 @@ import { CHAMPIONS } from '../src/data/game'
 import { ROLE_OPTIONS } from '../src/data/champions'
 import { localBuild, generateBuild } from '../src/lib/aiService'
 import { recommend, evaluatePick, SWITCH_DELTA } from '../src/lib/recommend'
+import { record, vsClass, champTable, historyBonus, MIN_GAMES } from '../src/lib/stats'
 
 const clone = () => structuredClone(game)
 const E = names => names.map((name, i) => ({ lane: 'top', name }))
@@ -21,6 +22,9 @@ describe('validator', () => {
     ['build naming an unknown item', g => { Object.values(g.builds)[0].core[0] = 'No existe' }],
     ['timer out of range', g => { g.timers = [{ id: 'x', es: 'a', en: 'b', secs: 5 }] }],
     ['missing version', g => { delete g.version }],
+    ['override for an unknown champion', g => { g.overrides = { Nadie: { core: Object.keys(g.items).slice(0, 4) } } }],
+    ['override with an unknown item', g => { g.overrides = { Jinx: { core: ['a', 'b', 'c', 'd'] } } }],
+    ['override repeating an item', g => { const i = Object.keys(g.items)[0]; g.overrides = { Jinx: { core: [i, i, i, i] } } }],
   ])('rejects %s', (_, mutate) => { const g = clone(); mutate(g); expect(isValidGame(g)).toBe(false) })
 })
 
@@ -37,6 +41,29 @@ describe('engine', () => {
   it('works with no enemies at all', () => {
     const r = localBuild({ myChamp: CHAMPIONS[0].n, myRole: 'Mid', allies: [], enemies: [], hints: {} })
     expect(r.build).toHaveLength(5)
+  })
+})
+
+describe('per-champion overrides', () => {
+  const ask = (c, role) => localBuild({ myChamp: c, myRole: role, allies: [], enemies: [], hints: {} })
+  it('every override in game.json produces a valid build', () => {
+    for (const n of Object.keys(game.overrides)) {
+      const c = CHAMPIONS.find(x => x.n === n)
+      const r = ask(n, ROLE_OPTIONS.find(x => x.value.startsWith(c.r[0] === 'ADC' ? 'ADC' : c.r[0]))?.value || 'Mid')
+      expect(r.build).toHaveLength(5)
+      expect(new Set(r.build.map(b => b.nombre)).size).toBe(5)
+    }
+  })
+  it('two champions of the same class no longer get the same core', () => {
+    const jinx = ask('Jinx', 'ADC / Duo').build.map(b => b.nombre), ashe = ask('Ashe', 'ADC / Duo').build.map(b => b.nombre)
+    const sivir = ask('Sivir', 'ADC / Duo').build.map(b => b.nombre)   // no override: class template
+    expect(jinx).not.toEqual(sivir)
+    expect(jinx).not.toEqual(ashe)
+  })
+  it('the keystone follows the override and keeps a description', () => {
+    const r = ask('Yasuo', 'Mid')
+    expect(r.runas[0].n).toBeTruthy()
+    expect(r.runas[0].p).toBeTruthy()
   })
 })
 
@@ -90,5 +117,33 @@ describe('AI service', () => {
     const f = vi.fn(); vi.stubGlobal('fetch', f)
     await generateBuild({ ...args, key: '' })
     expect(f).not.toHaveBeenCalled()
+  })
+})
+
+describe('your own stats', () => {
+  const assassin = CHAMPIONS.find(c => c.t === 'assassin').n
+  const game = (champ, win, enemies = []) => ({ champ, win, enemies })
+  const log = [game('Ahri', true, [assassin]), game('Ahri', true, [assassin]), game('Ahri', false, [assassin]), game('Ahri', true), game('Zed', false)]
+  it('counts a champion and a class matchup', () => {
+    expect(record(log, 'Ahri')).toEqual({ n: 4, w: 3 })
+    expect(vsClass(log, 'Ahri', 'assassin')).toEqual({ n: 3, w: 2 })
+  })
+  it('hides numbers below the minimum number of games', () => {
+    expect(MIN_GAMES).toBe(3)
+    expect(champTable(log).map(r => r.champ)).toEqual(['Ahri'])   // Zed has 1 game
+    expect(historyBonus(log, 'Zed').bonus).toBe(0)
+  })
+  it('the bonus stays within -1..1 and rewards a winning record', () => {
+    const b = historyBonus(Array.from({ length: 50 }, () => game('Ahri', true)), 'Ahri').bonus
+    expect(b).toBeGreaterThan(0.5); expect(b).toBeLessThanOrEqual(1)
+    expect(historyBonus(Array.from({ length: 50 }, () => game('Ahri', false)), 'Ahri').bonus).toBeGreaterThanOrEqual(-1)
+  })
+  it('suggestions use it: a winning champion outranks an equal one', () => {
+    const foes = [CHAMPIONS[5].n]
+    const base = recommend({ enemies: foes, allies: [], limit: 50 })
+    const target = base.find(x => x.score > 0)
+    const hist = Array.from({ length: 6 }, () => game(target.c.n, true))
+    const withHist = recommend({ enemies: foes, allies: [], limit: 50, history: hist }).find(x => x.c.n === target.c.n)
+    expect(withHist.score).toBeGreaterThan(target.score)
   })
 })

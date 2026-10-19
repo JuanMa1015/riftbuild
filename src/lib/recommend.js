@@ -1,4 +1,5 @@
 import { CHAMPIONS } from '../data/champions'
+import { historyBonus } from './stats'
 
 // Rule-based "who should I pick": class matchups + damage balance. NOT win-rate statistics (none are public for Wild Rift).
 // MATRIX[mine][theirs] > 0 means "my class does well against theirs".
@@ -18,7 +19,7 @@ const find = n => CHAMPIONS.find(c => c.n === n)
 
 // Scores every champion of the lane (plus `keep`, so my own pick is always in the list, even off-lane).
 // enemies/allies are the names known so far: drafts reveal them one by one, so this works with 1 or 2 of them.
-function scoreAll({ enemies, allies, lane, pool = [], recents = [], keep = null }) {
+function scoreAll({ enemies, allies, lane, pool = [], recents = [], history = [], keep = null }) {
   const foes = enemies.map(find).filter(Boolean)
   const mates = allies.map(find).filter(Boolean)
   const taken = new Set([...enemies, ...allies])
@@ -37,6 +38,10 @@ function scoreAll({ enemies, allies, lane, pool = [], recents = [], keep = null 
       if (mates.length >= 2 && ((c.d === 'ap' && ad > ap) || (c.d === 'ad' && ap > ad))) { score += 1; why = why || { v: 1, key: 'why.balance' } }
       if (pool.includes(c.n)) score += 0.75
       if (recents.includes(c.n)) score += 0.25
+      // your own results with this champion (only once there are enough games)
+      const h = historyBonus(history, c.n)
+      score += h.bonus
+      if (h.bonus >= 0.5 && !why) why = { v: h.bonus, key: 'why.history', w: h.w, n: h.n }
       return { c, score, why, bad, inPool: pool.includes(c.n) }
     })
   return { list, known: foes.length + mates.length > 0 }
@@ -45,8 +50,8 @@ function scoreAll({ enemies, allies, lane, pool = [], recents = [], keep = null 
 const byScore = (a, b) => b.score - a.score || a.c.n.localeCompare(b.c.n)
 
 // lane: board lane id; pool: my favourites (rank higher); recents: what I played lately (tiny bonus, breaks ties)
-export function recommend({ enemies, allies, lane = 'all', pool = [], recents = [], limit = 5 }) {
-  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents })
+export function recommend({ enemies, allies, lane = 'all', pool = [], recents = [], history = [], limit = 5 }) {
+  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents, history })
   if (!known) return []
   const scored = list.filter(x => x.score > 0).sort(byScore)
   // first pass keeps variety (no five fighters in a row), second pass fills what is left
@@ -57,8 +62,8 @@ export function recommend({ enemies, allies, lane = 'all', pool = [], recents = 
 }
 
 // "Is the champion I intend to play still a good answer?" -> my score, the best alternative and the gap.
-export function evaluatePick({ name, enemies, allies, lane = 'all', pool = [], recents = [] }) {
-  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents, keep: name })
+export function evaluatePick({ name, enemies, allies, lane = 'all', pool = [], recents = [], history = [] }) {
+  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents, history, keep: name })
   if (!known) return { known: false }
   const me = list.find(x => x.c.n === name)
   const best = list.filter(x => x.c.n !== name).sort(byScore)[0]

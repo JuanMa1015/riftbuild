@@ -1,5 +1,5 @@
 {
- "version": "2026-10-19T06:29",
+ "version": "2026-10-19T18:49",
  "patch": "7.3b",
  "champions": [
   {
@@ -2281,5 +2281,259 @@
    "secs": 360,
    "note": "WR wiki: Elder Dragon respawn 6:00"
   }
- ]
+ ],
+ "overrides": {
+  "Jinx": {
+   "core": [
+    "Filo del Infinito",
+    "Huracán de Runaan",
+    "Daga de Statikk",
+    "Cañón de Fuego Rápido"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Caitlyn": {
+   "core": [
+    "Filo del Infinito",
+    "Flechas Salvajes de Yun Tal",
+    "Cañón de Fuego Rápido",
+    "El Coleccionista"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Ashe": {
+   "core": [
+    "Filo del Infinito",
+    "Cañón de Fuego Rápido",
+    "Daga de Statikk",
+    "El Coleccionista"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Miss Fortune": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "El Coleccionista",
+    "Filo del Infinito",
+    "Huracán de Runaan"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Vayne": {
+   "core": [
+    "Espada del Rey Arruinado",
+    "Huracán de Runaan",
+    "Filo del Infinito",
+    "Daga de Statikk"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Draven": {
+   "core": [
+    "El Coleccionista",
+    "Filo del Infinito",
+    "Daga de Statikk",
+    "Cañón de Fuego Rápido"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Lucian": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "El Coleccionista",
+    "Filo del Infinito",
+    "Lanza de Shojin"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Jhin": {
+   "core": [
+    "El Coleccionista",
+    "Cañón de Fuego Rápido",
+    "Filo del Infinito",
+    "Huracán de Runaan"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Tristana": {
+   "core": [
+    "Cañón de Fuego Rápido",
+    "Filo del Infinito",
+    "Huracán de Runaan",
+    "El Coleccionista"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Twitch": {
+   "core": [
+    "Huracán de Runaan",
+    "Filo del Infinito",
+    "Daga de Statikk",
+    "Espada del Rey Arruinado"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Yasuo": {
+   "core": [
+    "Daga de Statikk",
+    "Filo del Infinito",
+    "Danza de la Muerte",
+    "Guantelete de Sterak"
+   ],
+   "ks": "Presa de la Flota"
+  },
+  "Yone": {
+   "core": [
+    "Filo del Infinito",
+    "Daga de Statikk",
+    "Danza de la Muerte",
+    "Guantelete de Sterak"
+   ],
+   "ks": "Conquistador"
+  },
+  "Tryndamere": {
+   "core": [
+    "Filo del Infinito",
+    "Danza de la Muerte",
+    "Guantelete de Sterak",
+    "Espada del Rey Arruinado"
+   ],
+   "ks": "Conquistador"
+  },
+  "Fiora": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "Espada del Rey Arruinado",
+    "Danza de la Muerte",
+    "Guantelete de Sterak"
+   ],
+   "ks": "Conquistador"
+  },
+  "Jax": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "Danza de la Muerte",
+    "Guantelete de Sterak",
+    "Cota de Espinas"
+   ],
+   "ks": "Conquistador"
+  },
+  "Irelia": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "Danza de la Muerte",
+    "Guantelete de Sterak",
+    "Espada del Rey Arruinado"
+   ],
+   "ks": "Conquistador"
+  },
+  "Master Yi": {
+   "core": [
+    "Espada del Rey Arruinado",
+    "Huracán de Runaan",
+    "Filo del Infinito",
+    "Danza de la Muerte"
+   ],
+   "ks": "Conquistador"
+  },
+  "Zed": {
+   "core": [
+    "Espada Fantasma de Youmuu",
+    "El Coleccionista",
+    "Cuchilla Oscura",
+    "Guantelete de Sterak"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Kha'Zix": {
+   "core": [
+    "El Coleccionista",
+    "Espada Fantasma de Youmuu",
+    "Filo del Infinito",
+    "Fuerza de la Trinidad"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Talon": {
+   "core": [
+    "Espada Fantasma de Youmuu",
+    "El Coleccionista",
+    "Cuchilla Oscura",
+    "Fuerza de la Trinidad"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Rengar": {
+   "core": [
+    "Espada Fantasma de Youmuu",
+    "El Coleccionista",
+    "Cuchilla Oscura",
+    "Guantelete de Sterak"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Akali": {
+   "core": [
+    "Lumbría",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Velo de la Banshee"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Katarina": {
+   "core": [
+    "Lumbría",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Báculo del Vacío"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Fizz": {
+   "core": [
+    "Lumbría",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Báculo del Vacío"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Veigar": {
+   "core": [
+    "Sombrero Mortífero de Rabadon",
+    "Lumbría",
+    "Reloj de Arena de Zhonya",
+    "Báculo del Vacío"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Ahri": {
+   "core": [
+    "Lumbría",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Báculo del Vacío"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Brand": {
+   "core": [
+    "El Tormento de Liandry",
+    "Sombrero Mortífero de Rabadon",
+    "Lumbría",
+    "Reloj de Arena de Zhonya"
+   ],
+   "ks": "Electrocutar"
+  },
+  "Ryze": {
+   "core": [
+    "El Tormento de Liandry",
+    "Abrazo del Serafín",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya"
+   ],
+   "ks": "Electrocutar"
+  }
+ }
 }

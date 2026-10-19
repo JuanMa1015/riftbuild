@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2, Loader2 } from 'lucide-react'
 import { GAME } from '../../data/game'
 import { useMatchStore, useMatchLog } from '../../store'
-import { LANES } from '../../data/champions'
+import { LANES, CHAMPIONS, TYPE_LABEL } from '../../data/champions'
+import { MIN_GAMES, record, vsClass, pct as pctOf } from '../../lib/stats'
 import { useT } from '../../i18n'
 import { bubbleSupported, useBubble } from '../../lib/bubble'
 import { useMedia } from '../../lib/useMedia'
@@ -203,6 +204,25 @@ function Basis({ r }) {
   return <p className="mb-3 text-sm text-chalk-dim">{n ? t('basis', { foes: `${n} ${t(n === 1 ? 'foe1' : 'foeN')}` }) : t('basisNone')}{threats ? ` · ${threats}` : ''}</p>
 }
 
+// "With Ahri against assassins you win 70%": only from your own saved games, only with enough of them
+function MyRecord() {
+  const { t, tr } = useT()
+  const { myChamp, enemies } = useMatchStore()
+  const entries = useMatchLog(s => s.entries)
+  if (!myChamp) return null
+  const classes = [...new Set(LANES.map(l => enemies[l.id]).filter(Boolean).map(n => CHAMPIONS.find(c => c.n === n)?.t).filter(Boolean))]
+  const lines = classes.map(k => ({ k, ...vsClass(entries, myChamp.n, k) })).filter(x => x.n >= MIN_GAMES)
+  const all = record(entries, myChamp.n)
+  if (!lines.length && all.n < MIN_GAMES) return null
+  const row = (key, vars, x) => <li key={key}>{t(key, { ...vars, w: x.w, n: x.n, p: pctOf(x) })}</li>
+  return (
+    <ul className="mb-3 text-sm text-chalk-dim">
+      {all.n >= MIN_GAMES && row('recChamp', { champ: tr(myChamp.n) }, all)}
+      {lines.map(x => row('recVs', { champ: tr(myChamp.n), klass: tr(TYPE_LABEL[x.k]) }, x))}
+    </ul>
+  )
+}
+
 function Skeleton() {
   return (
     <div aria-hidden className="animate-pulse">
@@ -286,6 +306,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
       </div>
 
       <Basis r={r} />
+      <MyRecord />
       <AiStatus aiOn={aiOn} aiStatus={aiStatus} aiError={aiError} aiModel={aiModel} onApplyLate={onApplyLate} />
 
       {waiting ? <Skeleton /> : <>

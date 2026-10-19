@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react'
-import { useMatchStore, usePoolStore, useRecentStore } from '../../store'
+import { useMatchStore, usePoolStore, useRecentStore, useMatchLog } from '../../store'
 import { LANES, ROLE_OPTIONS } from '../../data/champions'
 import { CHAMPIONS } from '../../data/champions'
 import { recommend } from '../../lib/recommend'
@@ -13,10 +13,11 @@ export default function Suggestions({ onPick, compact = false }) {
   const { enemies, allies, myRole, myChamp, setMyRole } = useMatchStore()
   const pool = usePoolStore(s => s.pool)
   const mine = useRecentStore(s => s.mine)
+  const history = useMatchLog(s => s.entries)
   const lane = ROLE_LANE[myRole] || 'all'
   const foes = LANES.map(l => enemies[l.id]).filter(Boolean)
   const mates = LANES.map(l => allies[l.id]).filter(Boolean)
-  const list = recommend({ enemies: foes, allies: mates, lane, pool: pool[lane] || [], recents: mine, limit: compact ? 3 : 5 })
+  const list = recommend({ enemies: foes, allies: mates, lane, pool: pool[lane] || [], recents: mine, history, limit: compact ? 3 : 5 })
   const favs = (pool[lane] || []).map(n => CHAMPIONS.find(c => c.n === n)).filter(Boolean)
   const known = foes.length + mates.length > 0
 
@@ -53,7 +54,7 @@ export default function Suggestions({ onPick, compact = false }) {
                   {tr(c.n)} {inPool && <Star size={14} className="fill-current text-marker" aria-label={t('poolMine')} />}
                 </span>
                 <span className="block text-sm leading-snug text-chalk-dim">
-                  {why ? (why.vs ? t(why.key, { vs: tr(why.vs) }) : t(why.key)) : ''}
+                  {why ? t(why.key, { vs: why.vs ? tr(why.vs) : '', w: why.w, n: why.n }) : ''}
                 </span>
               </span>
             </button>

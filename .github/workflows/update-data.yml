@@ -20,6 +20,7 @@ jobs:
           node-version: 22
       - run: node scripts/update-data.mjs
       - run: node scripts/check-i18n.mjs
+      - run: node scripts/check-game.mjs
       - name: Patch digest (opens an issue when the latest patch touches our items)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -58,6 +59,8 @@ jobs:
           node scripts/patch-digest.mjs > digest.md || true
           [ -s digest.md ] || exit 0
           node scripts/propose-builds.mjs digest.md || exit 0
+          # never open a PR with a file the app would reject
+          node scripts/check-game.mjs || { git checkout public/data/game.json; exit 0; }
           git diff --quiet public/data/game.json && exit 0
           branch="auto/builds-$(date +%Y%m%d)"
           git config user.name "riftbuild-bot"

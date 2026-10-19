@@ -7,7 +7,7 @@ import { useT } from '../i18n'
 import { GAME } from '../data/game'
 
 // Floating bubble over the game (Android only; native code lives in android/.../OverlayService.java)
-const Overlay = registerPlugin('Overlay')
+export const Overlay = registerPlugin('Overlay')
 export const bubbleSupported = Capacitor.isNativePlatform()
 
 // The bubble is on by default; the user's explicit "off" (toggle or the bubble's own X) is remembered.
@@ -18,6 +18,8 @@ export const setBubblePref = v => store('wr-bubble', v)
 
 export const useBubble = create((set, get) => ({
   on: false,
+  notif: true,   // false = Android hides our notification, which is the way back after closing the bubble
+  async checkNotif() { try { set({ notif: (await Overlay.notifState()).enabled }) } catch { /* not native */ } },
   async toggle() {
     if (get().on) { await Overlay.hide(); store('wr-bubble', 'off'); return set({ on: false }) }
     store('wr-bubble', 'on')
@@ -27,12 +29,26 @@ export const useBubble = create((set, get) => ({
   },
 }))
 
+// Android 13+ keeps the notification hidden until the user allows it: ask once, explain in Settings afterwards.
+async function askNotifications() {
+  const s = useBubble.getState()
+  await s.checkNotif()
+  if (!useBubble.getState().notif && !stored('wr-notif-asked')) {
+    store('wr-notif-asked', '1')
+    try { useBubble.setState({ notif: (await Overlay.requestNotifications()).enabled }) } catch { /* not native */ }
+  }
+}
+
 // Turn it on when the preference says so and the permission is there. Asks for the permission once, at first launch.
 async function autoEnable() {
   if (!bubbleSupported || !wantsBubble() || useBubble.getState().on) return
   if (stored('wr-onboarded') !== '1' && !stored('wr-bubble')) return   // first launch: the onboarding explains the permission first
   const { granted } = await Overlay.canDraw()
-  if (granted) return useBubble.setState({ on: true })
+  if (granted) {
+    useBubble.setState({ on: true })
+    askNotifications()
+    return
+  }
   if (!stored('wr-bubble-asked')) { store('wr-bubble-asked', '1'); Overlay.requestPermission() }
 }
 
@@ -56,14 +72,12 @@ function payload(r, t, lang, secs) {
   })
 }
 
-// The bubble only shows when the app is not on screen (you are in the game).
-let appActive = true
-const syncHidden = () => Overlay.setHidden({ hidden: appActive }).catch(() => {})
+// Showing and hiding the bubble as the app comes and goes is native (MainActivity). Here: back from the permission screens.
 if (bubbleSupported) {
   CapApp.addListener('appStateChange', ({ isActive }) => {
-    appActive = isActive
-    if (isActive) autoEnable()   // back from the permission screen
-    if (useBubble.getState().on) syncHidden()
+    if (!isActive) return
+    autoEnable()
+    useBubble.getState().checkNotif()
   })
 }
 
@@ -75,7 +89,7 @@ export function BubbleSync() {
   const secs = useTimerStore(s => s.secs)
   useEffect(() => { autoEnable() }, [])
   useEffect(() => {
-    if (on && result) Overlay.show({ data: payload(result, t, lang, secs) }).then(syncHidden).catch(() => {})
+    if (on && result) Overlay.show({ data: payload(result, t, lang, secs) }).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, result, lang, secs])
   return null
