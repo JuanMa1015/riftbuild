@@ -1,4 +1,4 @@
-import { Shield, TreePine, Zap, Crosshair, HeartHandshake } from 'lucide-react'
+import { Shield, TreePine, Zap, Crosshair, HeartHandshake, X } from 'lucide-react'
 import { GAME, REPO_RAW } from '../../data/game'
 
 const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><text x='24' y='32' text-anchor='middle' font-size='20' fill='%23a9c0b0'>?</text></svg>`
@@ -38,7 +38,7 @@ export function LaneGlyph({ lane, size = 16, className = '' }) {
  * side: 'me' (marker yellow) | 'ally' | 'foe'. Empty tokens show the lane glyph on a dashed chalk ring.
  */
 const RING = { me: 'ring-marker', ally: 'ring-ally', foe: 'ring-foe' }
-export function Token({ name, side = 'foe', lane, size = 56, active = false }) {
+export function Token({ name, side = 'foe', lane, size = 56, active = false, removable = false }) {
   return (
     <span key={name || 'empty'} className={`relative inline-flex rounded-full ${name ? 'drop' : ''}`} style={{ width: size, height: size }}>
       {name ? (
@@ -48,6 +48,10 @@ export function Token({ name, side = 'foe', lane, size = 56, active = false }) {
           ${active ? 'border-marker text-marker' : 'border-line text-chalk-dim'}`} style={{ width: size, height: size }}>
           <LaneGlyph lane={lane} size={Math.round(size * 0.4)} />
         </span>
+      )}
+      {name && removable && (
+        <span aria-hidden className="absolute -right-1 -top-1 flex items-center justify-center rounded-full bg-felt border border-line text-chalk"
+          style={{ width: size * 0.34, height: size * 0.34 }}><X size={Math.round(size * 0.2)} strokeWidth={3} /></span>
       )}
       {name && lane && (
         <span className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-felt border border-line text-chalk"

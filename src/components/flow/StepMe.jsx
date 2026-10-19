@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMatchStore, useRecentStore } from '../../store'
 import { CHAMPIONS, ROLE_OPTIONS, ROLE_MAP } from '../../data/champions'
 import { useT } from '../../i18n'
+import { X } from 'lucide-react'
 import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
 import ChampSearch from './ChampSearch'
 
@@ -9,17 +10,20 @@ import ChampSearch from './ChampSearch'
 export default function StepMe({ onPicked, compact = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
-  const { myChamp, myRole, setMyChamp, setMyRole } = useMatchStore()
+  const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
   const { mine, pushMine } = useRecentStore()
 
   function pick(c) {
+    const first = !myChamp
     setMyChamp(c)
     pushMine(c.n)
     const r = ROLE_MAP[c.r[0]]
     if (r) setMyRole(r)
     setChanging(false)
-    onPicked?.()
+    if (first) onPicked?.()   // going back to change the pick must not bounce you forward again
   }
+
+  function clearPick() { setMyChamp(null); setResult(null); setChanging(true) }
 
   return (
     <section aria-labelledby="me-title">
@@ -35,6 +39,8 @@ export default function StepMe({ onPicked, compact = false }) {
           {compact && !changing && (
             <button type="button" onClick={() => setChanging(true)} className="h-11 rounded-xl border border-line px-4 text-sm font-semibold">{t('change')}</button>
           )}
+          <button type="button" onClick={clearPick} aria-label={t('clearSlot')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim hover:text-chalk"><X size={18} /></button>
         </div>
       )}
 

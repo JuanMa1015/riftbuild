@@ -47,7 +47,7 @@ export default function StepFoes() {
           <li key={l.id}>
             <button type="button" onClick={() => tapSlot(l.id)} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
               className="flex w-full flex-col items-center gap-1 rounded-xl py-0.5 active:scale-95">
-              <Token name={team[l.id]} side={tokenSide} lane={l.id} size={narrow ? 42 : 52} active={l.id === target} />
+              <Token name={team[l.id]} side={tokenSide} lane={l.id} size={narrow ? 42 : 52} active={l.id === target} removable />
               <span className={`text-xs font-semibold ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
             </button>
           </li>

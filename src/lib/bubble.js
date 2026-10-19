@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { useMatchStore } from '../store'
 import { useT } from '../i18n'
+import { GAME } from '../data/game'
 
 // Floating bubble over the game (Android only; native code lives in android/.../OverlayService.java)
 const Overlay = registerPlugin('Overlay')
@@ -19,11 +20,16 @@ export const useBubble = create((set, get) => ({
 }))
 
 // What the native bubble draws: icons come from the bundled assets by slug, text from here.
+const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
+
 function payload(r, t) {
+  const rune = r.runas?.[0]
   return JSON.stringify({
     title: `${r.campeon} · ${t('role.' + r.carril) !== 'role.' + r.carril ? t('role.' + r.carril) : r.carril}`,
     items: r.build.map(b => ({ n: b.nombre, i: b.en })),
     boots: r.botas ? { n: r.botas.nombre, i: r.botas.en } : null,
+    rune: rune ? { n: rune.n, i: slug(GAME.en[rune.n] ?? rune.n) } : null,
+    spells: (r.hechizos || []).map(h => ({ n: h, i: slug(h) })),
     foot: `${r.runas?.[0]?.n} · ${r.hechizos?.join(' / ')}`,
     open: t('openApp'),
     close: t('close'),
