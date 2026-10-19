@@ -1,16 +1,9 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { CHAMPIONS, TYPE_COLOR, TYPE_LABEL, champImg, ROLE_MAP } from '../../data/champions'
+import { CHAMPIONS, TYPE_COLOR, TYPE_LABEL, ROLE_MAP } from '../../data/champions'
 import { ChampImg, TypeBadge } from '../ui'
+import { useT } from '../../i18n'
 
-const TYPE_FILTERS = [
-  {v:"all", label:"Todos"},
-  {v:"fighter",  label:"Luchador"},
-  {v:"mage",     label:"Mago"},
-  {v:"assassin", label:"Asesino"},
-  {v:"marksman", label:"Tirador"},
-  {v:"tank",     label:"Tanque"},
-  {v:"support",  label:"Soporte"},
-]
+const TYPE_FILTERS = ["all","fighter","mage","assassin","marksman","tank","support"]
 const LANE_FILTERS = ["Solo","Jungla","Mid","ADC","Support"]
 const LANE_ICONS   = {Solo:"🛡️",Jungla:"🌲",Mid:"⚡",ADC:"🏹",Support:"💛"}
 
@@ -24,6 +17,7 @@ const TYPE_ACTIVE_BG = {
 
 // ── Memoized grid item ─────────────────────────────────
 function ChampCard({ champ, selected, onPick, size=48 }) {
+  const { tr } = useT()
   const col = TYPE_COLOR[champ.t] || '#888'
   return (
     <button
@@ -34,14 +28,15 @@ function ChampCard({ champ, selected, onPick, size=48 }) {
           : 'border-transparent bg-[var(--bg3)] hover:border-[var(--border2)] hover:bg-[var(--bg4)] hover:-translate-y-px'}`}
     >
       <ChampImg name={champ.n} size={size} className="rounded-[7px]" />
-      <span className="text-[9px] text-[var(--text2)] text-center leading-tight break-words w-full">{champ.n}</span>
-      <span className="text-[8px] text-center" style={{color:col}}>{TYPE_LABEL[champ.t]}</span>
+      <span className="text-[9px] text-[var(--text2)] text-center leading-tight break-words w-full">{tr(champ.n)}</span>
+      <span className="text-[8px] text-center" style={{color:col}}>{tr(TYPE_LABEL[champ.t])}</span>
     </button>
   )
 }
 
 // ── Grouped grid ───────────────────────────────────────
 function GroupedGrid({ champs, selectedName, onPick, itemSize }) {
+  const { t } = useT()
   const groups = useMemo(() => {
     const g = {Solo:[],Jungla:[],Mid:[],ADC:[],Support:[]}
     champs.forEach(c => { const r = c.r[0]||"Solo"; if(g[r]) g[r].push(c) })
@@ -54,7 +49,7 @@ function GroupedGrid({ champs, selectedName, onPick, itemSize }) {
         <div key={lane}>
           <div className="text-[9px] font-extrabold text-[var(--text3)] uppercase tracking-widest
             px-1 pt-2 pb-1 border-t border-[var(--border)] first:border-t-0 first:pt-0 col-span-full">
-            {LANE_ICONS[lane]} {lane}
+            {LANE_ICONS[lane]} {t('lane.'+lane)}
           </div>
           {list.map(c => (
             <ChampCard key={c.n} champ={c} selected={c.n===selectedName} onPick={onPick} size={itemSize} />
@@ -70,9 +65,10 @@ export default function ChampionPicker({
   value,           // champion object or null
   onChange,        // (champ) => void
   onRoleChange,    // optional: auto-set role when picking
-  placeholder = "Elegir campeón...",
+  placeholder,
   size = "md",     // "md" | "sm"
 }) {
+  const { t, tr } = useT()
   const [open, setOpen]     = useState(false)
   const [search, setSearch] = useState("")
   const [typeF, setTypeF]   = useState("all")
@@ -136,7 +132,7 @@ export default function ChampionPicker({
         {value ? (
           <>
             <ChampImg name={value.n} size={isSm?24:30} className={`rounded-[${isSm?'4':'5'}px] flex-shrink-0`} />
-            <span className={`flex-1 font-semibold ${isSm?'text-[12px]':'text-[13px]'}`}>{value.n}</span>
+            <span className={`flex-1 font-semibold ${isSm?'text-[12px]':'text-[13px]'}`}>{tr(value.n)}</span>
             {!isSm && <TypeBadge type={value.t} small />}
             <button
               type="button"
@@ -146,7 +142,7 @@ export default function ChampionPicker({
             >×</button>
           </>
         ) : (
-          <span className={`flex-1 text-[var(--text3)] ${isSm?'text-[11px]':'text-[12px]'}`}>{placeholder}</span>
+          <span className={`flex-1 text-[var(--text3)] ${isSm?'text-[11px]':'text-[12px]'}`}>{placeholder || t('pick')}</span>
         )}
         <span className={`text-[var(--text3)] text-[9px] ml-1 transition-transform duration-200 flex-shrink-0 ${open?'rotate-180':''}`}>▼</span>
       </button>
@@ -170,7 +166,7 @@ export default function ChampionPicker({
                 if (e.key === "Enter" && filtered.length === 1) pick(filtered[0])
                 if (e.key === "Escape") setOpen(false)
               }}
-              placeholder="Buscar por nombre..."
+              placeholder={t('searchName')}
               className="flex-1 bg-transparent border-none outline-none text-[13px] text-[var(--text)] placeholder:text-[var(--text3)]"
             />
             {search && (
@@ -180,7 +176,7 @@ export default function ChampionPicker({
 
           {/* Type filters */}
           <div className="flex gap-1 px-2.5 py-1.5 border-b border-[var(--border)] overflow-x-auto scrollbar-thin flex-shrink-0 bg-[var(--bg3)]">
-            {TYPE_FILTERS.map(f => {
+            {TYPE_FILTERS.map(v => ({v})).map(f => {
               const active = typeF === f.v
               const bg = TYPE_ACTIVE_BG[f.v]
               return (
@@ -191,7 +187,7 @@ export default function ChampionPicker({
                   className={`${PILL_BASE} ${active ? '' : PILL_OFF}`}
                   style={active ? {background:bg, color:'#000', border:`1px solid ${bg}`} : {}}
                 >
-                  {f.label}
+                  {f.v === 'all' ? t('all') : tr(TYPE_LABEL[f.v])}
                 </button>
               )
             })}
@@ -206,7 +202,7 @@ export default function ChampionPicker({
                   className={`${PILL_BASE} ${active ? '' : PILL_OFF}`}
                   style={active ? {background:"var(--gold)", color:'#000', border:"1px solid var(--gold)"} : {}}
                 >
-                  {LANE_ICONS[l]} {l}
+                  {LANE_ICONS[l]} {t('lane.'+l)}
                 </button>
               )
             })}
@@ -215,7 +211,7 @@ export default function ChampionPicker({
           {/* Grid */}
           <div className="overflow-y-auto max-h-[260px] p-2">
             {filtered.length === 0 ? (
-              <div className="text-center py-6 text-[var(--text3)] text-[12px]">Sin resultados 🔍</div>
+              <div className="text-center py-6 text-[var(--text3)] text-[12px]">{t('noResults')}</div>
             ) : isGrouped ? (
               <div className="grid gap-1.5" style={{gridTemplateColumns:`repeat(auto-fill,minmax(${itemSize+16}px,1fr))`}}>
                 <GroupedGrid champs={filtered} selectedName={value?.n} onPick={pick} itemSize={itemSize} />

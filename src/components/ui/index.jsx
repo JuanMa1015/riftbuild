@@ -1,30 +1,35 @@
-import { champImg, itemImg, runeImg, spellImg, TYPE_COLOR, TYPE_LABEL } from '../../data/champions'
+import { TYPE_COLOR, TYPE_LABEL } from '../../data/champions'
+import { GAME, REPO_RAW } from '../../data/game'
+import { useT } from '../../i18n'
 
 const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='8' fill='%23242432'/><text x='24' y='32' text-anchor='middle' font-size='20'>?</text></svg>`
-const onErr = e => { e.target.onerror=null; e.target.src=FB }
+const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 
-export function ChampImg({ name, size=48, className="" }) {
-  return <img src={champImg(name)} alt={name} width={size} height={size}
+// Images ship inside the app (public/champs, items, runes, spells). Anything added by a data update
+// is not in the APK yet, so on a miss we try the repo copy once before showing "?".
+const onErr = e => {
+  const t = e.target
+  if (!t.dataset.retried && t.dataset.path) { t.dataset.retried = '1'; t.src = REPO_RAW + t.dataset.path; return }
+  t.onerror = null; t.src = FB
+}
+
+function Img({ path, alt, size, className }) {
+  return <img src={import.meta.env.BASE_URL + path} data-path={path} alt={alt} width={size} height={size}
     className={`object-cover bg-[var(--bg4)] ${className}`} style={{width:size,height:size}} onError={onErr} />
 }
-export function ItemImg({ en, alt="", size=52, className="" }) {
-  return <img src={itemImg(en)} alt={alt} width={size} height={size}
-    className={`object-cover bg-[var(--bg4)] ${className}`} style={{width:size,height:size}} onError={onErr} />
-}
-export function RuneImg({ name, size=40, className="" }) {
-  return <img src={runeImg(name)} alt={name} width={size} height={size}
-    className={`object-cover bg-[var(--bg4)] ${className}`} style={{width:size,height:size}} onError={onErr} />
-}
-export function SpellImg({ name, size=34, className="" }) {
-  return <img src={spellImg(name)} alt={name} width={size} height={size}
-    className={`object-cover bg-[var(--bg4)] ${className}`} style={{width:size,height:size}} onError={onErr} />
-}
+
+export const ChampImg = ({ name, size=48, className="" }) => <Img path={`champs/${slug(name)}.png`} alt={name} size={size} className={className} />
+export const ItemImg  = ({ en, alt="", size=52, className="" }) => <Img path={`items/${en}.png`} alt={alt} size={size} className={className} />
+// Rune names are stored in Spanish for keystones; the file is named after the English name.
+export const RuneImg  = ({ name, size=40, className="" }) => <Img path={`runes/${slug(GAME.en[name] ?? name)}.png`} alt={name} size={size} className={className} />
+export const SpellImg = ({ name, size=34, className="" }) => <Img path={`spells/${slug(name)}.png`} alt={name} size={size} className={className} />
 
 export function TypeBadge({ type, small=false }) {
+  const { tr } = useT()
   return (
     <span className={`font-bold rounded px-1.5 ${small?'text-[9px] py-0.5':'text-[10px] py-0.5'}`}
       style={{background: TYPE_COLOR[type]||'#555', color:'#000'}}>
-      {TYPE_LABEL[type]||type}
+      {tr(TYPE_LABEL[type]||type)}
     </span>
   )
 }

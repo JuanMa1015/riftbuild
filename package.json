@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
+    "update:data": "node scripts/update-data.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "android": "vite build && cap sync android",
     "preview": "vite preview"
   },
   "dependencies": {

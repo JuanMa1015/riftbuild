@@ -1,4 +1,6 @@
 import { ChampImg, ItemImg, RuneImg, SpellImg, Tag, Card, TipBox } from '../ui'
+import { GAME } from '../../data/game'
+import { useT } from '../../i18n'
 
 // ── Item strip with tooltip on hover ──────────────────
 function ItemChip({ item, index }) {
@@ -32,6 +34,7 @@ const TIPO_CLS = {
   Híbrido:  "bg-[rgba(200,155,60,0.13)] text-[var(--gold2)]",
 }
 function WhyRow({ item, index }) {
+  const { tr } = useT()
   return (
     <div className="flex gap-2.5 items-start bg-[var(--bg3)] rounded-[6px] px-3 py-2.5">
       <div className="w-5 h-5 rounded-full bg-[var(--gold)] text-black text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -42,7 +45,7 @@ function WhyRow({ item, index }) {
         <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
           <span className="text-[13px] font-bold">{item.nombre}</span>
           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${TIPO_CLS[item.tipo] || TIPO_CLS.Híbrido}`}>
-            {item.tipo}
+            {tr(item.tipo)}
           </span>
         </div>
         <p className="text-[12px] text-[var(--text2)] leading-snug">{item.por_que}</p>
@@ -70,6 +73,7 @@ function RuneRow({ rune }) {
 
 // ── Main component ─────────────────────────────────────
 export default function BuildResult({ build }) {
+  const { t } = useT()
   const {
     campeon, carril, amenazas=[], sinergias=[],
     build:items=[], botas, runas=[], hechizos=[],
@@ -87,7 +91,7 @@ export default function BuildResult({ build }) {
           <ChampImg name={campeon} size={64} className="rounded-[11px] border-2 border-[var(--gold)] flex-shrink-0" />
           <div>
             <div className="text-[22px] font-black text-[var(--gold2)] tracking-tight">{campeon}</div>
-            <div className="text-[12px] text-[var(--text2)] mt-0.5">{carril} · Wild Rift · Patch 7.1e</div>
+            <div className="text-[12px] text-[var(--text2)] mt-0.5">{t('role.'+carril) !== 'role.'+carril ? t('role.'+carril) : carril} · Wild Rift · {t('patch')} {GAME.patch}</div>
             {(amenazas.length > 0 || sinergias.length > 0) && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {amenazas.map((a,i) => <Tag key={i} cls={a.cls}>{a.l}</Tag>)}
@@ -99,15 +103,15 @@ export default function BuildResult({ build }) {
       </Card>
 
       {/* Items strip */}
-      <Card title="⚔️ Orden de compra">
+      <Card title={t('buyOrder')}>
         <div className="flex flex-wrap gap-2 mb-2">
           {items.map((it, i) => <ItemChip key={i} item={it} index={i} />)}
         </div>
-        <p className="text-[11px] text-[var(--text3)] mt-1">Pasa el cursor sobre cada ítem para ver el resumen.</p>
+        <p className="text-[11px] text-[var(--text3)] mt-1">{t('hoverHint')}</p>
       </Card>
 
       {/* Why */}
-      <Card title="📖 Por qué cada ítem">
+      <Card title={t('whyItems')}>
         <div className="flex flex-col gap-1.5">
           {items.map((it, i) => <WhyRow key={i} item={it} index={i} />)}
         </div>
@@ -115,12 +119,12 @@ export default function BuildResult({ build }) {
 
       {/* Boots */}
       {botas && (
-        <Card title="👟 Botas + Encantamiento">
+        <Card title={t('boots')}>
           <div className="flex items-start gap-3">
             <ItemImg en={botas.en} alt={botas.nombre} size={48} className="rounded-[8px] border border-[var(--border2)] flex-shrink-0" />
             <div>
               <div className="text-[14px] font-bold">{botas.nombre}</div>
-              <div className="text-[12px] text-[var(--gold)] font-semibold mt-0.5">+ Encantamiento: {botas.encantamiento}</div>
+              <div className="text-[12px] text-[var(--gold)] font-semibold mt-0.5">{t('enchant')} {botas.encantamiento}</div>
               <p className="text-[12px] text-[var(--text2)] mt-1 leading-snug">{botas.por_que}</p>
             </div>
           </div>
@@ -128,7 +132,7 @@ export default function BuildResult({ build }) {
       )}
 
       {/* Runes */}
-      <Card title="💎 Runas">
+      <Card title={t('runes')}>
         <div className="flex flex-col gap-1.5">
           {runas.map((r, i) => <RuneRow key={i} rune={r} />)}
         </div>
@@ -136,7 +140,7 @@ export default function BuildResult({ build }) {
 
       {/* Skill order */}
       {skillParts.length > 0 && (
-        <Card title="🎮 Orden de habilidades">
+        <Card title={t('skillOrder')}>
           <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
             {skillParts.map((p, i) => (
               <>
@@ -153,7 +157,7 @@ export default function BuildResult({ build }) {
 
       {/* Summoner spells */}
       {hechizos.length > 0 && (
-        <Card title="⚡ Hechizos de invocador">
+        <Card title={t('spells')}>
           <div className="flex gap-2 flex-wrap">
             {hechizos.map(h => (
               <div key={h} className="flex items-center gap-2 bg-[var(--bg3)] border border-[var(--border)] rounded-[6px] px-3.5 py-2">
@@ -167,9 +171,9 @@ export default function BuildResult({ build }) {
 
       {/* Tip */}
       {consejo && (
-        <Card title="💡 Consejo táctico">
+        <Card title={t('tip')}>
           <TipBox>
-            <strong className="text-[var(--gold2)]">Para esta partida: </strong>
+            <strong className="text-[var(--gold2)]">{t('tipFor')}</strong>
             {consejo}
           </TipBox>
         </Card>

@@ -22,7 +22,13 @@ export const useAIStore = create(
   )
 )
 
-const EMPTY = { top:"", jg:"", mid:"", adc:"", sup:"" }
+// Bumped when game data is hot-swapped so components re-render
+export const useDataStore = create((set) => ({
+  rev: 0,
+  bump: () => set(s => ({ rev: s.rev + 1 })),
+}))
+
+const EMPTY ={ top:"", jg:"", mid:"", adc:"", sup:"" }
 const NO_HINTS = { ap:false, ad:false, heal:false, cc:false, tank:false }
 
 // Last champions the user played (most recent first) — shown as one-tap shortcuts

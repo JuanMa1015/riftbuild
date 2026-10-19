@@ -1,14 +1,16 @@
 import { AI_PROVIDERS } from '../store'
 import { buildLocalBuild } from '../data/builds'
+import { GAME } from '../data/game'
 import { CHAMPIONS } from '../data/champions'
+import { makeTr } from '../i18n'
 
 const HINT_LBL = { ap:"mucho AP", ad:"mucho AD", heal:"mucha curación", cc:"mucho CC", tank:"muchos tanques" }
 
-function makePrompt(champName, role, allies, enemies, hints = {}) {
+function makePrompt(champName, role, allies, enemies, hints = {}, lang = 'es') {
   const hp = Object.keys(HINT_LBL).filter(k => hints[k]).map(k => HINT_LBL[k]).join(", ")
   const ap = allies.filter(Boolean).map(a=>`${a.lane}:${a.name}`).join(",") || "ninguno"
   const ep = enemies.filter(Boolean).map(e=>`${e.lane}:${e.name}`).join(",") || "ninguno"
-  return `Eres experto en Wild Rift patch 7.1. Responde SOLO con JSON válido, sin texto extra ni backticks.
+  return `Eres experto en Wild Rift patch ${GAME.patch}. Responde SOLO con JSON válido, sin texto extra ni backticks. Idioma de todos los textos: ${lang === 'en' ? 'inglés (nombres oficiales de ítems en inglés)' : 'español latinoamericano'}.
 
 Campeón: ${champName} | Carril: ${role}
 Aliados: ${ap}
@@ -32,19 +34,19 @@ async function parseResponse(resp, provider) {
 }
 
 // Instant, offline, synchronous — used for live updates as the user taps
-export function localBuild({ myChamp, myRole, allies, enemies, hints }) {
+export function localBuild({ myChamp, myRole, allies, enemies, hints, lang = 'es' }) {
   const cData     = CHAMPIONS.find(c => c.n === myChamp)
   const enemyList = enemies.filter(Boolean).map(e => ({ name:e.name, data:CHAMPIONS.find(c=>c.n===e.name)||null }))
   const allyList  = allies.filter(Boolean).map(a  => ({ name:a.name, data:CHAMPIONS.find(c=>c.n===a.name)||null }))
-  return buildLocalBuild(cData, myRole, enemyList, allyList, hints)
+  return buildLocalBuild(cData, myRole, enemyList, allyList, hints, makeTr(lang))
 }
 
-export async function generateBuild({ myChamp, myRole, allies, enemies, hints, provider, key, model }) {
-  if (provider === 'local' || !key?.trim()) return localBuild({ myChamp, myRole, allies, enemies, hints })
+export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model }) {
+  if (provider === 'local' || !key?.trim()) return localBuild({ myChamp, myRole, allies, enemies, hints, lang })
 
   // ── AI mode ──────────────────────────────────────────
   const cfg    = AI_PROVIDERS[provider]
-  const prompt = makePrompt(myChamp, myRole, allies, enemies, hints)
+  const prompt = makePrompt(myChamp, myRole, allies, enemies, hints, lang)
   let resp
 
   if (provider === 'anthropic') {
