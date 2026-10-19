@@ -10,7 +10,10 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -23,6 +26,7 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -101,7 +105,7 @@ public class OverlayService extends Service {
         PendingIntent close = PendingIntent.getService(this, 1, new Intent(this, OverlayService.class).setAction("hide"),
             PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         Notification n = new Notification.Builder(this, "overlay")
-            .setSmallIcon(R.mipmap.ic_launcher).setContentTitle("RiftBuild")
+            .setSmallIcon(R.drawable.ic_stat_riftbuild).setContentTitle("RiftBuild")
             .addAction(new Notification.Action.Builder(null, closeLabel, close).build()).build();
         if (Build.VERSION.SDK_INT >= 34) startForeground(1, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
         else startForeground(1, n);
@@ -130,6 +134,10 @@ public class OverlayService extends Service {
         bubble.setAlpha(0.8f);
         bubbleIcon = new ImageView(this);
         bubbleIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        bubbleIcon.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setOval(0, 0, v.getWidth(), v.getHeight()); }
+        });
+        bubbleIcon.setClipToOutline(true);
         bubbleText = new TextView(this);
         bubbleText.setText("RB");
         bubbleText.setTextColor(Color.parseColor("#1D1A05"));
@@ -258,7 +266,9 @@ public class OverlayService extends Service {
             row2.addView(foot);
             panel.addView(row2);
 
-            firstIcon = first;
+            JSONObject champ = d.optJSONObject("champ");
+            Bitmap portrait = champ != null ? icon("champs", champ.optString("i")) : null;
+            firstIcon = portrait != null ? portrait : appIcon();
 
             // third row: one button per objective; tap = start (or restart) its respawn countdown, long-press = cancel
             timerViews.clear();
@@ -328,6 +338,18 @@ public class OverlayService extends Service {
         } else if (firstIcon != null) {
             bubbleIcon.setImageBitmap(firstIcon); bubbleIcon.setVisibility(View.VISIBLE); bubbleText.setVisibility(View.GONE);
         } else { bubbleIcon.setVisibility(View.GONE); bubbleText.setVisibility(View.VISIBLE); bubbleText.setText("RB"); bubbleText.setTextSize(13); }
+    }
+
+    /** The launcher icon as a bitmap (it is an adaptive XML icon, so it cannot be decoded as a plain resource). */
+    private Bitmap appIcon() {
+        try {
+            Drawable d = getPackageManager().getApplicationIcon(getPackageName());
+            Bitmap b = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+            d.setBounds(0, 0, 96, 96);
+            d.draw(c);
+            return b;
+        } catch (Exception e) { return null; }
     }
 
     /** An icon cell; when the bitmap is missing it shows the name's first letters instead of an empty square. */

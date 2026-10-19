@@ -5,6 +5,17 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.4] - 2026-10-19
+
+### Añadido
+- Ícono propio de la app (cancha: círculo central, línea y ficha amarilla) en todos los tamaños de Android, con versión adaptable, redonda y monocroma para íconos con tema, y pantalla de inicio a juego. `npm run icons` lo regenera desde `assets/icons`.
+
+### Cambiado
+- El nombre bajo el ícono en el teléfono pasa de "Wild Rift Build" a "RiftBuild" (sin usar la marca del juego).
+- El logo pequeño de la cabecera y el favicon usan el mismo símbolo que el ícono de la app.
+- La burbuja muestra el retrato de tu campeón (o el ícono de la app si aún no eliges) en lugar del primer ítem; la cuenta atrás de un temporizador lo sigue reemplazando mientras corre.
+- Ícono de la notificación de la burbuja: silueta propia (cancha) en vez del ícono de la app, que Android dibujaba como un cuadrado blanco.
+
 ## [0.8.3] - 2026-10-19
 
 ### Corregido

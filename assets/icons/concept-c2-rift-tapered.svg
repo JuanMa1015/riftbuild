@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- C2: crystal split by a rift; the crack outline follows the sharper, tapered shape of the generated version -->
+  <rect width="1024" height="1024" fill="#0f2a1f"/>
+  <path d="M512.7 187.4 L832.0 514.0 L513.3 837.3 L192.0 514.0 Z" fill="none" stroke="#eef3ea" stroke-width="34" stroke-linejoin="round"/>
+  <polygon points="512.7,200.6 480.3,297.6 531.1,360.2 446.0,469.8 531.1,551.6 484.9,647.9 523.2,706.6 505.4,827.4 513.3,827.4 556.2,706.6 520.6,647.9 573.4,540.4 490.2,464.5 566.8,360.2 514.0,297.6 515.3,197.3" fill="#ffd23f" stroke="#ffd23f" stroke-width="10" stroke-linejoin="round"/>
+</svg>

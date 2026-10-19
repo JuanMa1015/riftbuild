@@ -5,10 +5,12 @@ import { useT } from '../../i18n'
 import { ItemImg } from '../ui'
 
 export function Mark({ size = 26 }) {
-  // Centre circle and halfway line: the pitch marking the app is named after
+  // The app icon: centre circle, halfway line (in two halves) and the yellow token
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-      <rect x="2" y="3" width="20" height="18" rx="2" /><line x1="12" y1="3" x2="12" y2="21" /><circle cx="12" cy="12" r="3.5" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden>
+      <circle cx="12" cy="12" r="6.6" />
+      <path d="M12 2.2V8M12 16V21.8" />
+      <circle cx="12" cy="12" r="2.3" fill="currentColor" stroke="none" />
     </svg>
   )
 }

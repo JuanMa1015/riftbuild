@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- A: the three lanes of a MOBA map. Blue base bottom-left, red base top-right, your pick (yellow) in the middle -->
+  <rect width="1024" height="1024" fill="#0f2a1f"/>
+  <path d="M292 292 L732 732" fill="none" stroke="#3f7a5a" stroke-width="30" stroke-linecap="round" stroke-dasharray="1 58"/>
+  <path d="M292 732 V292 H732 V732 H292 M292 732 L732 292" fill="none" stroke="#eef3ea" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="292" cy="732" r="50" fill="#5ab0ff" stroke="#0f2a1f" stroke-width="16"/>
+  <circle cx="732" cy="292" r="50" fill="#ff6a57" stroke="#0f2a1f" stroke-width="16"/>
+  <circle cx="512" cy="512" r="74" fill="#ffd23f" stroke="#0f2a1f" stroke-width="18"/>
+</svg>

@@ -44,6 +44,7 @@ function payload(r, t, lang, secs) {
   return JSON.stringify({
     timers: GAME.timers.map(tm => ({ id: tm.id, n: lang === 'en' ? tm.en : tm.es, secs: secs[tm.id] ?? tm.secs })),
     title: `${r.campeon} · ${t('role.' + r.carril) !== 'role.' + r.carril ? t('role.' + r.carril) : r.carril}`,
+    champ: { n: r.campeon, i: slug(r.campeon) },
     items: r.build.map(b => ({ n: b.nombre, i: b.en })),
     boots: r.botas ? { n: r.botas.nombre, i: r.botas.en } : null,
     rune: rune ? { n: rune.n, i: slug(GAME.en[rune.n] ?? rune.n) } : null,

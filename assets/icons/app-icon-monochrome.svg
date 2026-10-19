@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- themed icon (Android 13+): one colour, the system tints it -->
+  <g fill="none" stroke="#000" stroke-width="46" stroke-linecap="round">
+    <circle cx="512" cy="512" r="232"/>
+    <path d="M512 207 V380 M512 644 V817"/>
+  </g>
+  <circle cx="512" cy="512" r="88" fill="#000"/>
+</svg>

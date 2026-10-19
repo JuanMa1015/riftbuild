@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- B: the six inventory slots; the yellow one is the boots slot, the other five are the build -->
+  <rect width="1024" height="1024" fill="#0f2a1f"/>
+  <g fill="none" stroke="#eef3ea" stroke-width="30" stroke-linejoin="round">
+    <rect x="282" y="364" width="130" height="130" rx="28"/>
+    <rect x="447" y="364" width="130" height="130" rx="28"/>
+    <rect x="612" y="364" width="130" height="130" rx="28"/>
+    <rect x="282" y="529" width="130" height="130" rx="28"/>
+    <rect x="447" y="529" width="130" height="130" rx="28"/>
+  </g>
+  <rect x="612" y="529" width="130" height="130" rx="28" fill="#ffd23f"/>
+</svg>
