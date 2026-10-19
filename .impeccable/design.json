@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-18T00:00:00Z",
+  "title": "Design System: Wild Rift Build",
+  "extensions": {
+    "colorMeta": {
+      "felt": { "role": "neutral", "displayName": "Bottle-Green Felt", "canonical": "#0f2a1f", "tonalRamp": ["#04100a", "#081a12", "#0f2a1f", "#143626", "#1b4631", "#2f6a4d", "#6f9a82", "#a9c0b0"] },
+      "felt-2": { "role": "neutral", "displayName": "Raised Felt", "canonical": "#143626", "tonalRamp": ["#04100a", "#0a2016", "#0f2a1f", "#143626", "#1b4631", "#2f6a4d", "#6f9a82", "#a9c0b0"] },
+      "felt-3": { "role": "neutral", "displayName": "Pressed Felt", "canonical": "#1b4631", "tonalRamp": ["#0a2016", "#0f2a1f", "#143626", "#1b4631", "#2f6a4d", "#4e8467", "#8fb29f", "#cfe0d4"] },
+      "chalk": { "role": "neutral", "displayName": "Chalk", "canonical": "#eef3ea", "tonalRamp": ["#3a423a", "#5d695d", "#818f82", "#a9c0b0", "#c4d3c6", "#d8e2d6", "#e6ede3", "#eef3ea"] },
+      "chalk-dim": { "role": "neutral", "displayName": "Dim Chalk", "canonical": "#a9c0b0", "tonalRamp": ["#2b3a31", "#455a4c", "#64806f", "#86a392", "#a9c0b0", "#c1d3c8", "#d8e4dc", "#eaf1ec"] },
+      "chalk-line": { "role": "neutral", "displayName": "Chalk Line", "canonical": "rgb(238 243 234 / 0.18)", "tonalRamp": [] },
+      "ally-blue": { "role": "secondary", "displayName": "Ally Blue", "canonical": "#5ab0ff", "tonalRamp": ["#0a2a4a", "#10447a", "#1c64ad", "#3b87dc", "#5ab0ff", "#8cc7ff", "#bde0ff", "#e4f2ff"] },
+      "foe-red": { "role": "secondary", "displayName": "Foe Red", "canonical": "#ff6a57", "tonalRamp": ["#4a130c", "#7a2217", "#b03324", "#e04a39", "#ff6a57", "#ff9486", "#ffbdb3", "#ffe3de"] },
+      "marker-yellow": { "role": "primary", "displayName": "Marker Yellow", "canonical": "#ffd23f", "tonalRamp": ["#3d3000", "#6b5500", "#9c7d00", "#d1a800", "#ffd23f", "#ffde73", "#ffe9a3", "#fff6d6"] },
+      "marker-ink": { "role": "neutral", "displayName": "Marker Ink", "canonical": "#1d1a05", "tonalRamp": ["#1d1a05"] }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Title", "purpose": "Section titles at 1.25rem/600." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "App name in the top bar at 700." },
+      "body": { "displayName": "Body", "purpose": "Inputs and descriptions at 1rem." },
+      "label": { "displayName": "Label", "purpose": "Buttons, steps, tabs, field labels at 0.875rem." },
+      "caption": { "displayName": "Caption", "purpose": "Champion names under tiles, patch chip, tags at 0.75rem." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "drop", "value": "200ms cubic-bezier(0.22, 1, 0.36, 1); scale 1.18 -> 0.95 -> 1", "purpose": "A token lands on its slot (state change: slot filled)." },
+      { "name": "slide-in", "value": "200ms cubic-bezier(0.22, 1, 0.36, 1); translateX(16px) + fade", "purpose": "Step changes. Both motions disabled under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "short", "value": "max-height 520px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one yellow action per screen (Next, View build, New match).",
+      "html": "<button class=\"ds-btn-primary\">Siguiente</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 16px; border: 0; border-radius: 12px; background: #ffd23f; color: #1d1a05; font: 700 1rem 'Barlow Semi Condensed', system-ui, sans-serif; white-space: nowrap; cursor: pointer; } .ds-btn-primary:focus-visible { outline: 2px solid #ffd23f; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: .4; }"
+    },
+    {
+      "name": "Stepper Step",
+      "kind": "nav",
+      "refersTo": "stepper-step",
+      "description": "Three-part progress control; current step has a marker border and yellow number disc.",
+      "html": "<button class=\"ds-step ds-step-cur\"><span class=\"ds-disc\">1</span>Tú</button>",
+      "css": ".ds-step { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; width: 160px; border: 1px solid rgb(238 243 234 / .18); border-radius: 12px; background: transparent; color: #a9c0b0; font: 600 .875rem 'Barlow Semi Condensed', system-ui, sans-serif; cursor: pointer; } .ds-step-cur { border-color: #ffd23f; color: #eef3ea; } .ds-disc { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgb(238 243 234 / .18); font-size: .75rem; font-weight: 700; } .ds-step-cur .ds-disc { background: #ffd23f; color: #1d1a05; border-color: #ffd23f; } .ds-step:focus-visible { outline: 2px solid #ffd23f; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Full-width champion search; border turns marker yellow on focus.",
+      "html": "<label class=\"ds-search\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input placeholder=\"Buscar campeón\"></label>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px; border: 1px solid rgb(238 243 234 / .18); border-radius: 12px; background: #143626; color: #a9c0b0; } .ds-search:focus-within { border-color: #ffd23f; } .ds-search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: #eef3ea; caret-color: #ffd23f; font: 400 1rem 'Barlow Semi Condensed', system-ui, sans-serif; } .ds-search input::placeholder { color: #a9c0b0; }"
+    },
+    {
+      "name": "Tabs",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Segmented rail for build views; active tab is solid marker yellow.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab ds-tab-on\">Ítems</button><button class=\"ds-tab\">Runas</button><button class=\"ds-tab\">Plan</button></div>",
+      "css": ".ds-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border: 1px solid rgb(238 243 234 / .18); border-radius: 12px; background: #143626; } .ds-tab { height: 40px; border: 0; border-radius: 8px; background: transparent; color: #a9c0b0; font: 600 .875rem 'Barlow Semi Condensed', system-ui, sans-serif; cursor: pointer; } .ds-tab-on { background: #ffd23f; color: #1d1a05; } .ds-tab:focus-visible { outline: 2px solid #ffd23f; outline-offset: 2px; }"
+    },
+    {
+      "name": "Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Outlined pill for patch and type labels.",
+      "html": "<span class=\"ds-tag\">Parche 7.0</span>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid rgb(238 243 234 / .18); border-radius: 9999px; color: #a9c0b0; font: 600 .75rem 'Barlow Semi Condensed', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Token",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Magnetic champion token: circle with side-colored ring; drops on placement.",
+      "html": "<span class=\"ds-token ds-token-ally\"><span class=\"ds-token-img\">A</span></span><span class=\"ds-token ds-token-foe\"><span class=\"ds-token-img\">R</span></span><span class=\"ds-token ds-token-empty\"></span>",
+      "css": ".ds-token { display: inline-flex; margin-right: 12px; width: 56px; height: 56px; border-radius: 50%; animation: ds-drop 200ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-token-img { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: #1b4631; color: #eef3ea; font: 700 1.25rem 'Barlow Semi Condensed', system-ui, sans-serif; box-shadow: none; } .ds-token-ally .ds-token-img { outline: 3px solid #5ab0ff; outline-offset: -3px; } .ds-token-foe .ds-token-img { outline: 3px solid #ff6a57; outline-offset: -3px; } .ds-token-empty { border: 2px dashed rgb(238 243 234 / .18); animation: none; box-sizing: border-box; } @keyframes ds-drop { 0% { transform: scale(1.18); } 60% { transform: scale(.95); } 100% { transform: scale(1); } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Coach's Tactics Board",
+    "overview": "A dark bottle-green felt with chalk-white type and 1px chalk lines. The match is laid out like a magnet board: your champion and the five rivals are circular tokens, the build is read as a numbered play. Navigation is standard (stepper, tabs, bottom dock) but dressed in the board's colors. Phone-first, one-handed; every tap target is at least 40px.",
+    "keyCharacteristics": [
+      "Felt ground, one step lighter panels, chalk lines at 18% opacity",
+      "Circular portrait tokens with a team-colored ring and a lane glyph badge",
+      "One condensed sans (Barlow Semi Condensed), tabular numerals globally",
+      "Lucide line icons (stroke 2), plus a hand-drawn pitch mark as the logo",
+      "One authored motion: the token drop"
+    ],
+    "rules": [
+      { "name": "The One Highlighter Rule", "body": "Marker yellow appears only on the primary action and the current selection (step, tab, focus, active slot). It never decorates.", "section": "colors" },
+      { "name": "The Side Color Rule", "body": "Blue means ally, red means rival, and they appear only as token rings and side indicators.", "section": "colors" },
+      { "name": "The Tabular Rule", "body": "Numerals are tabular everywhere (set on body) so stats and prices align.", "section": "typography" },
+      { "name": "The No-Shadow Rule", "body": "Separation is a felt step or a 1px chalk line, never a shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Marker Yellow only for the primary action and the current selection.",
+      "Do ring tokens in blue for allies and red for rivals.",
+      "Do separate surfaces with a felt step or a Chalk Line border.",
+      "Do use Lucide line icons at stroke 2 and the lane glyph set wherever a lane appears.",
+      "Do keep tap targets at 40px or more and honor prefers-reduced-motion.",
+      "Do reserve the drop for a slot being filled; the slide-in is for step changes only."
+    ],
+    "donts": [
+      "Don't return to the dark-gold card dashboard with emoji headers.",
+      "Don't use shadows, gradients, or card grids for content.",
+      "Don't use blue or red for anything other than team side.",
+      "Don't introduce a second typeface."
+    ]
+  }
+}

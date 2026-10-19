@@ -48,6 +48,9 @@ export const useMatchStore = create((set) => ({
   allies:   { ...EMPTY },
   enemies:  { ...EMPTY },
   hints:    { ...NO_HINTS },
+  step:     0,          // 0 you · 1 rivals · 2 build (phone flow)
+  view:     'flow',     // 'flow' | 'settings'
+  side:     'enemy',    // which team the board is editing
   result:   null,
   loading:  false,
   error:    null,
@@ -56,6 +59,9 @@ export const useMatchStore = create((set) => ({
   setMyRole:   (r)        => set({ myRole: r }),
   setAlly:     (id, name) => set(s => ({ allies:  { ...s.allies,  [id]: name } })),
   setEnemy:    (id, name) => set(s => ({ enemies: { ...s.enemies, [id]: name } })),
+  setStep:     (n)        => set({ step: n }),
+  setView:     (v)        => set({ view: v }),
+  setSide:     (v)        => set({ side: v }),
   toggleHint:  (k)        => set(s => ({ hints: { ...s.hints, [k]: !s.hints[k] } })),
   clearTeams:  ()         => set({ allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS } }),
   setResult:   (r)        => set({ result: r, loading: false, error: null }),

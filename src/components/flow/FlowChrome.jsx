@@ -1,0 +1,81 @@
+import { Settings, Check, ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react'
+import { GAME } from '../../data/game'
+import { useMatchStore } from '../../store'
+import { useT } from '../../i18n'
+import { ItemImg } from '../ui'
+
+export function Mark({ size = 26 }) {
+  // Centre circle and halfway line: the pitch marking the app is named after
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+      <rect x="2" y="3" width="20" height="18" rx="2" /><line x1="12" y1="3" x2="12" y2="21" /><circle cx="12" cy="12" r="3.5" />
+    </svg>
+  )
+}
+
+export function TopBar() {
+  const { t } = useT()
+  const setView = useMatchStore(s => s.setView)
+  return (
+    <header className="pt-safe flex items-center gap-3 px-4 pb-2">
+      <span className="flex items-center gap-2 text-marker"><Mark /><span className="text-lg font-bold tracking-tight text-chalk">{t('appName')}</span></span>
+      <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden">{t('patch')} {GAME.patch}</span>
+      <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
+        className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
+    </header>
+  )
+}
+
+// Three steps; later ones unlock as the previous is done.
+export function Stepper() {
+  const { t } = useT()
+  const { step, setStep, myChamp } = useMatchStore()
+  const steps = [['stepMe', true], ['stepFoes', !!myChamp], ['stepBuild', !!myChamp]]
+  return (
+    <nav aria-label={t('menuFlow')} className="px-4 pb-3 short:hidden">
+      <ol className="grid grid-cols-3 gap-2">
+        {steps.map(([l, enabled], i) => {
+          const cur = step === i, done = step > i
+          return (
+            <li key={l}>
+              <button type="button" disabled={!enabled} onClick={() => setStep(i)} aria-current={cur ? 'step' : undefined}
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold disabled:opacity-40
+                  ${cur ? 'border-marker text-chalk' : 'border-line text-chalk-dim'}`}>
+                <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${cur ? 'bg-marker text-marker-ink' : done ? 'bg-chalk text-felt' : 'border border-line'}`}>
+                  {done ? <Check size={12} strokeWidth={3} /> : i + 1}
+                </span>
+                {t(l)}
+              </button>
+            </li>
+          )
+        })}
+      </ol>
+    </nav>
+  )
+}
+
+// Bottom dock: live peek of the build from the first pick, plus the one primary action.
+export function Dock() {
+  const { t } = useT()
+  const { step, setStep, myChamp, result, clearTeams } = useMatchStore()
+  const primary = 'flex h-12 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-marker px-4 font-bold text-marker-ink disabled:opacity-40'
+  return (
+    <div className="pb-safe border-t border-line bg-felt">
+      <div className="mx-auto flex max-w-xl items-center gap-3 px-4 py-3 short:py-2">
+        {step > 0 && (
+          <button type="button" onClick={() => setStep(step - 1)} aria-label={t('back')}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-line"><ArrowLeft size={20} /></button>
+        )}
+        {step < 2 && (
+          <div className="hidden min-w-0 items-center gap-1 min-[360px]:flex" aria-hidden>
+            {result?.build?.slice(0, 3).map((b, i) => <ItemImg key={i} en={b.en} size={32} className="rounded-md" />)}
+            {!result && <span className="truncate text-sm text-chalk-dim">{t('dockPick')}</span>}
+          </div>
+        )}
+        {step === 0 && <button type="button" disabled={!myChamp} onClick={() => setStep(1)} className={primary}>{t('next')} <ArrowRight size={18} /></button>}
+        {step === 1 && <button type="button" disabled={!myChamp} onClick={() => setStep(2)} className={primary}>{t('viewBuild')} <ArrowRight size={18} /></button>}
+        {step === 2 && <button type="button" onClick={() => { clearTeams(); setStep(1) }} className={primary}><RotateCcw size={18} /> {t('newMatch')}</button>}
+      </div>
+    </div>
+  )
+}

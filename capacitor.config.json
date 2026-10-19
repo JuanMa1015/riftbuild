@@ -1,5 +1,6 @@
 {
   "appId": "com.wildrift.build",
-  "appName": "Wild Rift Build",
+  "appName": "RiftBuild",
+  "backgroundColor": "#0f2a1f",
   "webDir": "dist"
 }

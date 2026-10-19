@@ -1,8 +1,7 @@
-import { TYPE_COLOR, TYPE_LABEL } from '../../data/champions'
+import { Shield, TreePine, Zap, Crosshair, HeartHandshake } from 'lucide-react'
 import { GAME, REPO_RAW } from '../../data/game'
-import { useT } from '../../i18n'
 
-const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='8' fill='%23242432'/><text x='24' y='32' text-anchor='middle' font-size='20'>?</text></svg>`
+const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><text x='24' y='32' text-anchor='middle' font-size='20' fill='%23a9c0b0'>?</text></svg>`
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 // Images ship inside the app (public/champs, items, runes, spells). Anything added by a data update
@@ -13,59 +12,62 @@ const onErr = e => {
   t.onerror = null; t.src = FB
 }
 
-function Img({ path, alt, size, className }) {
+function Img({ path, alt, size, className = '' }) {
   return <img src={import.meta.env.BASE_URL + path} data-path={path} alt={alt} width={size} height={size}
-    className={`object-cover bg-[var(--bg4)] ${className}`} style={{width:size,height:size}} onError={onErr} />
+    decoding="async"
+    className={`object-cover bg-felt-3 ${className}`} style={{ width: size, height: size }} onError={onErr} />
 }
 
-export const ChampImg = ({ name, size=48, className="" }) => <Img path={`champs/${slug(name)}.png`} alt={name} size={size} className={className} />
-export const ItemImg  = ({ en, alt="", size=52, className="" }) => <Img path={`items/${en}.png`} alt={alt} size={size} className={className} />
+export const ChampImg = ({ name, size = 48, className = '' }) => <Img path={`champs/${slug(name)}.png`} alt={name} size={size} className={className} />
+export const ItemImg  = ({ en, alt = '', size = 52, className = '' }) => <Img path={`items/${en}.png`} alt={alt} size={size} className={className} />
 // Rune names are stored in Spanish for keystones; the file is named after the English name.
-export const RuneImg  = ({ name, size=40, className="" }) => <Img path={`runes/${slug(GAME.en[name] ?? name)}.png`} alt={name} size={size} className={className} />
-export const SpellImg = ({ name, size=34, className="" }) => <Img path={`spells/${slug(name)}.png`} alt={name} size={size} className={className} />
+export const RuneImg  = ({ name, size = 40, className = '' }) => <Img path={`runes/${slug(GAME.en[name] ?? name)}.png`} alt={name} size={size} className={className} />
+export const SpellImg = ({ name, size = 34, className = '' }) => <Img path={`spells/${slug(name)}.png`} alt={name} size={size} className={className} />
 
-export function TypeBadge({ type, small=false }) {
-  const { tr } = useT()
+// One drawn glyph per lane, used everywhere a lane appears
+export const LANE_ICON = { top: Shield, jg: TreePine, mid: Zap, adc: Crosshair, sup: HeartHandshake }
+export const ROLE_LANE = { 'Solo / Baron': 'top', Jungla: 'jg', Mid: 'mid', 'ADC / Duo': 'adc', Support: 'sup' }
+
+export function LaneGlyph({ lane, size = 16, className = '' }) {
+  const Icon = LANE_ICON[lane]
+  return Icon ? <Icon size={size} strokeWidth={2} className={className} aria-hidden /> : null
+}
+
+/**
+ * A magnetic token on the board: a circle with the portrait, a ring in the team colour and a lane badge.
+ * side: 'me' (marker yellow) | 'ally' | 'foe'. Empty tokens show the lane glyph on a dashed chalk ring.
+ */
+const RING = { me: 'ring-marker', ally: 'ring-ally', foe: 'ring-foe' }
+export function Token({ name, side = 'foe', lane, size = 56, active = false }) {
   return (
-    <span className={`font-bold rounded px-1.5 ${small?'text-[9px] py-0.5':'text-[10px] py-0.5'}`}
-      style={{background: TYPE_COLOR[type]||'#555', color:'#000'}}>
-      {tr(TYPE_LABEL[type]||type)}
+    <span key={name || 'empty'} className={`relative inline-flex rounded-full ${name ? 'drop' : ''}`} style={{ width: size, height: size }}>
+      {name ? (
+        <ChampImg name={name} size={size} className={`rounded-full ${size < 48 ? 'ring-2' : 'ring-[3px]'} ${RING[side]}`} />
+      ) : (
+        <span className={`flex items-center justify-center rounded-full border-2 border-dashed
+          ${active ? 'border-marker text-marker' : 'border-line text-chalk-dim'}`} style={{ width: size, height: size }}>
+          <LaneGlyph lane={lane} size={Math.round(size * 0.4)} />
+        </span>
+      )}
+      {name && lane && (
+        <span className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-felt border border-line text-chalk"
+          style={{ width: size * 0.38, height: size * 0.38 }}>
+          <LaneGlyph lane={lane} size={Math.round(size * 0.22)} />
+        </span>
+      )}
     </span>
   )
 }
 
-const TAG_CLS = {
-  'tag-r':    'bg-[rgba(181,48,31,0.18)]   text-[var(--red3)]    border border-[rgba(181,48,31,0.3)]',
-  'tag-b':    'bg-[rgba(45,159,216,0.14)]  text-[var(--blue3)]   border border-[rgba(45,159,216,0.25)]',
-  'tag-g':    'bg-[rgba(34,168,85,0.14)]   text-[var(--green3)]  border border-[rgba(34,168,85,0.25)]',
-  'tag-gold': 'bg-[rgba(200,155,60,0.13)]  text-[var(--gold2)]   border border-[rgba(200,155,60,0.25)]',
-  'tag-p':    'bg-[rgba(139,68,204,0.15)]  text-[var(--purple3)] border border-[rgba(139,68,204,0.25)]',
-}
-export function Tag({ cls, children }) {
-  return <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${TAG_CLS[cls]||TAG_CLS['tag-r']}`}>{children}</span>
+export function TypeTag({ children }) {
+  return <span className="inline-flex items-center rounded-full border border-line px-2 py-0.5 text-xs font-semibold text-chalk-dim">{children}</span>
 }
 
-export function Card({ title, children, className="" }) {
+export function SectionTitle({ children, aside }) {
   return (
-    <div className={`bg-[var(--bg2)] border border-[var(--border)] rounded-[10px] overflow-hidden ${className}`}>
-      {title && (
-        <div className="px-4 py-2.5 border-b border-[var(--border)] bg-white/[0.02] flex items-center gap-2">
-          <span className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--gold)]">{title}</span>
-        </div>
-      )}
-      <div className="p-4">{children}</div>
+    <div className="flex items-baseline justify-between gap-3 mb-2">
+      <h2 className="text-lg font-semibold tracking-tight">{children}</h2>
+      {aside}
     </div>
   )
-}
-
-export function TipBox({ children }) {
-  return (
-    <div className="bg-[rgba(200,155,60,0.06)] border border-[rgba(200,155,60,0.16)] border-l-[3px] border-l-[var(--gold)] rounded-r-[6px] px-3.5 py-2.5 text-[13px] text-[var(--text2)] leading-relaxed">
-      {children}
-    </div>
-  )
-}
-
-export function Spinner({ size=10 }) {
-  return <div className={`w-${size} h-${size} rounded-full border-[3px] border-[var(--bg5)] border-t-[var(--gold)] animate-spin`} />
 }

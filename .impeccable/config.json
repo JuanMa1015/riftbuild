@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/components/ui/index.jsx"
+        ],
+        "createdAt": "2026-10-19T04:29:17.876Z",
+        "reason": "agent: Img wrapper takes a runtime path to bundled public/ icons (verified 40/40 loading); no empty src"
+      }
+    ]
+  }
+}
