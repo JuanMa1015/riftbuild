@@ -39,6 +39,17 @@ import java.io.InputStream;
 public class OverlayService extends Service {
     /** Set by the Capacitor plugin so the web layer learns when the user closes the overlay natively. */
     public static Runnable onClose;
+    /** The bubble is pointless while the app itself is on screen, so the web layer hides it then. */
+    private static OverlayService instance;
+    private static boolean hiddenWanted = true;
+
+    public static void setHidden(boolean hidden) {
+        hiddenWanted = hidden;
+        OverlayService s = instance;
+        if (s != null) s.handler.post(s::applyHidden);
+    }
+
+    private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted ? View.GONE : View.VISIBLE); }
 
     private static final int BUBBLE_DP = 40, ICON_DP = 34, FOLD_MS = 7000;
     private WindowManager wm;
@@ -51,6 +62,8 @@ public class OverlayService extends Service {
     private final Runnable fold = () -> { if (panel != null) { panel.setVisibility(View.GONE); snapToEdge(); } };
 
     @Override public IBinder onBind(Intent i) { return null; }
+
+    @Override public void onCreate() { super.onCreate(); instance = this; }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && "hide".equals(intent.getAction())) { closeAll(); return START_NOT_STICKY; }
@@ -154,6 +167,7 @@ public class OverlayService extends Service {
         });
         wm.addView(root, lp);
         snapToEdge();
+        applyHidden();
     }
 
     private int screenW() {
@@ -311,6 +325,7 @@ public class OverlayService extends Service {
     }
 
     @Override public void onDestroy() {
+        if (instance == this) instance = null;
         handler.removeCallbacks(fold);
         if (root != null) { wm.removeView(root); root = null; }
         super.onDestroy();

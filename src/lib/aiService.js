@@ -1,81 +1,96 @@
 import { AI_PROVIDERS } from '../store'
-import { buildLocalBuild } from '../data/builds'
+import { buildLocalBuild, ITEMS } from '../data/builds'
 import { GAME } from '../data/game'
 import { CHAMPIONS } from '../data/champions'
 import { makeTr } from '../i18n'
 
-const HINT_LBL = { ap:"mucho AP", ad:"mucho AD", heal:"mucha curación", cc:"mucho CC", tank:"muchos tanques" }
-
-function makePrompt(champName, role, allies, enemies, hints = {}, lang = 'es') {
-  const hp = Object.keys(HINT_LBL).filter(k => hints[k]).map(k => HINT_LBL[k]).join(", ")
-  const ap = allies.filter(Boolean).map(a=>`${a.lane}:${a.name}`).join(",") || "ninguno"
-  const ep = enemies.filter(Boolean).map(e=>`${e.lane}:${e.name}`).join(",") || "ninguno"
-  return `Eres experto en Wild Rift patch ${GAME.patch}. Responde SOLO con JSON válido, sin texto extra ni backticks. Idioma de todos los textos: ${lang === 'en' ? 'inglés (nombres oficiales de ítems en inglés)' : 'español latinoamericano'}.
-
-Campeón: ${champName} | Carril: ${role}
-Aliados: ${ap}
-Enemigos: ${ep}${hp ? `\nEquipo enemigo tiene: ${hp}` : ""}
-
-JSON exacto:
-{"campeon":"nombre","carril":"${role}","amenazas":["amenaza1"],"sinergias":["sinergia1"],"build":[{"nombre":"Nombre ítem español WR","en":"slug-ingles","tipo":"Ofensivo|Defensivo|Híbrido|Botas","por_que":"1-2 oraciones específicas para ESTOS rivales"}],"botas":{"nombre":"nombre español","en":"slug","encantamiento":"nombre","por_que":"razón"},"runas":[{"slot":"Keystone","n":"nombre","p":"razón"},{"slot":"Slot 1","n":"nombre","p":"razón"},{"slot":"Slot 2","n":"nombre","p":"razón"},{"slot":"Slot 3","n":"nombre","p":"razón"},{"slot":"Slot 4","n":"nombre","p":"razón"}],"hechizos":["Flash","Ignite"],"orden_habilidades":"R > Q > E > W","skillNote":"razón breve","consejo":"consejo táctico clave para ESTA partida"}
-
-6 ítems exactos. Nombres reales de Wild Rift en español latinoamericano.`
-}
-
-async function parseResponse(resp, provider) {
-  const data = await resp.json()
-  if (provider === 'anthropic') {
-    if (data.error) throw new Error(data.error.message)
-    const text = data.content.map(b => b.text||"").join("").replace(/```json|```/g,"").trim()
-    return JSON.parse(text)
-  }
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error))
-  return JSON.parse(data.choices[0].message.content.replace(/```json|```/g,"").trim())
-}
+const HINT_LBL = { ap: 'mucho AP', ad: 'mucho AD', heal: 'mucha curación', cc: 'mucho CC', tank: 'muchos tanques' }
 
 // Instant, offline, synchronous — used for live updates as the user taps
 export function localBuild({ myChamp, myRole, allies, enemies, hints, lang = 'es' }) {
   const cData     = CHAMPIONS.find(c => c.n === myChamp)
-  const enemyList = enemies.filter(Boolean).map(e => ({ name:e.name, data:CHAMPIONS.find(c=>c.n===e.name)||null }))
-  const allyList  = allies.filter(Boolean).map(a  => ({ name:a.name, data:CHAMPIONS.find(c=>c.n===a.name)||null }))
+  const enemyList = enemies.filter(Boolean).map(e => ({ name: e.name, data: CHAMPIONS.find(c => c.n === e.name) || null }))
+  const allyList  = allies.filter(Boolean).map(a => ({ name: a.name, data: CHAMPIONS.find(c => c.n === a.name) || null }))
   return buildLocalBuild(cData, myRole, enemyList, allyList, hints, makeTr(lang))
 }
 
-export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model }) {
-  if (provider === 'local' || !key?.trim()) return localBuild({ myChamp, myRole, allies, enemies, hints, lang })
+// ── AI refinement ──────────────────────────────────────────────────────────────
+// The model only chooses from OUR item list, so every item has a name, an icon and a translation.
+// Runes, spells and skill order stay from the local engine. Short output = cheap calls.
+const BOOTS = Object.keys(ITEMS).filter(k => ITEMS[k].t === 'Botas')
+const GEAR  = Object.keys(ITEMS).filter(k => ITEMS[k].t !== 'Botas')
 
-  // ── AI mode ──────────────────────────────────────────
-  const cfg    = AI_PROVIDERS[provider]
-  const prompt = makePrompt(myChamp, myRole, allies, enemies, hints, lang)
+function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base }) {
+  const hp = Object.keys(HINT_LBL).filter(k => hints[k]).map(k => HINT_LBL[k]).join(', ')
+  const list = a => a.map(x => `${x.lane}:${x.name}`).join(', ') || 'ninguno'
+  const out = lang === 'en' ? 'inglés' : 'español latinoamericano'
+  return `Wild Rift, parche ${GAME.patch}. Mejora la build de ${myChamp} (${myRole}) contra estos rivales: ${list(enemies)}${hp ? ` (${hp})` : ''}. Aliados: ${list(allies)}.
+Build base del motor: ${base.items.join(', ')} | botas ${base.boots}.
+Elige 6 ítems distintos SOLO de esta lista, en orden de compra: ${GEAR.join(' | ')}.
+Botas SOLO de: ${BOOTS.join(' | ')}.
+Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida"}
+Los textos "w" y "tip" en ${out}. Los nombres de ítems se copian tal cual de la lista.`
+}
+
+async function ask({ provider, key, model, prompt }) {
+  const cfg = AI_PROVIDERS[provider]
+  const m = model || cfg.models[0]
+  const post = (headers, body) => fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) })
   let resp
-
   if (provider === 'anthropic') {
-    resp = await fetch(cfg.url, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01" },
-      body: JSON.stringify({ model: model||cfg.models[0], max_tokens:1400, messages:[{role:"user",content:prompt}] })
-    })
-  } else if (provider === 'openrouter') {
-    resp = await fetch(cfg.url, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "Authorization":`Bearer ${key}`, "HTTP-Referer":"https://wildrift-advisor.local", "X-Title":"Wild Rift Build Advisor" },
-      body: JSON.stringify({ model: model||cfg.models[0], messages:[{role:"user",content:prompt}] })
-    })
+    resp = await post(
+      // the browser-access header is required for calls made from a WebView
+      { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      { model: m, max_tokens: 700, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
   } else {
-    resp = await fetch(cfg.url, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "Authorization":`Bearer ${key}` },
-      body: JSON.stringify({ model: model||cfg.models[0], messages:[{role:"user",content:prompt}] })
+    resp = await post(
+      { Authorization: `Bearer ${key}`, ...(provider === 'openrouter' ? { 'HTTP-Referer': 'https://riftbuild.app', 'X-Title': 'RiftBuild' } : {}) },
+      { model: m, max_tokens: 700, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+  }
+  const data = await resp.json().catch(() => ({}))
+  if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`)
+  const text = provider === 'anthropic' ? data.content.map(b => b.text || '').join('') : data.choices[0].message.content
+  const json = text.match(/\{[\s\S]*\}/)?.[0]
+  if (!json) throw new Error('Respuesta sin JSON')
+  return JSON.parse(json)
+}
+
+// Same question twice costs nothing: answers are cached on the device.
+const CACHE_KEY = 'wr-ai-cache'
+const readCache = () => { try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || {} } catch { return {} } }
+function writeCache(k, v) {
+  try {
+    const c = readCache(); c[k] = v
+    const keys = Object.keys(c); if (keys.length > 40) delete c[keys[0]]
+    localStorage.setItem(CACHE_KEY, JSON.stringify(c))
+  } catch { /* storage blocked */ }
+}
+
+export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model }) {
+  const base = localBuild({ myChamp, myRole, allies, enemies, hints, lang })
+  if (provider === 'local' || !key?.trim()) return base
+
+  const cfg = AI_PROVIDERS[provider]
+  const m = cfg.models.includes(model) ? model : cfg.models[0]   // a stale saved model falls back to the default
+  const ck = JSON.stringify([GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
+  let ans = readCache()[ck]
+  if (!ans) {
+    const es = localBuild({ myChamp, myRole, allies, enemies, hints, lang: 'es' }) // canonical names for the prompt
+    ans = await ask({
+      provider, key, model: m,
+      prompt: makePrompt({ myChamp, myRole, allies, enemies, hints, lang, base: { items: es.build.map(b => b.nombre), boots: es.botas.nombre } }),
     })
+    writeCache(ck, ans)
   }
 
-  const build = await parseResponse(resp, provider)
+  const tr = makeTr(lang)
+  const seen = new Set()
+  const items = (ans.items || []).filter(i => ITEMS[i.n] && ITEMS[i.n].t !== 'Botas' && !seen.has(i.n) && seen.add(i.n)).slice(0, 6)
+    .map(i => ({ nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: i.w || tr(ITEMS[i.n].desc) }))
+  if (items.length < 4) throw new Error('La IA no devolvió ítems válidos')
 
-  // Normalize tag format from AI strings to {l, cls} objects
-  if (build.amenazas?.length && typeof build.amenazas[0] === "string")
-    build.amenazas = build.amenazas.map(a => ({ l:a, cls:"tag-r" }))
-  if (build.sinergias?.length && typeof build.sinergias[0] === "string")
-    build.sinergias = build.sinergias.map(s => ({ l:s, cls:"tag-g" }))
-
-  return build
+  const out = { ...base, build: items }
+  if (ITEMS[ans.boots]?.t === 'Botas') out.botas = { ...base.botas, nombre: tr(ans.boots), en: ITEMS[ans.boots].en, por_que: tr(ITEMS[ans.boots].desc) }
+  if (ans.tip) out.consejo = ans.tip
+  return out
 }

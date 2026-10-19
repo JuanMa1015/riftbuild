@@ -2,6 +2,7 @@ import { Shield, TreePine, Zap, Crosshair, HeartHandshake, X } from 'lucide-reac
 import { GAME, REPO_RAW } from '../../data/game'
 
 const FB = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><text x='24' y='32' text-anchor='middle' font-size='20' fill='%23a9c0b0'>?</text></svg>`
+const FB_ITEM = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' fill='%231b4631'/><path d='M24 9l12 4v10c0 8-5 13-12 16C17 36 12 31 12 23V13z' fill='none' stroke='%23a9c0b0' stroke-width='2.5' stroke-linejoin='round'/></svg>`
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 // Images ship inside the app (public/champs, items, runes, spells). Anything added by a data update
@@ -9,7 +10,7 @@ const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 const onErr = e => {
   const t = e.target
   if (!t.dataset.retried && t.dataset.path) { t.dataset.retried = '1'; t.src = REPO_RAW + t.dataset.path; return }
-  t.onerror = null; t.src = FB
+  t.onerror = null; t.src = t.dataset.path?.startsWith('items/') ? FB_ITEM : FB
 }
 
 function Img({ path, alt, size, className = '' }) {

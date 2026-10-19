@@ -1,9 +1,13 @@
 import { useMemo, useRef, useState } from 'react'
 import { Search, X } from 'lucide-react'
+import { LANES } from '../../data/champions'
 import { CHAMPIONS } from '../../data/champions'
 import { useDataStore } from '../../store'
 import { useT, fold } from '../../i18n'
-import { ChampImg } from '../ui'
+import { ChampImg, LaneGlyph } from '../ui'
+
+// champion roles in the data are Solo/Jungla/Mid/ADC/Support; board lanes are top/jg/mid/adc/sup
+const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Support' }
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
@@ -12,12 +16,13 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
   const top = useRef(null)
+  const [lane, setLane] = useState('all')   // lane filter: applies to every search (my champion and rivals)
 
   const list = useMemo(() => {
     const f = fold(q.trim())
-    return CHAMPIONS.filter(c => !f || fold(tr(c.n)).includes(f))
+    return CHAMPIONS.filter(c => (lane === 'all' || c.r.includes(LANE_ROLE[lane])) && (!f || fold(tr(c.n)).includes(f)))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, rev, lang])
+  }, [q, rev, lang, lane])
 
   function pick(c) { onPick(c); setQ('') }
 
@@ -49,12 +54,21 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           )}
         </span>
         </label>
+        <div role="radiogroup" aria-label="Lane" className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto">
+          {['all', ...LANES.map(l => l.id)].map(id => (
+            <button key={id} type="button" role="radio" aria-checked={lane === id} onClick={() => setLane(id)}
+              className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${lane === id ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
+              {id !== 'all' && <LaneGlyph lane={id} size={14} />}
+              {id === 'all' ? t('all') : t('lane.' + id)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {!q && recents.length > 0 && (
         <div className="mb-3">
           <p className="mb-1.5 text-sm font-medium text-chalk-dim">{t('meRecents')}</p>
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
             {recents.map(n => (
               <button key={n} type="button" onClick={() => pick(CHAMPIONS.find(c => c.n === n))}
                 className="flex w-16 shrink-0 flex-col items-center gap-1 rounded-lg py-1 active:scale-95">

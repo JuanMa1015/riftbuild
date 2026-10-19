@@ -34,7 +34,7 @@ export default function StepMe({ onPicked, compact = false }) {
           <Token name={myChamp.n} side="me" lane={ROLE_LANE[myRole]} size={56} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-lg font-semibold leading-tight">{tr(myChamp.n)}</p>
-            <p className="text-sm text-chalk-dim">{t('meLane')}</p>
+            <p className="text-sm text-chalk-dim">{t('role.' + myRole)}</p>
           </div>
           {compact && !changing && (
             <button type="button" onClick={() => setChanging(true)} className="h-11 rounded-xl border border-line px-4 text-sm font-semibold">{t('change')}</button>

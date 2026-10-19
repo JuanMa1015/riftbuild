@@ -74,7 +74,7 @@ export default function StepFoes() {
       {side === 'enemy' && (
         <div className="mb-3">
           <p className="mb-1.5 text-sm text-chalk-dim short:hidden">{t('quickHint')}</p>
-          <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('quickTitle')}>
+          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('quickTitle')}>
             {CHIPS.map(c => (
               <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
                 className={`h-10 shrink-0 rounded-full border px-4 text-sm font-semibold

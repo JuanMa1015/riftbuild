@@ -34,6 +34,11 @@ public class OverlayPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod public void setHidden(PluginCall call) {
+        OverlayService.setHidden(Boolean.TRUE.equals(call.getBoolean("hidden", true)));
+        call.resolve();
+    }
+
     @PluginMethod public void hide(PluginCall call) {
         getContext().startService(new Intent(getContext(), OverlayService.class).setAction("hide"));
         call.resolve();

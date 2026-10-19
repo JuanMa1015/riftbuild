@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { create } from 'zustand'
 import { Capacitor, registerPlugin } from '@capacitor/core'
+import { App as CapApp } from '@capacitor/app'
 import { useMatchStore } from '../store'
 import { useT } from '../i18n'
 import { GAME } from '../data/game'
@@ -36,13 +37,20 @@ function payload(r, t) {
   })
 }
 
+// The bubble only shows when the app is not on screen (you are in the game).
+let appActive = true
+const syncHidden = () => Overlay.setHidden({ hidden: appActive }).catch(() => {})
+if (bubbleSupported) {
+  CapApp.addListener('appStateChange', ({ isActive }) => { appActive = isActive; if (useBubble.getState().on) syncHidden() })
+}
+
 // Mount once: keeps the bubble text in sync with the current build and language.
 export function BubbleSync() {
   const { t, lang } = useT()
   const result = useMatchStore(s => s.result)
   const on = useBubble(s => s.on)
   useEffect(() => {
-    if (on && result) Overlay.show({ data: payload(result, t) }).catch(() => {})
+    if (on && result) Overlay.show({ data: payload(result, t) }).then(syncHidden).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, result, lang])
   return null
