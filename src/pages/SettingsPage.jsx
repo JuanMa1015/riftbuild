@@ -6,6 +6,7 @@ import { GAME } from '../data/game'
 import { checkForUpdates } from '../lib/updater'
 import { bubbleSupported, useBubble } from '../lib/bubble'
 import { SectionTitle } from '../components/ui'
+import { version } from '../../package.json'
 
 const seg = on => `h-11 rounded-lg px-3 text-sm font-semibold ${on ? 'bg-marker text-marker-ink' : 'text-chalk-dim'}`
 
@@ -115,6 +116,7 @@ export default function SettingsPage() {
       </section>
 
       <p className="text-sm text-chalk-dim">{t('disclaimer')}</p>
+      <p className="mt-1 text-sm text-chalk-dim">RiftBuild v{version}</p>
     </div>
   )
 }
