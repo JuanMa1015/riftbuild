@@ -5,11 +5,15 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
-## [0.8.1] - 2026-10-19
+## [0.8.2] - 2026-10-19
 
 ### Añadido
 - Aviso en vivo sobre tu pick: conforme agregas rivales, si otro campeón es claramente mejor aparece una flecha con el motivo y el botón "Cambiar a …"; si tu pick se sostiene, un check discreto. "Bloqueado" apaga el aviso (en ranked un pick bloqueado ya no se puede cambiar).
 - Filtro de carril automático al buscar rivales: sigue al hueco que estás llenando (Barón, Jungla, Mid…), también si tocas un hueco concreto. Escribir un nombre ignora el carril; tocar un carril lo deja en manual y "Auto" lo devuelve.
+
+## [0.8.1] - 2026-10-19
+
+### Añadido
 - Sugeridos de campeón también en el paso Rivales: aparecen desde el primer rival o aliado y se actualizan con cada pick, justo debajo del tablero. Con selector de carril, y en partidas sin información muestran tu pool.
 - Los sugeridos mezclan clases (no cinco luchadores seguidos) y dan un pequeño bonus a lo que jugaste hace poco.
 - Línea "Según tu campeón y N rivales · amenazas" que dice en qué se basó la build.
