@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2 } from 'lucide-react'
+import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2, Loader2 } from 'lucide-react'
 import { GAME } from '../../data/game'
 import { useMatchStore, useMatchLog } from '../../store'
 import { LANES } from '../../data/champions'
@@ -151,6 +151,14 @@ function ChampStats() {
   )
 }
 
+function Skeleton() {
+  return (
+    <div aria-hidden className="animate-pulse">
+      {[0, 1, 2, 3].map(i => <div key={i} className="mb-3 h-20 rounded-xl border border-line bg-felt-2" />)}
+    </div>
+  )
+}
+
 function PlanTab({ r }) {
   const { t } = useT()
   const skills = (r.orden_habilidades || '').split('>').map(s => s.split('—')[0].trim()).filter(Boolean)
@@ -196,7 +204,7 @@ function PlanTab({ r }) {
   )
 }
 
-export default function BuildView({ result: r, loading, error, onImprove, canImprove }) {
+export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiStatus, onApplyLate, waiting }) {
   const { t } = useT()
   const [tab, setTab] = useState('items')
   const myRole = useMatchStore(s => s.myRole)
@@ -225,9 +233,20 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         ))}
       </div>
 
+      {aiStatus === 'waiting' && <p className="mb-3 flex items-center gap-2 text-sm text-chalk-dim"><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiWorking')}</p>}
+      {aiStatus === 'done' && <p className="mb-3 flex items-center gap-2 text-sm text-chalk-dim"><Sparkles size={16} aria-hidden /> {t('aiDone')}</p>}
+      {aiStatus === 'error' && <p className="mb-3 text-sm text-chalk-dim">{t('aiFallback')}</p>}
+      {aiStatus === 'late' && (
+        <button type="button" onClick={onApplyLate} className="mb-3 flex h-11 w-full items-center justify-between rounded-xl border border-marker px-4 text-sm font-semibold">
+          <span className="flex items-center gap-2"><Sparkles size={16} aria-hidden /> {t('aiLate')}</span><span>{t('aiApply')}</span>
+        </button>
+      )}
+
+      {waiting ? <Skeleton /> : <>
       {tab === 'items' && <ItemsTab r={r} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
+      </>}
 
       <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
 
@@ -238,7 +257,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
           <p className="text-chalk-dim">{t('errorHelp')}</p>
         </div>
       )}
-      {canImprove && (
+      {canImprove && aiStatus !== 'done' && aiStatus !== 'waiting' && (
         <button type="button" onClick={onImprove} disabled={loading}
           className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-felt-2 font-semibold disabled:opacity-50">
           <Sparkles size={18} aria-hidden /> {loading ? t('consulting') : t('improveAI')}

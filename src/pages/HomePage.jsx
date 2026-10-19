@@ -15,7 +15,7 @@ import SettingsPage from './SettingsPage'
 export default function HomePage() {
   const { step, setStep, view } = useMatchStore()
   const wide = useMedia('(min-width: 768px)')   // window / tablet mode: inputs left, build right
-  const build = useBuild()
+  const build = useBuild({ wide })
 
   useEffect(() => { checkForUpdates() }, [])
 

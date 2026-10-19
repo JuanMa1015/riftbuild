@@ -13,7 +13,7 @@ export default function SettingsPage() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
   const { lang, setLang } = useLang()
-  const { provider, key, model, setProvider, setKey, setModel } = useAIStore()
+  const { provider, key, model, auto, setAuto, setProvider, setKey, setModel } = useAIStore()
   const { on, toggle } = useBubble()
   const [done, setDone] = useState(false)
   const { entries, remove } = useMatchLog()
@@ -73,6 +73,10 @@ export default function SettingsPage() {
                 className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker">
                 {cfg?.models?.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
+            </label>
+            <label className="flex items-start gap-3">
+              <input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} className="mt-1 h-5 w-5 accent-[var(--color-marker)]" />
+              <span><span className="block font-medium">{t('aiAuto')}</span><span className="block text-sm text-chalk-dim">{t('aiAutoHint')}</span></span>
             </label>
             {cfg?.docsUrl && (
               <p className="text-sm text-chalk-dim">{t('aiKeyAt')}{' '}

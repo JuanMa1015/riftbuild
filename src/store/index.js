@@ -14,6 +14,8 @@ export const useAIStore = create(
       provider: 'local',
       key:      '',
       model:    '',
+      auto:     true,   // refine the build with the AI automatically when a key is set
+      setAuto:  (v) => set({ auto: v }),
       setProvider: (p) => set({ provider: p, model: AI_PROVIDERS[p]?.models?.[0] || '' }),
       setKey:      (k) => set({ key: k }),
       setModel:    (m) => set({ model: m }),
