@@ -11,39 +11,57 @@ const MATRIX = {
   support:  { assassin: -1, marksman: 0, mage: 0, fighter: 0, tank: 0, support: 0 },
 }
 const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Support' }
-const PER_CLASS = 2   // variety: at most this many of one class in the first pass
+const PER_CLASS = 2        // variety: at most this many of one class in the first pass
+export const SWITCH_DELTA = 1.5   // a better option must beat my pick by this much before the app says "switch"
 
-// enemies/allies: champion names known so far (drafts reveal them one by one, so this must work with 1 or 2);
-// lane: board lane id; pool: my favourites (rank higher); recents: what I played lately (tiny bonus, breaks ties)
-export function recommend({ enemies, allies, lane = 'all', pool = [], recents = [], limit = 5 }) {
-  const find = n => CHAMPIONS.find(c => c.n === n)
+const find = n => CHAMPIONS.find(c => c.n === n)
+
+// Scores every champion of the lane (plus `keep`, so my own pick is always in the list, even off-lane).
+// enemies/allies are the names known so far: drafts reveal them one by one, so this works with 1 or 2 of them.
+function scoreAll({ enemies, allies, lane, pool = [], recents = [], keep = null }) {
   const foes = enemies.map(find).filter(Boolean)
   const mates = allies.map(find).filter(Boolean)
-  if (!foes.length && !mates.length) return []
   const taken = new Set([...enemies, ...allies])
   const ad = mates.filter(m => m.d === 'ad').length, ap = mates.filter(m => m.d === 'ap').length
-
-  const scored = CHAMPIONS
-    .filter(c => !taken.has(c.n) && (lane === 'all' || c.r.includes(LANE_ROLE[lane])))
+  const list = CHAMPIONS
+    .filter(c => !taken.has(c.n) && (c.n === keep || lane === 'all' || c.r.includes(LANE_ROLE[lane])))
     .map(c => {
-      let score = 0, why = null
+      let score = 0, why = null, bad = null
       for (const f of foes) {
         const v = MATRIX[c.t]?.[f.t] ?? 0
         score += v
         if (v > 0 && (!why || v > why.v)) why = { v, key: `why.${c.t}.${f.t}`, vs: f.n }
+        if (v < 0 && (!bad || v < bad.v)) bad = { v, key: `bad.${c.t}.${f.t}`, vs: f.n }
       }
       // a team of only AD (or only AP) is easy to itemize against: prefer the missing damage type
       if (mates.length >= 2 && ((c.d === 'ap' && ad > ap) || (c.d === 'ad' && ap > ad))) { score += 1; why = why || { v: 1, key: 'why.balance' } }
       if (pool.includes(c.n)) score += 0.75
       if (recents.includes(c.n)) score += 0.25
-      return { c, score, why, inPool: pool.includes(c.n) }
+      return { c, score, why, bad, inPool: pool.includes(c.n) }
     })
-    .filter(x => x.score > 0)
-    .sort((a, b) => b.score - a.score || a.c.n.localeCompare(b.c.n))
+  return { list, known: foes.length + mates.length > 0 }
+}
 
+const byScore = (a, b) => b.score - a.score || a.c.n.localeCompare(b.c.n)
+
+// lane: board lane id; pool: my favourites (rank higher); recents: what I played lately (tiny bonus, breaks ties)
+export function recommend({ enemies, allies, lane = 'all', pool = [], recents = [], limit = 5 }) {
+  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents })
+  if (!known) return []
+  const scored = list.filter(x => x.score > 0).sort(byScore)
   // first pass keeps variety (no five fighters in a row), second pass fills what is left
   const out = [], count = {}
   for (const x of scored) if ((count[x.c.t] = (count[x.c.t] || 0) + 1) <= PER_CLASS && out.length < limit) out.push(x)
   for (const x of scored) if (out.length < limit && !out.includes(x)) out.push(x)
-  return out.sort((a, b) => b.score - a.score)
+  return out.sort(byScore)
+}
+
+// "Is the champion I intend to play still a good answer?" -> my score, the best alternative and the gap.
+export function evaluatePick({ name, enemies, allies, lane = 'all', pool = [], recents = [] }) {
+  const { list, known } = scoreAll({ enemies, allies, lane, pool, recents, keep: name })
+  if (!known) return { known: false }
+  const me = list.find(x => x.c.n === name)
+  const best = list.filter(x => x.c.n !== name).sort(byScore)[0]
+  if (!me) return { known: true }
+  return { known: true, me, best, delta: best ? best.score - me.score : 0, switchNow: !!best && best.score - me.score >= SWITCH_DELTA }
 }

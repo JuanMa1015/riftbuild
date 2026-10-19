@@ -85,6 +85,7 @@ export const useMatchStore = create((set) => ({
   allies:   { ...EMPTY },
   enemies:  { ...EMPTY },
   hints:    { ...NO_HINTS },
+  locked:   false,      // pick locked in the game: stop suggesting changes
   step:     0,          // 0 you · 1 rivals · 2 build (phone flow)
   view:     'flow',     // 'flow' | 'settings'
   side:     'enemy',    // which team the board is editing
@@ -92,7 +93,8 @@ export const useMatchStore = create((set) => ({
   loading:  false,
   error:    null,
 
-  setMyChamp:  (c)        => set({ myChamp: c }),
+  setMyChamp:  (c)        => set({ myChamp: c, locked: false }),
+  setLocked:   (v)        => set({ locked: v }),
   setMyRole:   (r)        => set({ myRole: r }),
   setAlly:     (id, name) => set(s => ({ allies:  { ...s.allies,  [id]: name } })),
   setEnemy:    (id, name) => set(s => ({ enemies: { ...s.enemies, [id]: name } })),
@@ -100,7 +102,7 @@ export const useMatchStore = create((set) => ({
   setView:     (v)        => set({ view: v }),
   setSide:     (v)        => set({ side: v }),
   toggleHint:  (k)        => set(s => ({ hints: { ...s.hints, [k]: !s.hints[k] } })),
-  clearTeams:  ()         => set({ allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS } }),
+  clearTeams:  ()         => set({ allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false }),
   setResult:   (r)        => set({ result: r, loading: false, error: null }),
   setLoading:  (v)        => set({ loading: v, error: null }),
   setError:    (e)        => set({ error: e,   loading: false }),

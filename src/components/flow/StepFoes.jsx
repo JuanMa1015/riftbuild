@@ -6,6 +6,7 @@ import { Token } from '../ui'
 import { useMedia } from '../../lib/useMedia'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
+import PickStatus from './PickStatus'
 import { chooseChampion } from '../../lib/pick'
 
 const CHIPS = [
@@ -62,12 +63,15 @@ export default function StepFoes() {
   // Real drafts reveal the enemy one pick at a time, so the suggestions live in this step, right under the board,
   // and update with every rival you add. Once you have a champion this slot just shows it.
   const mineOrSuggestions = myChamp ? (
+    <>
     <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-2.5">
       <Token name={myChamp.n} side="me" size={40} />
       <p className="min-w-0 flex-1 truncate font-semibold">{tr(myChamp.n)}</p>
       <button type="button" onClick={() => { setMyChamp(null); setResult(null) }}
         className="h-10 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
     </div>
+    <PickStatus />
+    </>
   ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
 
   return (
@@ -102,6 +106,7 @@ export default function StepFoes() {
       <ChampSearch
         key={side}
         header={board}
+        autoLane={target ?? null}
         between={wide ? null : mineOrSuggestions}
         label={target ? `${t(side === 'enemy' ? 'searchFor' : 'searchAlly')} ${t('lane.' + target)}` : undefined}
         placeholder={t('typeToSearch')}

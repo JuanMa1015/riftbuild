@@ -7,6 +7,7 @@ import { X, Star } from 'lucide-react'
 import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
+import PickStatus from './PickStatus'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
 export default function StepMe({ onPicked, compact = false }) {
@@ -48,6 +49,8 @@ export default function StepMe({ onPicked, compact = false }) {
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim hover:text-chalk"><X size={18} /></button>
         </div>
       )}
+
+      {myChamp && <PickStatus />}
 
       {myChamp && (
         <div role="radiogroup" aria-label={t('meLane')} className="mb-4 grid grid-cols-5 gap-1.5">

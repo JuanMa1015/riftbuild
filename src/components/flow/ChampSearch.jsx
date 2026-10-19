@@ -11,16 +11,20 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header, between = null }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header, between = null, autoLane }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
   const top = useRef(null)
-  const [lane, setLane] = useState('all')   // lane filter: applies to every search (my champion and rivals)
+  // Lane filter. With `autoLane` (the board lane being filled) it follows that slot by itself; a tap on any chip takes manual
+  // control, and "Auto" gives it back. Typing ignores the lane entirely: a name search must never miss a champion.
+  const [manual, setManual] = useState(null)
+  const auto = autoLane !== undefined
+  const lane = manual ?? (auto ? autoLane || 'all' : 'all')
 
   const list = useMemo(() => {
     const f = fold(q.trim())
-    return CHAMPIONS.filter(c => (lane === 'all' || c.r.includes(LANE_ROLE[lane])) && (!f || fold(tr(c.n)).includes(f)))
+    return CHAMPIONS.filter(c => (f || lane === 'all' || c.r.includes(LANE_ROLE[lane])) && (!f || fold(tr(c.n)).includes(f)))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, rev, lang, lane])
 
@@ -71,13 +75,16 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
         </span>
         </label>
         <div role="radiogroup" aria-label="Lane" className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto">
-          {['all', ...LANES.map(l => l.id)].map(id => (
-            <button key={id} type="button" role="radio" aria-checked={lane === id} onClick={() => setLane(id)}
-              className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${lane === id ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
-              {id !== 'all' && <LaneGlyph lane={id} size={14} />}
-              {id === 'all' ? t('all') : t('lane.' + id)}
-            </button>
-          ))}
+          {[...(auto ? ['auto'] : []), 'all', ...LANES.map(l => l.id)].map(id => {
+            const on = id === 'auto' ? manual === null : (manual ?? (auto ? 'auto' : 'all')) === id
+            return (
+              <button key={id} type="button" role="radio" aria-checked={on} onClick={() => setManual(id === 'auto' ? null : id)}
+                className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
+                {id !== 'all' && id !== 'auto' && <LaneGlyph lane={id} size={14} />}
+                {id === 'auto' ? `${t('autoLane')}${autoLane ? ' · ' + t('lane.' + autoLane) : ''}` : id === 'all' ? t('all') : t('lane.' + id)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
