@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 export const AI_PROVIDERS = {
   local:      { label:"Sin IA (local)",      icon:"📦" },
   anthropic:  { label:"Anthropic",           icon:"🟠", url:"https://api.anthropic.com/v1/messages",              models:["claude-haiku-5-5","claude-sonnet-5-5"],                                            docsUrl:"https://console.anthropic.com" },
-  openrouter: { label:"OpenRouter (gratis)", icon:"🆓", url:"https://openrouter.ai/api/v1/chat/completions",       models:["mistralai/mistral-7b-instruct:free","meta-llama/llama-3.1-8b-instruct:free","google/gemma-2-9b-it:free"], docsUrl:"https://openrouter.ai", note:"Crea cuenta en openrouter.ai → API Keys. Sin tarjeta para modelos :free" },
+  openrouter: { label:"OpenRouter (gratis)", icon:"🆓", url:"https://openrouter.ai/api/v1/chat/completions",       models:["nvidia/nemotron-3-ultra-550b-a55b:free","meta-llama/llama-3.1-8b-instruct:free"], docsUrl:"https://openrouter.ai", note:"Crea cuenta en openrouter.ai → API Keys. Sin tarjeta para modelos :free" },
   openai:     { label:"OpenAI",              icon:"🤖", url:"https://api.openai.com/v1/chat/completions",          models:["gpt-4o-mini","gpt-3.5-turbo"],                                                                     docsUrl:"https://platform.openai.com/api-keys" },
 }
 

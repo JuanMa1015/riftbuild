@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update:
@@ -18,6 +19,17 @@ jobs:
           node-version: 22
       - run: node scripts/update-data.mjs
       - run: node scripts/check-i18n.mjs
+      - name: Patch digest (opens an issue when the latest patch touches our items)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/patch-digest.mjs > digest.md || true
+          if [ -s digest.md ]; then
+            title=$(head -1 digest.md | sed 's/^## //')
+            if [ "$(gh issue list --state all --search "\"$title\" in:title" --json number --jq length)" = "0" ]; then
+              gh issue create --title "$title" --body-file digest.md
+            fi
+          fi
       - name: Commit changes
         run: |
           git config user.name "riftbuild-bot"

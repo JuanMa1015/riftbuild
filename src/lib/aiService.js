@@ -43,9 +43,17 @@ async function ask({ provider, key, model, prompt }) {
       { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       { model: m, max_tokens: 700, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
   } else {
+    const or = provider === 'openrouter'
     resp = await post(
-      { Authorization: `Bearer ${key}`, ...(provider === 'openrouter' ? { 'HTTP-Referer': 'https://riftbuild.app', 'X-Title': 'RiftBuild' } : {}) },
-      { model: m, max_tokens: 700, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+      { Authorization: `Bearer ${key}`, ...(or ? { 'HTTP-Referer': 'https://riftbuild.app', 'X-Title': 'RiftBuild' } : {}) },
+      {
+        model: m, temperature: 0.2, messages: [{ role: 'user', content: prompt }],
+        // reasoning models spend tokens thinking first: keep it short and leave room for the answer
+        max_tokens: or ? 1500 : 700,
+        ...(or ? { reasoning: { effort: 'low' } } : {}),
+        // the free Nemotron endpoint is pinned to NVIDIA, as in OpenRouter's own example
+        ...(or && m.startsWith('nvidia/') ? { provider: { only: ['nvidia'], allow_fallbacks: false } } : {}),
+      })
   }
   const data = await resp.json().catch(() => ({}))
   if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`)
