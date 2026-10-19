@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMatchStore, useRecentStore, usePoolStore } from '../../store'
-import { CHAMPIONS, ROLE_OPTIONS, ROLE_MAP } from '../../data/champions'
+import { CHAMPIONS, ROLE_OPTIONS } from '../../data/champions'
+import { chooseChampion } from '../../lib/pick'
 import { useT } from '../../i18n'
 import { X, Star } from 'lucide-react'
 import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
@@ -12,18 +13,15 @@ export default function StepMe({ onPicked, compact = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
   const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
-  const { mine, pushMine } = useRecentStore()
+  const { mine } = useRecentStore()
   const pool = usePoolStore(s => s.pool)
   const togglePool = usePoolStore(s => s.toggle)
   const lane = ROLE_LANE[myRole]
   const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
 
-  function pick(c) {
+  function pick(c, opts) {
     const first = !myChamp
-    setMyChamp(c)
-    pushMine(c.n)
-    const r = ROLE_MAP[c.r[0]]
-    if (r) setMyRole(r)
+    chooseChampion(c, opts)
     setChanging(false)
     if (first) onPicked?.()   // going back to change the pick must not bounce you forward again
   }
@@ -67,7 +65,7 @@ export default function StepMe({ onPicked, compact = false }) {
         </div>
       )}
 
-      {(!compact || !myChamp || changing) && <Suggestions onPick={pick} />}
+      {(!compact || !myChamp || changing) && <Suggestions onPick={c => pick(c, { keepRole: true })} />}
 
       {(!compact || !myChamp || changing) && <ChampSearch
         placeholder={t('meSearch')}

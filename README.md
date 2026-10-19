@@ -14,7 +14,7 @@
 
 - **Entrada rápida.** Tu campeón (con accesos directos a los últimos que jugaste), cinco toques para los rivales y listo. El resultado se recalcula en cada toque, sin botón ni espera.
 - **Atajos de composición.** ¿No alcanzaste a ver todos los rivales? Marca "AP", "AD", "Curación", "CC" o "Tanques" y la build se ajusta.
-- **Burbuja flotante (Android).** Muestra los 6 ítems, botas, runa y hechizos encima del juego. Se arrastra y se actualiza sola.
+- **Burbuja flotante (Android).** Muestra los 5 ítems, las botas, la runa y los hechizos encima del juego. Se arrastra y se actualiza sola.
 - **Offline.** El motor de builds y todas las imágenes viajan dentro de la app.
 - **IA opcional.** Con tu propia API key (Anthropic, OpenRouter u OpenAI) puedes pedir un análisis más fino. La key se guarda solo en tu dispositivo.
 - **Español LATAM por defecto, inglés disponible.** Cambia el idioma en *Configuración de IA*. Los nombres de ítems son los oficiales de cada idioma.

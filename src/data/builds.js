@@ -63,11 +63,13 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
            : ccCount>=3&&cData?.d==="ad"&&!items.includes("Cimitarra Mercurial")       ? "Cimitarra Mercurial"
            : tpl.core[3] || tpl.core[0]
 
-  if (i5) items.push(i5)
-  if (i6 && !items.includes(i6)) items.push(i6)
-  items = [...new Set(items)].slice(0,6)
+  // 6 inventory slots, boots take one: 4 core items + the one that answers this game = 5 items, boots are returned separately
+  const extra = [i5, i6, tpl.sit.win, ...Object.values(tpl.sit)].find(x => x && !items.includes(x))
+  if (extra) items.push(extra)
+  items = [...new Set(items)].slice(0,5)
 
-  const bootsName = apCount>=3 ? tpl.boots.ap : tpl.boots.def
+  // magic-resist boots vs heavy AP, armor boots vs heavy AD (for AP champions); not every template has both, so fall back to the default
+  const bootsName = (apCount>=3 && tpl.boots.ap) || (adCount>=3 && tpl.boots.ad) || tpl.boots.def
 
   const build = items.map((name, i) => {
     const d = ITEMS[name] || {}
@@ -100,7 +102,7 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
       nombre:       tr(bootsName),
       en:           ITEMS[bootsName]?.en || "plated-steelcaps",
       encantamiento: tpl.enc,
-      por_que:      tr(apCount>=3 ? "RM y tenacidad críticas contra tanto AP." : ITEMS[bootsName]?.desc||"")
+      por_que:      tr(apCount>=3 && bootsName===tpl.boots.ap ? "RM y tenacidad críticas contra tanto AP." : ITEMS[bootsName]?.desc||"")
     },
     runas,
     orden_habilidades: tpl.skills,

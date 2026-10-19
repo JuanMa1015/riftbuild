@@ -76,6 +76,7 @@ export default function SettingsPage() {
                 {cfg?.models?.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </label>
+            {key.trim() && <p className="text-sm text-chalk-dim">{t('aiKeyOn')}</p>}
             <label className="flex items-start gap-3">
               <input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} className="mt-1 h-5 w-5 accent-[var(--color-marker)]" />
               <span><span className="block font-medium">{t('aiAuto')}</span><span className="block text-sm text-chalk-dim">{t('aiAutoHint')}</span></span>

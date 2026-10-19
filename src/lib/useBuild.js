@@ -16,7 +16,8 @@ export function useBuild({ wide = false } = {}) {
   const lang = useLang(s => s.lang)
   const rev = useDataStore(s => s.rev)
   const { myChamp, myRole, allies, enemies, hints, step, setResult, setLoading, setError } = m
-  const [ai, setAi] = useState('idle')     // idle | waiting | done | late | error
+  const [ai, setAi] = useState('idle')     // idle | waiting | slow | done | late | error
+  const [aiError, setAiError] = useState('')
   const late = useRef(null)
   const req = useRef(0)
 
@@ -44,7 +45,7 @@ export function useBuild({ wide = false } = {}) {
     const timer = setTimeout(() => {
       setAi('waiting')
       let timedOut = false
-      const t = setTimeout(() => { timedOut = true; if (req.current === id) setAi('idle') }, WAIT_MS)
+      const t = setTimeout(() => { timedOut = true; if (req.current === id) setAi('slow') }, WAIT_MS)
       generateBuild(inputs()).then(res => {
         clearTimeout(t)
         if (req.current !== id) return
@@ -53,7 +54,7 @@ export function useBuild({ wide = false } = {}) {
         clearTimeout(t)
         if (req.current !== id) return
         if ([401, 402, 403, 429].includes(e.status)) pausedUntil = Date.now() + PAUSE_MS
-        setAi('error')
+        setAiError(e.message); setAi('error')
       })
     }, wide ? 2500 : 0)
     return () => clearTimeout(timer)
@@ -72,7 +73,8 @@ export function useBuild({ wide = false } = {}) {
 
   return {
     result: m.result, loading: m.loading, error: m.error, canImprove,
-    onImprove: improve, onApplyLate: applyLate, aiStatus: ai,
+    onImprove: improve, onApplyLate: applyLate, aiStatus: ai, aiError,
+    aiOn: provider !== 'local' && !!key?.trim(), aiModel: model,
     waiting: ai === 'waiting' && !wide,   // phone: hide the local build behind a skeleton while the AI answers
   }
 }

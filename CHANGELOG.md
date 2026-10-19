@@ -5,6 +5,22 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.1] - 2026-10-19
+
+### Añadido
+- Sugeridos de campeón también en el paso Rivales: aparecen desde el primer rival o aliado y se actualizan con cada pick, justo debajo del tablero. Con selector de carril, y en partidas sin información muestran tu pool.
+- Los sugeridos mezclan clases (no cinco luchadores seguidos) y dan un pequeño bonus a lo que jugaste hace poco.
+- Línea "Según tu campeón y N rivales · amenazas" que dice en qué se basó la build.
+- Ajustes confirma cuando hay una clave guardada: la IA se consulta sola y las respuestas se guardan en el teléfono.
+- Indicador del motor en la pestaña Build: "Motor local · añade tu clave de IA" (abre Ajustes), "Analizando con IA…", "La IA está tardando", "Build mejorada con IA · modelo" o el motivo del error.
+
+### Corregido
+- Elegir un sugerido ya no cambia tu carril al "usual" del campeón.
+- "Según 1 rivales": ahora concuerda en singular y plural.
+- La build recomendaba 6 ítems más las botas (7 en total). Ahora son 5 ítems y las botas, que ocupan el sexto espacio; también en la IA y en la burbuja.
+- Con muchos rivales de AP, algunas plantillas no mostraban las botas (salían vacías); ahora se elige un par válido siempre.
+- Los nombres largos de ítems ya no se cortan con "…".
+
 ## [0.8.0] - 2026-10-19
 
 ### Añadido

@@ -42,6 +42,6 @@ Siguientes pasos (PowerShell, en la carpeta del proyecto):
   copy android\\app\\build\\outputs\\apk\\debug\\app-debug.apk ${apk}
   git add -A
   git commit -m "chore(release): v${next}"
-  git tag v${next}
+  git tag -a v${next} -m "RiftBuild ${next}"
   git push --follow-tags
   gh release create v${next} ${apk} --title "RiftBuild ${next}" --notes-file release-notes.md${next.startsWith('0.') ? ' --prerelease' : ''}`)

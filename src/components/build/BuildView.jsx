@@ -27,7 +27,7 @@ function ItemRow({ item, index, last }) {
         <span className="flex items-center gap-3">
           <ItemImg en={item.en} alt="" size={short ? 32 : 44} className="rounded-lg" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate font-semibold leading-tight">{item.nombre}</span>
+            <span className="block font-semibold leading-tight">{item.nombre}</span>
             <span className="short:hidden"><TypeTag>{tr(item.tipo)}</TypeTag></span>
           </span>
           <ChevronDown size={18} className={`shrink-0 text-chalk-dim transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
@@ -172,6 +172,37 @@ function ChampStats() {
   )
 }
 
+// Always say which engine produced the build: local rules, or the AI (and what happened when it did not answer)
+function AiStatus({ aiOn, aiStatus, aiError, aiModel, onApplyLate }) {
+  const { t } = useT()
+  const setView = useMatchStore(s => s.setView)
+  const line = 'mb-3 flex items-center gap-2 text-sm text-chalk-dim'
+  if (!aiOn) return (
+    <button type="button" onClick={() => setView('settings')} className={`${line} h-10 w-full rounded-xl border border-line px-3 text-left`}>
+      <Sparkles size={16} className="shrink-0" aria-hidden /> <span className="min-w-0 flex-1">{t('aiOffRow')}</span> <ChevronRight size={16} aria-hidden />
+    </button>
+  )
+  if (aiStatus === 'waiting') return <p className={line}><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiWorking')}</p>
+  if (aiStatus === 'slow') return <p className={line}><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiSlow')}</p>
+  if (aiStatus === 'done') return <p className={line}><Sparkles size={16} aria-hidden /> {t('aiDone')}{aiModel ? ` · ${aiModel.split('/').pop().replace(':free', '')}` : ''}</p>
+  if (aiStatus === 'error') return <p className={line}>{t('aiFallback')}{aiError ? ` (${aiError.slice(0, 80)})` : ''}</p>
+  if (aiStatus === 'late') return (
+    <button type="button" onClick={onApplyLate} className="mb-3 flex h-11 w-full items-center justify-between rounded-xl border border-marker px-4 text-sm font-semibold">
+      <span className="flex items-center gap-2"><Sparkles size={16} aria-hidden /> {t('aiLate')}</span><span>{t('aiApply')}</span>
+    </button>
+  )
+  return null
+}
+
+// What the engine looked at, in one line
+function Basis({ r }) {
+  const { t } = useT()
+  const enemies = useMatchStore(s => s.enemies)
+  const n = LANES.filter(l => enemies[l.id]).length
+  const threats = (r.amenazas || []).map(a => a.l).join(', ')
+  return <p className="mb-3 text-sm text-chalk-dim">{n ? t('basis', { foes: `${n} ${t(n === 1 ? 'foe1' : 'foeN')}` }) : t('basisNone')}{threats ? ` · ${threats}` : ''}</p>
+}
+
 function Skeleton() {
   return (
     <div aria-hidden className="animate-pulse">
@@ -225,7 +256,7 @@ function PlanTab({ r }) {
   )
 }
 
-export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiStatus, onApplyLate, waiting }) {
+export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiStatus, aiError, aiOn, aiModel, onApplyLate, waiting }) {
   const { t } = useT()
   const [tab, setTab] = useState('items')
   const myRole = useMatchStore(s => s.myRole)
@@ -254,14 +285,8 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         ))}
       </div>
 
-      {aiStatus === 'waiting' && <p className="mb-3 flex items-center gap-2 text-sm text-chalk-dim"><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiWorking')}</p>}
-      {aiStatus === 'done' && <p className="mb-3 flex items-center gap-2 text-sm text-chalk-dim"><Sparkles size={16} aria-hidden /> {t('aiDone')}</p>}
-      {aiStatus === 'error' && <p className="mb-3 text-sm text-chalk-dim">{t('aiFallback')}</p>}
-      {aiStatus === 'late' && (
-        <button type="button" onClick={onApplyLate} className="mb-3 flex h-11 w-full items-center justify-between rounded-xl border border-marker px-4 text-sm font-semibold">
-          <span className="flex items-center gap-2"><Sparkles size={16} aria-hidden /> {t('aiLate')}</span><span>{t('aiApply')}</span>
-        </button>
-      )}
+      <Basis r={r} />
+      <AiStatus aiOn={aiOn} aiStatus={aiStatus} aiError={aiError} aiModel={aiModel} onApplyLate={onApplyLate} />
 
       {waiting ? <Skeleton /> : <>
       {tab === 'items' && <ItemsTab r={r} />}

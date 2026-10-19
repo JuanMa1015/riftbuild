@@ -5,6 +5,8 @@ import { useT } from '../../i18n'
 import { Token } from '../ui'
 import { useMedia } from '../../lib/useMedia'
 import ChampSearch from './ChampSearch'
+import Suggestions from './Suggestions'
+import { chooseChampion } from '../../lib/pick'
 
 const CHIPS = [
   { k: 'ap', l: 'hintAP' }, { k: 'ad', l: 'hintAD' }, { k: 'heal', l: 'hintHeal' },
@@ -14,8 +16,8 @@ const CHIPS = [
 // Step 2: the board. Five positions per side; a pick lands on the active slot, else on the first free one.
 // The board and the search box stay pinned together, so slot, query and result are always on screen.
 export default function StepFoes() {
-  const { t } = useT()
-  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeams, myChamp, setStep } = useMatchStore()
+  const { t, tr } = useT()
+  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeams, myChamp, setMyChamp, setResult } = useMatchStore()
   const wide = useMedia('(min-width: 768px)')
   const [active, setActive] = useState(null)
   const narrow = useMedia('(max-width: 359px)')   // Samsung pop-up window and other small windows
@@ -57,6 +59,17 @@ export default function StepFoes() {
     </div>
   )
 
+  // Real drafts reveal the enemy one pick at a time, so the suggestions live in this step, right under the board,
+  // and update with every rival you add. Once you have a champion this slot just shows it.
+  const mineOrSuggestions = myChamp ? (
+    <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-2.5">
+      <Token name={myChamp.n} side="me" size={40} />
+      <p className="min-w-0 flex-1 truncate font-semibold">{tr(myChamp.n)}</p>
+      <button type="button" onClick={() => { setMyChamp(null); setResult(null) }}
+        className="h-10 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
+    </div>
+  ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
+
   return (
     <section aria-label={t('stepFoes')}>
       <div className="mb-3 flex items-center gap-2">
@@ -72,16 +85,8 @@ export default function StepFoes() {
           className="h-11 rounded-xl px-3 text-sm font-medium text-chalk-dim hover:text-chalk">{t('clear')}</button>
       </div>
 
-      {!myChamp && !wide && (
-        <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-3">
-          <p className="flex-1 text-sm">{t('noChamp')}</p>
-          <button type="button" onClick={() => setStep(0)} className="h-10 rounded-lg border border-marker px-3 text-sm font-semibold">{t('sugGo')}</button>
-        </div>
-      )}
-
       {side === 'enemy' && (
         <div className="mb-3">
-          <p className="mb-1.5 text-sm text-chalk-dim short:hidden">{t('quickHint')}</p>
           <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('quickTitle')}>
             {CHIPS.map(c => (
               <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
@@ -97,6 +102,7 @@ export default function StepFoes() {
       <ChampSearch
         key={side}
         header={board}
+        between={wide ? null : mineOrSuggestions}
         label={target ? `${t(side === 'enemy' ? 'searchFor' : 'searchAlly')} ${t('lane.' + target)}` : undefined}
         placeholder={t('typeToSearch')}
         onPick={pick}

@@ -11,7 +11,7 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header, between = null }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
@@ -81,6 +81,7 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
         </div>
       </div>
 
+      {!q && between}
       {!q && poolNames.length > 0 && row(t('poolTitle'), poolNames)}
       {!q && recents.length > 0 && row(t('meRecents'), recents)}
 

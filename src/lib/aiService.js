@@ -26,7 +26,7 @@ function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base }
   const out = lang === 'en' ? 'inglés' : 'español latinoamericano'
   return `Wild Rift, parche ${GAME.patch}. Mejora la build de ${myChamp} (${myRole}) contra estos rivales: ${list(enemies)}${hp ? ` (${hp})` : ''}. Aliados: ${list(allies)}.
 Build base del motor: ${base.items.join(', ')} | botas ${base.boots}.
-Elige 6 ítems distintos SOLO de esta lista, en orden de compra: ${GEAR.join(' | ')}.
+Elige 5 ítems distintos (el sexto espacio son las botas) SOLO de esta lista, en orden de compra: ${GEAR.join(' | ')}.
 Botas SOLO de: ${BOOTS.join(' | ')}.
 Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida"}
 Los textos "w" y "tip" en ${out}. Los nombres de ítems se copian tal cual de la lista.`
@@ -94,7 +94,7 @@ export async function generateBuild({ myChamp, myRole, allies, enemies, hints, l
 
   const tr = makeTr(lang)
   const seen = new Set()
-  const items = (ans.items || []).filter(i => ITEMS[i.n] && ITEMS[i.n].t !== 'Botas' && !seen.has(i.n) && seen.add(i.n)).slice(0, 6)
+  const items = (ans.items || []).filter(i => ITEMS[i.n] && ITEMS[i.n].t !== 'Botas' && !seen.has(i.n) && seen.add(i.n)).slice(0, 5)
     .map(i => ({ nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: i.w || tr(ITEMS[i.n].desc) }))
   if (items.length < 4) throw new Error('La IA no devolvió ítems válidos')
 
