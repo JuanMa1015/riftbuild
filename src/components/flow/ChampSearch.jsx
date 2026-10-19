@@ -11,7 +11,7 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], label, header }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
@@ -25,6 +25,22 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
   }, [q, rev, lang, lane])
 
   function pick(c) { onPick(c); setQ('') }
+  // favourites of the selected lane (all lanes when the filter is on 'Todos'); recents are shown separately
+  const poolNames = pools ? [...new Set(lane === 'all' ? Object.values(pools).flat() : pools[lane] || [])] : []
+  const row = (title, names) => (
+    <div className="mb-3">
+      <p className="mb-1.5 text-sm font-medium text-chalk-dim">{title}</p>
+      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+        {names.map(n => (
+          <button key={n} type="button" onClick={() => pick(CHAMPIONS.find(c => c.n === n))}
+            className="flex w-16 shrink-0 flex-col items-center gap-1 rounded-lg py-1 active:scale-95">
+            <ChampImg name={n} size={52} className={`rounded-full ${ring(n)}`} />
+            <span className="w-full truncate text-center text-xs">{tr(n)}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 
   return (
     <div ref={top}>
@@ -65,20 +81,8 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
         </div>
       </div>
 
-      {!q && recents.length > 0 && (
-        <div className="mb-3">
-          <p className="mb-1.5 text-sm font-medium text-chalk-dim">{t('meRecents')}</p>
-          <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
-            {recents.map(n => (
-              <button key={n} type="button" onClick={() => pick(CHAMPIONS.find(c => c.n === n))}
-                className="flex w-16 shrink-0 flex-col items-center gap-1 rounded-lg py-1 active:scale-95">
-                <ChampImg name={n} size={52} className={`rounded-full ${ring(n)}`} />
-                <span className="w-full truncate text-center text-xs">{tr(n)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {!q && poolNames.length > 0 && row(t('poolTitle'), poolNames)}
+      {!q && recents.length > 0 && row(t('meRecents'), recents)}
 
       {list.length === 0 ? (
         <p className="py-8 text-center text-chalk-dim">{t('noMatch')} “{q}”</p>

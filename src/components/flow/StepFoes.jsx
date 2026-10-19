@@ -15,7 +15,8 @@ const CHIPS = [
 // The board and the search box stay pinned together, so slot, query and result are always on screen.
 export default function StepFoes() {
   const { t } = useT()
-  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeams } = useMatchStore()
+  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeams, myChamp, setStep } = useMatchStore()
+  const wide = useMedia('(min-width: 768px)')
   const [active, setActive] = useState(null)
   const narrow = useMedia('(max-width: 359px)')   // Samsung pop-up window and other small windows
 
@@ -70,6 +71,13 @@ export default function StepFoes() {
         <button type="button" onClick={() => { clearTeams(); setActive(null) }}
           className="h-11 rounded-xl px-3 text-sm font-medium text-chalk-dim hover:text-chalk">{t('clear')}</button>
       </div>
+
+      {!myChamp && !wide && (
+        <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-3">
+          <p className="flex-1 text-sm">{t('noChamp')}</p>
+          <button type="button" onClick={() => setStep(0)} className="h-10 rounded-lg border border-marker px-3 text-sm font-semibold">{t('sugGo')}</button>
+        </div>
+      )}
 
       {side === 'enemy' && (
         <div className="mb-3">

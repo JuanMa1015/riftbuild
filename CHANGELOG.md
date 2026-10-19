@@ -5,9 +5,25 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.0] - 2026-10-19
+
 ### Añadido
+- Sugeridos de campeón contra los rivales y aliados ya puestos (reglas de clase y tipo de daño, no estadísticas); se puede llenar primero a los rivales.
+- Mi pool: ★ en tu campeón para guardarlo por carril; sale primero al buscar y puntúa más en las sugerencias.
+- Temporizadores de Barón, Dragón y Dragón Anciano en la burbuja (toca para iniciar, mantén pulsado para cancelar, vibra al terminar); duraciones editables en Ajustes.
+- Notas post-partida: etiquetas de "qué pesó más" y una nota corta, visibles en el historial.
+- Introducción de primer uso: qué hace la app y por qué la burbuja pide permiso.
+- 8 ítems de Wild Rift (Youmuu, Relicario de los Solari, Warmog, Daga de Statikk, Yun Tal, Abrazo del Serafín, Rey Arruinado, Al Filo de la Cordura) y plantilla de soporte tanque.
+- APK de release firmado con clave propia (la clave vive fuera del repo, en `~/.riftbuild`).
 - Versión única en `package.json`: el APK la lee (`versionName` y `versionCode`) y Ajustes la muestra.
 - Script `npm run release` para subir versión, ordenar este archivo y preparar las notas de la release.
+
+### Cambiado
+- 22 ítems pasan a su nombre oficial en español LATAM (por ejemplo Cuchilla Oscura, Cota de Espinas, Filo del Infinito).
+- Modelo gratuito por defecto de OpenRouter: Nemotron 3 Super sin razonamiento (responde en ~10 s con JSON válido).
+
+### Corregido
+- Con Nemotron Ultra la IA pensaba 30-70 s y se quedaba sin tokens antes de devolver el JSON.
 
 ## [0.7.0] - 2026-10-19
 

@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useMatchStore, useRecentStore } from '../../store'
+import { useMatchStore, useRecentStore, usePoolStore } from '../../store'
 import { CHAMPIONS, ROLE_OPTIONS, ROLE_MAP } from '../../data/champions'
 import { useT } from '../../i18n'
-import { X } from 'lucide-react'
+import { X, Star } from 'lucide-react'
 import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
 import ChampSearch from './ChampSearch'
+import Suggestions from './Suggestions'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
 export default function StepMe({ onPicked, compact = false }) {
@@ -12,6 +13,10 @@ export default function StepMe({ onPicked, compact = false }) {
   const [changing, setChanging] = useState(false)
   const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
   const { mine, pushMine } = useRecentStore()
+  const pool = usePoolStore(s => s.pool)
+  const togglePool = usePoolStore(s => s.toggle)
+  const lane = ROLE_LANE[myRole]
+  const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
 
   function pick(c) {
     const first = !myChamp
@@ -39,6 +44,8 @@ export default function StepMe({ onPicked, compact = false }) {
           {compact && !changing && (
             <button type="button" onClick={() => setChanging(true)} className="h-11 rounded-xl border border-line px-4 text-sm font-semibold">{t('change')}</button>
           )}
+          <button type="button" onClick={() => togglePool(lane, myChamp.n)} aria-pressed={inPool} aria-label={inPool ? t('poolRemove') : t('poolAdd')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim"><Star size={18} className={inPool ? 'fill-current text-marker' : ''} /></button>
           <button type="button" onClick={clearPick} aria-label={t('clearSlot')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim hover:text-chalk"><X size={18} /></button>
         </div>
@@ -60,10 +67,13 @@ export default function StepMe({ onPicked, compact = false }) {
         </div>
       )}
 
+      {(!compact || !myChamp || changing) && <Suggestions onPick={pick} />}
+
       {(!compact || !myChamp || changing) && <ChampSearch
         placeholder={t('meSearch')}
         onPick={pick}
         recents={mine.filter(n => CHAMPIONS.some(c => c.n === n))}
+        pools={pool}
         ring={n => (n === myChamp?.n ? 'ring-[3px] ring-marker' : '')}
       />}
     </section>

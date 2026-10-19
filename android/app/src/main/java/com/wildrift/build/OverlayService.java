@@ -17,6 +17,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -30,6 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Floating build over the game, built to stay out of the way:
@@ -59,6 +64,14 @@ public class OverlayService extends Service {
     private WindowManager.LayoutParams lp;
     private String closeLabel = "Close";
     private final Handler handler = new Handler(Looper.getMainLooper());
+    // objective respawn timers: id -> end time (ms). They live in the service, so they keep counting while the panel is folded.
+    private final Map<String, Long> ends = new HashMap<>();
+    private final Map<String, TextView> timerViews = new LinkedHashMap<>();
+    private final Map<String, String> timerNames = new HashMap<>();
+    private Bitmap firstIcon;
+    private final Runnable tick = new Runnable() {
+        @Override public void run() { refreshTimers(); if (!ends.isEmpty()) handler.postDelayed(this, 1000); }
+    };
     private final Runnable fold = () -> { if (panel != null) { panel.setVisibility(View.GONE); snapToEdge(); } };
 
     @Override public IBinder onBind(Intent i) { return null; }
@@ -245,10 +258,76 @@ public class OverlayService extends Service {
             row2.addView(foot);
             panel.addView(row2);
 
-            if (first != null) { bubbleIcon.setImageBitmap(first); bubbleIcon.setVisibility(View.VISIBLE); bubbleText.setVisibility(View.GONE); }
+            firstIcon = first;
+
+            // third row: one button per objective; tap = start (or restart) its respawn countdown, long-press = cancel
+            timerViews.clear();
+            JSONArray tms = d.optJSONArray("timers");
+            if (tms != null && tms.length() > 0) {
+                LinearLayout row3 = new LinearLayout(this);
+                row3.setPadding(0, dp(6), 0, 0);
+                for (int i = 0; i < tms.length(); i++) {
+                    JSONObject tm = tms.getJSONObject(i);
+                    final String id = tm.optString("id");
+                    final long secs = tm.optLong("secs", 300);
+                    timerNames.put(id, tm.optString("n", id));
+                    TextView b = new TextView(this);
+                    b.setGravity(Gravity.CENTER);
+                    b.setTextSize(12);
+                    b.setTypeface(null, android.graphics.Typeface.BOLD);
+                    b.setOnClickListener(v -> {
+                        ends.put(id, System.currentTimeMillis() + secs * 1000);
+                        handler.removeCallbacks(tick); handler.post(tick);
+                        if (panel.getVisibility() == View.VISIBLE) { handler.removeCallbacks(fold); handler.postDelayed(fold, FOLD_MS); }
+                    });
+                    b.setOnLongClickListener(v -> { ends.remove(id); refreshTimers(); return true; });
+                    timerViews.put(id, b);
+                    LinearLayout.LayoutParams lp3 = new LinearLayout.LayoutParams(0, dp(36), 1f);
+                    lp3.rightMargin = dp(3);
+                    row3.addView(b, lp3);
+                }
+                panel.addView(row3);
+            }
+            refreshTimers();
             // a changed build while the panel is open restarts the fold timer
             if (panel.getVisibility() == View.VISIBLE) { handler.removeCallbacks(fold); handler.postDelayed(fold, FOLD_MS); }
         } catch (Exception ignored) { /* keep the previous render */ }
+    }
+
+    private void styleTimer(TextView t, boolean on, String text) {
+        t.setText(text);
+        t.setTextColor(Color.parseColor(on ? "#1D1A05" : "#EEF3EA"));
+        GradientDrawable g = new GradientDrawable();
+        g.setCornerRadius(dp(8));
+        g.setColor(Color.parseColor(on ? "#FFD23F" : "#1B4631"));
+        t.setBackground(g);
+    }
+
+    private static String mmss(long secs) { return (secs / 60) + ":" + String.format(java.util.Locale.US, "%02d", secs % 60); }
+
+    /** Repaints every timer button and the bubble (the soonest remaining time replaces the item icon). */
+    private void refreshTimers() {
+        long now = System.currentTimeMillis(), soonest = Long.MAX_VALUE;
+        for (String id : new java.util.ArrayList<>(ends.keySet())) {
+            long left = (ends.get(id) - now + 999) / 1000;
+            if (left <= 0) {
+                ends.remove(id);
+                Vibrator vb = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                if (vb != null) vb.vibrate(VibrationEffect.createWaveform(new long[]{0, 250, 120, 250}, -1));
+            } else soonest = Math.min(soonest, left);
+        }
+        for (Map.Entry<String, TextView> e : timerViews.entrySet()) {
+            Long end = ends.get(e.getKey());
+            String name = timerNames.get(e.getKey());
+            if (end == null) styleTimer(e.getValue(), false, name);
+            else styleTimer(e.getValue(), true, name + " " + mmss(Math.max(0, (end - now + 999) / 1000)));
+        }
+        if (bubbleText == null) return;
+        if (soonest != Long.MAX_VALUE) {
+            bubbleIcon.setVisibility(View.GONE); bubbleText.setVisibility(View.VISIBLE); bubbleText.setText(mmss(soonest)); bubbleText.setTextSize(12);
+        } else if (firstIcon != null) {
+            bubbleIcon.setImageBitmap(firstIcon); bubbleIcon.setVisibility(View.VISIBLE); bubbleText.setVisibility(View.GONE);
+        } else { bubbleIcon.setVisibility(View.GONE); bubbleText.setVisibility(View.VISIBLE); bubbleText.setText("RB"); bubbleText.setTextSize(13); }
     }
 
     /** An icon cell; when the bitmap is missing it shows the name's first letters instead of an empty square. */
@@ -327,6 +406,7 @@ public class OverlayService extends Service {
     @Override public void onDestroy() {
         if (instance == this) instance = null;
         handler.removeCallbacks(fold);
+        handler.removeCallbacks(tick);
         if (root != null) { wm.removeView(root); root = null; }
         super.onDestroy();
     }

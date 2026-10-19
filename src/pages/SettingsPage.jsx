@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
-import { useAIStore, AI_PROVIDERS, useMatchStore, useMatchLog } from '../store'
+import { useAIStore, AI_PROVIDERS, useMatchStore, useMatchLog, useTimerStore } from '../store'
 import { useT, useLang, LANGS } from '../i18n'
 import { GAME } from '../data/game'
 import { checkForUpdates } from '../lib/updater'
@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const { on, toggle } = useBubble()
   const [done, setDone] = useState(false)
   const { entries, remove } = useMatchLog()
+  const { secs, setSecs } = useTimerStore()
   const won = entries.filter(e => e.win).length
   const cfg = AI_PROVIDERS[provider]
 
@@ -88,6 +89,27 @@ export default function SettingsPage() {
         )}
       </section>
 
+      {bubbleSupported && (
+        <section className="mb-8">
+          <SectionTitle>{t('timersTitle')}</SectionTitle>
+          <p className="mb-3 text-sm text-chalk-dim">{t('timersHelp')}</p>
+          <ul className="flex flex-col gap-2">
+            {GAME.timers.map(tm => {
+              const v = secs[tm.id] ?? tm.secs
+              return (
+                <li key={tm.id} className="flex items-center gap-3">
+                  <span className="flex-1 font-medium">{lang === 'en' ? tm.en : tm.es}</span>
+                  <input type="number" inputMode="numeric" min="10" max="900" value={v} onChange={e => setSecs(tm.id, Math.max(10, Math.min(900, +e.target.value || tm.secs)))}
+                    aria-label={lang === 'en' ? tm.en : tm.es}
+                    className="h-11 w-24 rounded-xl border border-line bg-felt-2 px-3 text-right outline-none focus:border-marker" />
+                  <span className="w-20 text-sm text-chalk-dim">{t('timersSecs')} · {Math.floor(v / 60)}:{String(v % 60).padStart(2, '0')}</span>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
+
       <section className="mb-8">
         <SectionTitle>{t('history')}</SectionTitle>
         {entries.length === 0 ? <p className="text-sm text-chalk-dim">{t('historyEmpty')}</p> : (
@@ -97,7 +119,10 @@ export default function SettingsPage() {
               {entries.slice(0, 8).map(e => (
                 <li key={e.id} className="flex items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 py-2 text-sm">
                   <span className={`font-bold ${e.win ? 'text-ally' : 'text-foe'}`}>{e.win ? 'W' : 'L'}</span>
-                  <span className="min-w-0 flex-1 truncate">{e.champ} {t('vs')} {e.enemies.join(', ') || '—'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate">{e.champ} {t('vs')} {e.enemies.join(', ') || '—'}</span>
+                    {(e.tags?.length > 0 || e.note) && <span className="block truncate text-chalk-dim">{[...(e.tags || []).map(k => t(k)), e.note].filter(Boolean).join(' · ')}</span>}
+                  </span>
                   <button type="button" onClick={() => remove(e.id)} className="h-9 rounded-lg px-2 text-chalk-dim">{t('delete')}</button>
                 </li>
               ))}

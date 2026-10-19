@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { useMatchStore } from '../store'
@@ -11,11 +11,13 @@ import StepMe from '../components/flow/StepMe'
 import StepFoes from '../components/flow/StepFoes'
 import BuildView from '../components/build/BuildView'
 import SettingsPage from './SettingsPage'
+import Onboarding, { isOnboarded } from '../components/Onboarding'
 
 export default function HomePage() {
   const { step, setStep, view } = useMatchStore()
   const wide = useMedia('(min-width: 768px)')   // window / tablet mode: inputs left, build right
   const build = useBuild({ wide })
+  const [onb, setOnb] = useState(() => !isOnboarded())
 
   useEffect(() => { checkForUpdates() }, [])
 
@@ -65,6 +67,7 @@ export default function HomePage() {
   return (
     <div className="flex h-dvh flex-col bg-felt text-chalk">
       <BubbleSync />
+      {onb && <Onboarding onDone={() => setOnb(false)} />}
       {view === 'flow' ? <TopBar /> : <div className="pt-safe" />}
       {body}
     </div>

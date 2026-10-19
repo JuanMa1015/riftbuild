@@ -112,18 +112,39 @@ function BubbleButton() {
 const wl = (entries) => ({ w: entries.filter(e => e.win).length, l: entries.filter(e => !e.win).length })
 const pct = ({ w, l }) => (w + l ? Math.round((100 * w) / (w + l)) : 0)
 
-// After the match: one tap saves the result with the build you used
+// After the match: one tap saves the result with the build you used, then an optional "what mattered" note
+const NOTE_TAGS = ['tagEarly', 'tagCounter', 'tagBuild', 'tagTeam', 'tagMacro', 'tagMine']
 function ResultLog({ r }) {
   const { t } = useT()
   const { myChamp, myRole, enemies, hints } = useMatchStore()
-  const add = useMatchLog(s => s.add)
-  const [saved, setSaved] = useState(false)
+  const { add, update } = useMatchLog()
+  const [saved, setSaved] = useState(null)   // id of the saved match
+  const [tags, setTags] = useState([])
+  const [note, setNote] = useState('')
+  const [noted, setNoted] = useState(false)
   function save(win) {
-    add({ champ: myChamp.n, role: myRole, win, hints, items: r.build.map(b => b.en),
-      enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: Date.now() })
-    setSaved(true)
+    const id = Date.now()
+    add({ id, champ: myChamp.n, role: myRole, win, hints, items: r.build.map(b => b.en),
+      enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: id })
+    setSaved(id)
   }
-  if (saved) return <p className="mt-6 text-sm text-chalk-dim">{t('logSaved')}</p>
+  if (saved && noted) return <p className="mt-6 text-sm text-chalk-dim">{t('noteSaved')}</p>
+  if (saved) return (
+    <div className="mt-6">
+      <p className="mb-1 text-sm text-chalk-dim">{t('logSaved')}</p>
+      <p className="mb-2 font-semibold">{t('noteAsk')}</p>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {NOTE_TAGS.map(k => (
+          <button key={k} type="button" aria-pressed={tags.includes(k)} onClick={() => setTags(x => x.includes(k) ? x.filter(y => y !== k) : [...x, k])}
+            className={`h-10 rounded-full border px-4 text-sm font-semibold ${tags.includes(k) ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2'}`}>{t(k)}</button>
+        ))}
+      </div>
+      <input value={note} onChange={e => setNote(e.target.value)} placeholder={t('notePlaceholder')} maxLength={140}
+        className="mb-2 h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
+      <button type="button" onClick={() => { update(saved, { tags, note: note.trim() }); setNoted(true) }}
+        className="h-12 w-full rounded-xl border border-line bg-felt-2 font-semibold">{t('noteSave')}</button>
+    </div>
+  )
   return (
     <div className="mt-6">
       <p className="mb-2 font-semibold">{t('logAsk')}</p>

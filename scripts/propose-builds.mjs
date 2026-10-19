@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 
 const [digestPath] = process.argv.slice(2)
 const key = process.env.OPENROUTER_API_KEY
-const MODEL = process.env.PROPOSE_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free'
+const MODEL = process.env.PROPOSE_MODEL || 'nvidia/nemotron-3-super-120b-a12b:free'
 if (!digestPath || !existsSync(digestPath) || !key) process.exit(0)
 
 const file = new URL('../public/data/game.json', import.meta.url)
@@ -31,7 +31,7 @@ Use {"changes":[]} if nothing is justified.`
 const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-  body: JSON.stringify({ model: MODEL, temperature: 0.1, max_tokens: 2500, reasoning: { effort: 'low' }, messages: [{ role: 'user', content: prompt }] }),
+  body: JSON.stringify({ model: MODEL, temperature: 0.1, max_tokens: 2500, reasoning: { enabled: false }, messages: [{ role: 'user', content: prompt }] }),
 })
 const data = await resp.json().catch(() => ({}))
 const text = data.choices?.[0]?.message?.content || ''

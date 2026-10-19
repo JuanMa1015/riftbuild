@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 export const AI_PROVIDERS = {
   local:      { label:"Sin IA (local)",      icon:"📦" },
   anthropic:  { label:"Anthropic",           icon:"🟠", url:"https://api.anthropic.com/v1/messages",              models:["claude-haiku-5-5","claude-sonnet-5-5"],                                            docsUrl:"https://console.anthropic.com" },
-  openrouter: { label:"OpenRouter (gratis)", icon:"🆓", url:"https://openrouter.ai/api/v1/chat/completions",       models:["nvidia/nemotron-3-ultra-550b-a55b:free","meta-llama/llama-3.1-8b-instruct:free"], docsUrl:"https://openrouter.ai", note:"Crea cuenta en openrouter.ai → API Keys. Sin tarjeta para modelos :free" },
+  openrouter: { label:"OpenRouter (gratis)", icon:"🆓", url:"https://openrouter.ai/api/v1/chat/completions",       models:["nvidia/nemotron-3-super-120b-a12b:free","google/gemma-4-26b-a4b-it:free"], docsUrl:"https://openrouter.ai", note:"Crea cuenta en openrouter.ai → API Keys. Sin tarjeta para modelos :free" },
   openai:     { label:"OpenAI",              icon:"🤖", url:"https://api.openai.com/v1/chat/completions",          models:["gpt-4o-mini","gpt-3.5-turbo"],                                                                     docsUrl:"https://platform.openai.com/api-keys" },
 }
 
@@ -31,8 +31,31 @@ export const useMatchLog = create(
       entries: [],
       add: (e) => set(s => ({ entries: [{ id: Date.now(), ...e }, ...s.entries].slice(0, 300) })),
       remove: (id) => set(s => ({ entries: s.entries.filter(x => x.id !== id) })),
+      update: (id, patch) => set(s => ({ entries: s.entries.map(x => x.id === id ? { ...x, ...patch } : x) })),
     }),
     { name: 'wr-matchlog' }
+  )
+)
+
+// Favourite champions per lane (they rank higher in suggestions and show up first when searching)
+export const usePoolStore = create(
+  persist(
+    (set) => ({
+      pool: { top: [], jg: [], mid: [], adc: [], sup: [] },
+      toggle: (lane, name) => set(s => {
+        const cur = s.pool[lane] || []
+        return { pool: { ...s.pool, [lane]: cur.includes(name) ? cur.filter(n => n !== name) : [...cur, name] } }
+      }),
+    }),
+    { name: 'wr-pool' }
+  )
+)
+
+// Objective respawn timers the user corrected (seconds by id); the defaults live in game.json
+export const useTimerStore = create(
+  persist(
+    (set) => ({ secs: {}, setSecs: (id, v) => set(s => ({ secs: { ...s.secs, [id]: v } })) }),
+    { name: 'wr-timers' }
   )
 )
 

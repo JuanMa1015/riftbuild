@@ -30,7 +30,7 @@ export function TopBar() {
 export function Stepper() {
   const { t } = useT()
   const { step, setStep, myChamp } = useMatchStore()
-  const steps = [['stepMe', true], ['stepFoes', !!myChamp], ['stepBuild', !!myChamp]]
+  const steps = [['stepMe', true], ['stepFoes', true], ['stepBuild', !!myChamp]]
   return (
     <nav aria-label={t('menuFlow')} className="px-4 pb-3 short:hidden">
       <ol className="grid grid-cols-3 gap-2">
@@ -72,7 +72,7 @@ export function Dock() {
             {!result && <span className="truncate text-sm text-chalk-dim">{t('dockPick')}</span>}
           </div>
         )}
-        {step === 0 && <button type="button" disabled={!myChamp} onClick={() => setStep(1)} className={primary}>{t('next')} <ArrowRight size={18} /></button>}
+        {step === 0 && <button type="button" onClick={() => setStep(1)} className={primary}>{t('next')} <ArrowRight size={18} /></button>}
         {step === 1 && <button type="button" disabled={!myChamp} onClick={() => setStep(2)} className={primary}>{t('viewBuild')} <ArrowRight size={18} /></button>}
         {step === 2 && <button type="button" onClick={() => { clearTeams(); setStep(1) }} className={primary}><RotateCcw size={18} /> {t('newMatch')}</button>}
       </div>

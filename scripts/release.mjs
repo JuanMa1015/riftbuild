@@ -33,7 +33,7 @@ pkg.version = next
 writeFileSync(pkgUrl, JSON.stringify(pkg, null, 2) + '\n')
 writeFileSync(new URL('../release-notes.md', import.meta.url), body + '\n')
 
-const apk = `riftbuild-${next}-debug.apk`
+const apk = `riftbuild-${next}.apk`   // signed with the release key in ~/.riftbuild
 console.log(`Versión ${prev} -> ${next}  (versionCode ${(+next.split('.')[0]) * 10000 + (+next.split('.')[1]) * 100 + (+next.split('.')[2].replace(/\D.*/, ''))})
 
 Siguientes pasos (PowerShell, en la carpeta del proyecto):

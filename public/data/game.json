@@ -1,5 +1,5 @@
 {
- "version": "2026-10-19",
+ "version": "2026-10-19T06:29",
  "patch": "7.3b",
  "champions": [
   {
@@ -1207,7 +1207,7 @@
    "t": "Ofensivo",
    "desc": "Escudo activo tras habilidades. Core para bruisers AD que entran y salen."
   },
-  "Tachón Negro": {
+  "Cuchilla Oscura": {
    "en": "black-cleaver",
    "t": "Ofensivo",
    "desc": "Reduce armadura del rival con cada golpe. Escala con campeones que atacan seguido."
@@ -1217,7 +1217,7 @@
    "t": "Híbrido",
    "desc": "Convierte parte del daño en sangrado. Matas a alguien y te curas."
   },
-  "Tachón de Sterak": {
+  "Guantelete de Sterak": {
    "en": "steraks-gage",
    "t": "Defensivo",
    "desc": "Escudo enorme cuando estás a punto de morir. Esencial contra asesinos y burst."
@@ -1227,12 +1227,12 @@
    "t": "Defensivo",
    "desc": "Escudo mágico + RM + AD. Imprescindible contra mucho AP."
   },
-  "Espada de Cadena Quimiopunk": {
+  "Sierraespada Quimpunk": {
    "en": "chempunk-chainsword",
    "t": "Ofensivo",
    "desc": "Aplica Heridas Graves (reduce curación 40%). Contra rivales con mucha sustain."
   },
-  "Espinos": {
+  "Cota de Espinas": {
    "en": "thornmail",
    "t": "Defensivo",
    "desc": "Devuelve daño al atacante y aplica Heridas Graves. Contra carries AD."
@@ -1242,7 +1242,7 @@
    "t": "Defensivo",
    "desc": "Gana resistencias al estar en combate. Contra equipos mixtos con mucho CC."
   },
-  "Lanza Shojin": {
+  "Lanza de Shojin": {
    "en": "spear-of-shojin",
    "t": "Ofensivo",
    "desc": "Reduce cooldowns al atacar. Ideal cuando vas ganando y necesitas spam de habilidades."
@@ -1252,17 +1252,17 @@
    "t": "Defensivo",
    "desc": "Limpia cualquier CC activo instantáneamente. Contra supresión o CC decisivo."
   },
-  "Guantelete de la Trinidad": {
+  "Fuerza de la Trinidad": {
    "en": "trinity-force",
    "t": "Híbrido",
    "desc": "Stats balanceadas + empowered attack tras cada habilidad. Core bruiser Q-AA-Q."
   },
-  "Cielos Hendidos": {
+  "Cielo Desgarrado": {
    "en": "sundered-sky",
    "t": "Ofensivo",
    "desc": "Cura al golpear con habilidades en campeones. Sustain para fighters."
   },
-  "Filo Infinito": {
+  "Filo del Infinito": {
    "en": "infinity-edge",
    "t": "Ofensivo",
    "desc": "El ítem de crítico más poderoso. Amplifica enormemente los golpes críticos."
@@ -1272,42 +1272,42 @@
    "t": "Ofensivo",
    "desc": "Proyectiles a 2 enemigos cercanos. Limpias oleadas y dañas varios en teamfights."
   },
-  "Cañón de Tiro Rápido": {
+  "Cañón de Fuego Rápido": {
    "en": "rapid-firecannon",
    "t": "Ofensivo",
    "desc": "Carga un ataque de largo alcance. Para ADCs que atacan desde la mayor distancia."
   },
-  "El Recolector": {
+  "El Coleccionista": {
    "en": "the-collector",
    "t": "Ofensivo",
    "desc": "Ejecuta al rival con menos del 5% de vida. Para asesinos AD y carries."
   },
-  "Tormento de Liandry": {
+  "El Tormento de Liandry": {
    "en": "liandrys-torment",
    "t": "Ofensivo",
    "desc": "Quema basada en la vida máxima del rival. Core contra campeones con mucha HP."
   },
-  "Capricho de Rabadon": {
+  "Sombrero Mortífero de Rabadon": {
    "en": "rabadons-deathcap",
    "t": "Ofensivo",
    "desc": "Aumenta TODO tu AP en 40%. El ítem de AP más eficiente del juego."
   },
-  "Abismo de Zhonya": {
+  "Reloj de Arena de Zhonya": {
    "en": "zhonyas-hourglass",
    "t": "Defensivo",
    "desc": "Invulnerabilidad de 2.5 segundos. Para magos que hacen engage o vs asesinos AD."
   },
-  "Velo de Banshee": {
+  "Velo de la Banshee": {
    "en": "banshees-veil",
    "t": "Defensivo",
    "desc": "Bloquea el primer hechizo enemigo. Contra magos de rango o CC clave del rival."
   },
-  "Vacío de Void": {
+  "Báculo del Vacío": {
    "en": "void-staff",
    "t": "Ofensivo",
    "desc": "40% de penetración mágica. Obligatorio cuando los rivales construyen RM."
   },
-  "Llama Sombría": {
+  "Lumbría": {
    "en": "shadowflame",
    "t": "Ofensivo",
    "desc": "Penetración mágica fija alta. Devastador contra rivales con poca RM."
@@ -1317,17 +1317,17 @@
    "t": "Híbrido",
    "desc": "Tus habilidades marcan al rival para que tus aliados hagan más daño."
   },
-  "Égida Redimida": {
+  "Redención": {
    "en": "redemption",
    "t": "Defensivo",
    "desc": "Sana a aliados cercanos desde lejos. Cambia teamfights críticas."
   },
-  "Cítara de Ardent Censer": {
+  "Pebetero Ardiente": {
    "en": "ardent-censer",
    "t": "Híbrido",
    "desc": "Da velocidad de ataque y daño extra a aliados que proteges."
   },
-  "Cristal de Zeke": {
+  "Convergencia de Zeke": {
    "en": "zekes-convergence",
    "t": "Híbrido",
    "desc": "Al usar CC, tú y un aliado se potencian. Excelente con carry AD fuerte."
@@ -1337,7 +1337,7 @@
    "t": "Defensivo",
    "desc": "Limpia el CC de un aliado. Contra CC masivo que bloquea a tu carry."
   },
-  "Grebas Encadenadas": {
+  "Punteras de Acero Revestidas": {
    "en": "plated-steelcaps",
    "t": "Botas",
    "desc": "Reducen el daño de ataques básicos un 12%. Las mejores botas contra carries AD."
@@ -1352,34 +1352,74 @@
    "t": "Botas",
    "desc": "Penetración mágica. Las mejores botas de daño para magos."
   },
-  "Botas de Lucidez Jónica": {
+  "Botas Jonias de la Lucidez": {
    "en": "ionian-boots-of-lucidity",
    "t": "Botas",
    "desc": "Reducen cooldowns. Para supports y campeones con habilidades de alto CD."
   },
-  "Botas de Celeridad": {
+  "Botas de Rapidez": {
    "en": "boots-of-swiftness",
    "t": "Botas",
    "desc": "La mayor velocidad de movimiento. Para campeones que necesitan roam constante."
+  },
+  "Espada Fantasma de Youmuu": {
+   "en": "youmuus-ghostblade",
+   "t": "Ofensivo",
+   "desc": "Más velocidad de movimiento y letalidad. Para asesinos que necesitan entrar y salir rápido."
+  },
+  "Relicario de los Solari de Hierro": {
+   "en": "locket-of-the-iron-solari",
+   "t": "Defensivo",
+   "desc": "Escudo para el equipo cercano al activarlo. Esencial para soportes tanque contra burst."
+  },
+  "Armadura de Warmog": {
+   "en": "warmogs-armor",
+   "t": "Defensivo",
+   "desc": "Mucha vida y regeneración fuera de combate. Para tanques que aguantan peleas largas."
+  },
+  "Daga de Statikk": {
+   "en": "statikk-shiv",
+   "t": "Ofensivo",
+   "desc": "Tus ataques encadenan rayos a varios enemigos. Limpia oleadas y daña en grupo."
+  },
+  "Flechas Salvajes de Yun Tal": {
+   "en": "yun-tal-wildarrows",
+   "t": "Ofensivo",
+   "desc": "Ítem de tirador enfocado en críticos y daño sostenido."
+  },
+  "Abrazo del Serafín": {
+   "en": "seraphs-embrace",
+   "t": "Híbrido",
+   "desc": "Escudo basado en maná cuando bajas de vida. Para magos que quieren sobrevivir a un burst."
+  },
+  "Espada del Rey Arruinado": {
+   "en": "blade-of-the-ruined-king",
+   "t": "Ofensivo",
+   "desc": "Daño según la vida actual del rival, más curación. Fuerte contra tanques."
+  },
+  "Al Filo de la Cordura": {
+   "en": "wits-end",
+   "t": "Híbrido",
+   "desc": "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP."
   }
  },
  "builds": {
   "fighter_ad": {
    "core": [
     "Eclipse",
-    "Tachón Negro",
+    "Cuchilla Oscura",
     "Danza de la Muerte",
-    "Tachón de Sterak"
+    "Guantelete de Sterak"
    ],
    "sit": {
-    "ap": "Fauces de Malmortius",
-    "heal": "Espada de Cadena Quimiopunk",
-    "adatk": "Espinos",
+    "ap": "Al Filo de la Cordura",
+    "heal": "Sierraespada Quimpunk",
+    "adatk": "Cota de Espinas",
     "cc": "Twinguard de Amaranth",
-    "win": "Lanza Shojin"
+    "win": "Lanza de Shojin"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Stoneplate",
@@ -1423,20 +1463,20 @@
   },
   "fighter_ap": {
    "core": [
-    "Tormento de Liandry",
-    "Capricho de Rabadon",
-    "Abismo de Zhonya",
-    "Velo de Banshee"
+    "El Tormento de Liandry",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Velo de la Banshee"
    ],
    "sit": {
-    "ad": "Abismo de Zhonya",
-    "heal": "Espada de Cadena Quimiopunk",
+    "ad": "Reloj de Arena de Zhonya",
+    "heal": "Sierraespada Quimpunk",
     "cc": "Twinguard de Amaranth",
-    "win": "Tormento de Liandry"
+    "win": "El Tormento de Liandry"
    },
    "boots": {
     "def": "Botas del Hechicero",
-    "ad": "Grebas Encadenadas"
+    "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Arcane Comet",
    "ks": "Conquistador",
@@ -1479,19 +1519,19 @@
   },
   "fighter_mixed": {
    "core": [
-    "Guantelete de la Trinidad",
-    "Tachón Negro",
+    "Fuerza de la Trinidad",
+    "Cuchilla Oscura",
     "Danza de la Muerte",
-    "Tachón de Sterak"
+    "Guantelete de Sterak"
    ],
    "sit": {
     "ap": "Fauces de Malmortius",
-    "heal": "Espada de Cadena Quimiopunk",
-    "adatk": "Espinos",
-    "win": "Cielos Hendidos"
+    "heal": "Sierraespada Quimpunk",
+    "adatk": "Cota de Espinas",
+    "win": "Cielo Desgarrado"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Stoneplate",
@@ -1535,19 +1575,19 @@
   },
   "assassin_ad": {
    "core": [
-    "El Recolector",
-    "Filo Infinito",
+    "El Coleccionista",
+    "Filo del Infinito",
     "Cimitarra Mercurial",
-    "Guantelete de la Trinidad"
+    "Fuerza de la Trinidad"
    ],
    "sit": {
     "ap": "Fauces de Malmortius",
-    "heal": "Espada de Cadena Quimiopunk",
-    "tank": "El Recolector",
-    "win": "El Recolector"
+    "heal": "Sierraespada Quimpunk",
+    "tank": "El Coleccionista",
+    "win": "Espada Fantasma de Youmuu"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Quicksilver",
@@ -1587,20 +1627,20 @@
   },
   "assassin_ap": {
    "core": [
-    "Llama Sombría",
-    "Capricho de Rabadon",
-    "Abismo de Zhonya",
-    "Velo de Banshee"
+    "Lumbría",
+    "Sombrero Mortífero de Rabadon",
+    "Reloj de Arena de Zhonya",
+    "Velo de la Banshee"
    ],
    "sit": {
-    "ad": "Abismo de Zhonya",
-    "ap": "Velo de Banshee",
-    "heal": "Espada de Cadena Quimiopunk",
-    "win": "Vacío de Void"
+    "ad": "Reloj de Arena de Zhonya",
+    "ap": "Velo de la Banshee",
+    "heal": "Sierraespada Quimpunk",
+    "win": "Báculo del Vacío"
    },
    "boots": {
     "def": "Botas del Hechicero",
-    "ad": "Grebas Encadenadas"
+    "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Sorcerer's",
    "ks": "Electrocutar",
@@ -1639,19 +1679,19 @@
   },
   "marksman_ad": {
    "core": [
-    "Filo Infinito",
+    "Filo del Infinito",
     "Huracán de Runaan",
-    "Cañón de Tiro Rápido",
-    "El Recolector"
+    "Cañón de Fuego Rápido",
+    "El Coleccionista"
    ],
    "sit": {
     "ap": "Cimitarra Mercurial",
-    "heal": "Espada de Cadena Quimiopunk",
-    "tank": "Huracán de Runaan",
-    "win": "Filo Infinito"
+    "heal": "Sierraespada Quimpunk",
+    "tank": "Espada del Rey Arruinado",
+    "win": "Flechas Salvajes de Yun Tal"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Gluttonous",
@@ -1691,19 +1731,19 @@
   },
   "marksman_mixed": {
    "core": [
-    "Filo Infinito",
+    "Filo del Infinito",
     "Huracán de Runaan",
-    "El Recolector",
-    "Cañón de Tiro Rápido"
+    "El Coleccionista",
+    "Cañón de Fuego Rápido"
    ],
    "sit": {
     "ap": "Cimitarra Mercurial",
-    "heal": "Espada de Cadena Quimiopunk",
-    "tank": "Huracán de Runaan",
-    "win": "Filo Infinito"
+    "heal": "Sierraespada Quimpunk",
+    "tank": "Espada del Rey Arruinado",
+    "win": "Filo del Infinito"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Gluttonous",
@@ -1743,21 +1783,21 @@
   },
   "mage_ap": {
    "core": [
-    "Tormento de Liandry",
-    "Capricho de Rabadon",
-    "Llama Sombría",
-    "Abismo de Zhonya"
+    "El Tormento de Liandry",
+    "Sombrero Mortífero de Rabadon",
+    "Lumbría",
+    "Reloj de Arena de Zhonya"
    ],
    "sit": {
-    "ad": "Abismo de Zhonya",
-    "ap": "Velo de Banshee",
-    "heal": "Espada de Cadena Quimiopunk",
-    "tank": "Tormento de Liandry",
-    "win": "Vacío de Void"
+    "ad": "Reloj de Arena de Zhonya",
+    "ap": "Velo de la Banshee",
+    "heal": "Sierraespada Quimpunk",
+    "tank": "El Tormento de Liandry",
+    "win": "Abrazo del Serafín"
    },
    "boots": {
     "def": "Botas del Hechicero",
-    "ad": "Grebas Encadenadas"
+    "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Sorcerer's",
    "ks": "Electrocutar",
@@ -1800,19 +1840,19 @@
   },
   "tank_ad": {
    "core": [
-    "Tachón Negro",
-    "Tachón de Sterak",
+    "Cuchilla Oscura",
+    "Guantelete de Sterak",
     "Twinguard de Amaranth",
-    "Espinos"
+    "Cota de Espinas"
    ],
    "sit": {
     "ap": "Fauces de Malmortius",
-    "heal": "Espinos",
-    "adatk": "Espinos",
-    "win": "Guantelete de la Trinidad"
+    "heal": "Cota de Espinas",
+    "adatk": "Cota de Espinas",
+    "win": "Armadura de Warmog"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Stoneplate",
@@ -1860,19 +1900,19 @@
   },
   "tank_ap": {
    "core": [
-    "Tormento de Liandry",
-    "Abismo de Zhonya",
+    "El Tormento de Liandry",
+    "Reloj de Arena de Zhonya",
     "Twinguard de Amaranth",
-    "Espinos"
+    "Cota de Espinas"
    ],
    "sit": {
-    "ad": "Espinos",
-    "ap": "Velo de Banshee",
-    "heal": "Espinos",
-    "win": "Capricho de Rabadon"
+    "ad": "Cota de Espinas",
+    "ap": "Velo de la Banshee",
+    "heal": "Cota de Espinas",
+    "win": "Armadura de Warmog"
    },
    "boots": {
-    "def": "Grebas Encadenadas",
+    "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
    "enc": "Stoneplate",
@@ -1917,18 +1957,18 @@
   "support_ap": {
    "core": [
     "Mandato Imperial",
-    "Égida Redimida",
-    "Cítara de Ardent Censer",
+    "Redención",
+    "Pebetero Ardiente",
     "Bendición de Mikael"
    ],
    "sit": {
-    "ap": "Velo de Banshee",
-    "heal": "Espada de Cadena Quimiopunk",
-    "ad": "Abismo de Zhonya",
-    "win": "Capricho de Rabadon"
+    "ap": "Velo de la Banshee",
+    "heal": "Sierraespada Quimpunk",
+    "ad": "Reloj de Arena de Zhonya",
+    "win": "Sombrero Mortífero de Rabadon"
    },
    "boots": {
-    "def": "Botas de Lucidez Jónica",
+    "def": "Botas Jonias de la Lucidez",
     "ap": "Botas de Mercurio"
    },
    "enc": "Locket",
@@ -1965,41 +2005,95 @@
     ]
    },
    "tip": "Tu ADC es tu prioridad. Usa CC y protección para mantenerlo vivo. Tu segunda responsabilidad es la visión."
+  },
+  "tank_support": {
+   "core": [
+    "Relicario de los Solari de Hierro",
+    "Convergencia de Zeke",
+    "Redención",
+    "Armadura de Warmog"
+   ],
+   "sit": {
+    "ap": "Velo de la Banshee",
+    "heal": "Cota de Espinas",
+    "adatk": "Cota de Espinas",
+    "cc": "Bendición de Mikael",
+    "tank": "Armadura de Warmog",
+    "win": "Mandato Imperial"
+   },
+   "boots": {
+    "def": "Botas Jonias de la Lucidez",
+    "ap": "Botas de Mercurio"
+   },
+   "enc": "Locket",
+   "ks": "Guardián",
+   "ksn": "Escudo a aliados al recibir daño. El keystone más fuerte para supports protectores.",
+   "runas": [
+    {
+     "slot": "Slot 1",
+     "n": "Weak Point",
+     "p": "Tus habilidades marcan al rival para que tus aliados hagan más daño."
+    },
+    {
+     "slot": "Slot 2",
+     "n": "Second Wind",
+     "p": "Regen vital contra el poke rival en lane."
+    },
+    {
+     "slot": "Slot 3",
+     "n": "Bone Plating",
+     "p": "Reduces el daño inicial de los engages enemigos."
+    },
+    {
+     "slot": "Slot 4",
+     "n": "Pack Hunter",
+     "p": "Velocidad extra con aliados. Clave para roams y llegar a tiempo."
+    }
+   ],
+   "skills": "R > E > Q > W",
+   "sn": "Prioriza el CC y el engage. Eres el iniciador, no quien hace el daño.",
+   "spells": {
+    "def": [
+     "Flash",
+     "Exhaust"
+    ]
+   },
+   "tip": "Tu trabajo es absorber daño e iniciar peleas. Entra primero, usa todo tu CC, y deja que tus carries limpien."
   }
  },
  "en": {
   "Eclipse": "Eclipse",
-  "Tachón Negro": "Black Cleaver",
+  "Cuchilla Oscura": "Black Cleaver",
   "Danza de la Muerte": "Death's Dance",
-  "Tachón de Sterak": "Sterak's Gage",
+  "Guantelete de Sterak": "Sterak's Gage",
   "Fauces de Malmortius": "Maw of Malmortius",
-  "Espada de Cadena Quimiopunk": "Chempunk Chainsword",
-  "Espinos": "Thornmail",
+  "Sierraespada Quimpunk": "Chempunk Chainsword",
+  "Cota de Espinas": "Thornmail",
   "Twinguard de Amaranth": "Amaranth's Twinguard",
-  "Lanza Shojin": "Spear of Shojin",
+  "Lanza de Shojin": "Spear of Shojin",
   "Cimitarra Mercurial": "Mercurial Scimitar",
-  "Guantelete de la Trinidad": "Trinity Force",
-  "Cielos Hendidos": "Sundered Sky",
-  "Filo Infinito": "Infinity Edge",
+  "Fuerza de la Trinidad": "Trinity Force",
+  "Cielo Desgarrado": "Sundered Sky",
+  "Filo del Infinito": "Infinity Edge",
   "Huracán de Runaan": "Runaan's Hurricane",
-  "Cañón de Tiro Rápido": "Rapid Firecannon",
-  "El Recolector": "The Collector",
-  "Tormento de Liandry": "Liandry's Torment",
-  "Capricho de Rabadon": "Rabadon's Deathcap",
-  "Abismo de Zhonya": "Zhonya's Hourglass",
-  "Velo de Banshee": "Banshee's Veil",
-  "Vacío de Void": "Void Staff",
-  "Llama Sombría": "Shadowflame",
+  "Cañón de Fuego Rápido": "Rapid Firecannon",
+  "El Coleccionista": "The Collector",
+  "El Tormento de Liandry": "Liandry's Torment",
+  "Sombrero Mortífero de Rabadon": "Rabadon's Deathcap",
+  "Reloj de Arena de Zhonya": "Zhonya's Hourglass",
+  "Velo de la Banshee": "Banshee's Veil",
+  "Báculo del Vacío": "Void Staff",
+  "Lumbría": "Shadowflame",
   "Mandato Imperial": "Imperial Mandate",
-  "Égida Redimida": "Redemption",
-  "Cítara de Ardent Censer": "Ardent Censer",
-  "Cristal de Zeke": "Zeke's Convergence",
+  "Redención": "Redemption",
+  "Pebetero Ardiente": "Ardent Censer",
+  "Convergencia de Zeke": "Zeke's Convergence",
   "Bendición de Mikael": "Mikael's Blessing",
-  "Grebas Encadenadas": "Plated Steelcaps",
+  "Punteras de Acero Revestidas": "Plated Steelcaps",
   "Botas de Mercurio": "Mercury's Treads",
   "Botas del Hechicero": "Sorcerer's Shoes",
-  "Botas de Lucidez Jónica": "Ionian Boots of Lucidity",
-  "Botas de Celeridad": "Boots of Swiftness",
+  "Botas Jonias de la Lucidez": "Ionian Boots of Lucidity",
+  "Botas de Rapidez": "Boots of Swiftness",
   "Ofensivo": "Offensive",
   "Defensivo": "Defensive",
   "Híbrido": "Hybrid",
@@ -2147,6 +2241,45 @@
   "RM y tenacidad críticas contra tanto AP.": "MR and tenacity are critical against this much AP.",
   "Desconocido": "Unknown",
   "Contra tanto AP, Bone Plating reduce el burst inicial antes de activar tus defensivos.": "⚡ Against this much AP, Bone Plating reduces the initial burst before your defensives kick in.",
-  "Nunu y Willump": "Nunu & Willump"
- }
+  "Nunu y Willump": "Nunu & Willump",
+  "Espada Fantasma de Youmuu": "Youmuu's Ghostblade",
+  "Más velocidad de movimiento y letalidad. Para asesinos que necesitan entrar y salir rápido.": "More movement speed and lethality. For assassins who need to dive in and out fast.",
+  "Relicario de los Solari de Hierro": "Locket of the Iron Solari",
+  "Escudo para el equipo cercano al activarlo. Esencial para soportes tanque contra burst.": "Shields nearby allies when activated. Essential for tank supports against burst.",
+  "Armadura de Warmog": "Warmog's Armor",
+  "Mucha vida y regeneración fuera de combate. Para tanques que aguantan peleas largas.": "Lots of health and out-of-combat regeneration. For tanks who soak long fights.",
+  "Daga de Statikk": "Statikk Shiv",
+  "Tus ataques encadenan rayos a varios enemigos. Limpia oleadas y daña en grupo.": "Your attacks chain lightning to several enemies. Clears waves and hits groups.",
+  "Flechas Salvajes de Yun Tal": "Yun Tal Wildarrows",
+  "Ítem de tirador enfocado en críticos y daño sostenido.": "Marksman item focused on crits and sustained damage.",
+  "Abrazo del Serafín": "Seraph's Embrace",
+  "Escudo basado en maná cuando bajas de vida. Para magos que quieren sobrevivir a un burst.": "Mana-based shield when you drop low. For mages who want to survive a burst.",
+  "Espada del Rey Arruinado": "Blade of the Ruined King",
+  "Daño según la vida actual del rival, más curación. Fuerte contra tanques.": "Damage based on the target's current health, plus lifesteal. Strong against tanks.",
+  "Al Filo de la Cordura": "Wit's End",
+  "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP.": "Attack speed, magic resist and on-hit magic damage. Against heavy-AP teams."
+ },
+ "timers": [
+  {
+   "id": "baron",
+   "es": "Barón",
+   "en": "Baron",
+   "secs": 210,
+   "note": "WR wiki / riftpatchnotes: respawn 3:30"
+  },
+  {
+   "id": "dragon",
+   "es": "Dragón",
+   "en": "Dragon",
+   "secs": 270,
+   "note": "WR wiki: 5:00 reduced to 4:30 in patch 4.2"
+  },
+  {
+   "id": "elder",
+   "es": "Anciano",
+   "en": "Elder",
+   "secs": 360,
+   "note": "WR wiki: Elder Dragon respawn 6:00"
+  }
+ ]
 }

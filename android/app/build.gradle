@@ -4,6 +4,13 @@ apply plugin: 'com.android.application'
 def pkg = new groovy.json.JsonSlurper().parse(file('../../package.json'))
 def (vMajor, vMinor, vPatch) = pkg.version.tokenize('.-').take(3).collect { it as int }
 
+// Release signing: ~/.riftbuild/keystore.properties locally, RIFTBUILD_* environment variables in CI.
+// The keystore and its passwords never live in the repo.
+def ksProps = new Properties()
+def ksFile = new File(System.getProperty('user.home'), '.riftbuild/keystore.properties')
+if (ksFile.exists()) ksFile.withInputStream { ksProps.load(it) }
+def ksVal = { String key, String env -> ksProps.getProperty(key) ?: System.getenv(env) }
+
 android {
     namespace = "com.wildrift.build"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -20,8 +27,20 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def path = ksVal('storeFile', 'RIFTBUILD_KEYSTORE')
+            if (path) {
+                storeFile file(path)
+                storePassword ksVal('storePassword', 'RIFTBUILD_STORE_PASSWORD')
+                keyAlias ksVal('keyAlias', 'RIFTBUILD_KEY_ALIAS')
+                keyPassword ksVal('keyPassword', 'RIFTBUILD_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (ksVal('storeFile', 'RIFTBUILD_KEYSTORE')) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

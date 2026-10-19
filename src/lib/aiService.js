@@ -48,9 +48,10 @@ async function ask({ provider, key, model, prompt }) {
       { Authorization: `Bearer ${key}`, ...(or ? { 'HTTP-Referer': 'https://riftbuild.app', 'X-Title': 'RiftBuild' } : {}) },
       {
         model: m, temperature: 0.2, messages: [{ role: 'user', content: prompt }],
-        // reasoning models spend tokens thinking first: keep it short and leave room for the answer
-        max_tokens: or ? 1500 : 700,
-        ...(or ? { reasoning: { effort: 'low' } } : {}),
+        // measured with a real key: with reasoning ON, Nemotron Ultra thought for 30-70 s and ran out of tokens before the JSON.
+        // Nemotron Super with reasoning OFF answers in ~10 s with valid JSON, so reasoning is switched off.
+        max_tokens: 800,
+        ...(or ? { reasoning: { enabled: false } } : {}),
         // the free Nemotron endpoint is pinned to NVIDIA, as in OpenRouter's own example
         ...(or && m.startsWith('nvidia/') ? { provider: { only: ['nvidia'], allow_fallbacks: false } } : {}),
       })

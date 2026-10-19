@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { create } from 'zustand'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
-import { useMatchStore } from '../store'
+import { useMatchStore, useTimerStore } from '../store'
 import { useT } from '../i18n'
 import { GAME } from '../data/game'
 
@@ -14,6 +14,7 @@ export const bubbleSupported = Capacitor.isNativePlatform()
 const store = (k, v) => { try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, v) } catch { /* storage blocked */ } }
 const stored = k => { try { return localStorage.getItem(k) } catch { return null } }
 const wantsBubble = () => stored('wr-bubble') !== 'off'
+export const setBubblePref = v => store('wr-bubble', v)
 
 export const useBubble = create((set, get) => ({
   on: false,
@@ -29,6 +30,7 @@ export const useBubble = create((set, get) => ({
 // Turn it on when the preference says so and the permission is there. Asks for the permission once, at first launch.
 async function autoEnable() {
   if (!bubbleSupported || !wantsBubble() || useBubble.getState().on) return
+  if (stored('wr-onboarded') !== '1' && !stored('wr-bubble')) return   // first launch: the onboarding explains the permission first
   const { granted } = await Overlay.canDraw()
   if (granted) return useBubble.setState({ on: true })
   if (!stored('wr-bubble-asked')) { store('wr-bubble-asked', '1'); Overlay.requestPermission() }
@@ -37,9 +39,10 @@ async function autoEnable() {
 // What the native bubble draws: icons come from the bundled assets by slug, text from here.
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
 
-function payload(r, t) {
+function payload(r, t, lang, secs) {
   const rune = r.runas?.[0]
   return JSON.stringify({
+    timers: GAME.timers.map(tm => ({ id: tm.id, n: lang === 'en' ? tm.en : tm.es, secs: secs[tm.id] ?? tm.secs })),
     title: `${r.campeon} · ${t('role.' + r.carril) !== 'role.' + r.carril ? t('role.' + r.carril) : r.carril}`,
     items: r.build.map(b => ({ n: b.nombre, i: b.en })),
     boots: r.botas ? { n: r.botas.nombre, i: r.botas.en } : null,
@@ -67,11 +70,12 @@ export function BubbleSync() {
   const { t, lang } = useT()
   const result = useMatchStore(s => s.result)
   const on = useBubble(s => s.on)
+  const secs = useTimerStore(s => s.secs)
   useEffect(() => { autoEnable() }, [])
   useEffect(() => {
-    if (on && result) Overlay.show({ data: payload(result, t) }).then(syncHidden).catch(() => {})
+    if (on && result) Overlay.show({ data: payload(result, t, lang, secs) }).then(syncHidden).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [on, result, lang])
+  }, [on, result, lang, secs])
   return null
 }
 

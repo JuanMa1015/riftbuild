@@ -41,7 +41,8 @@ export function analyzeSynergies(allies, tr = s => s) {
 }
 
 export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s => s) {
-  const key = cData ? `${cData.t}_${cData.d}` : "fighter_ad"
+  const isSupp0 = role.toLowerCase().includes("support")
+  const key = isSupp0 && cData?.t === "tank" ? "tank_support" : cData ? `${cData.t}_${cData.d}` : "fighter_ad"
   const tpl  = BUILDS[key] || BUILDS.fighter_ad
   const {threats,apCount,adCount,tankCount,healCount,assCount,ccCount} = analyzeThreats(enemies, hints, tr)
   const syns   = analyzeSynergies(allies, tr)
@@ -57,8 +58,8 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
            : tpl.sit.win || tpl.core[0]
 
   const i6 = apCount>=2&&cData?.d==="ad"&&!items.includes("Fauces de Malmortius")     ? "Fauces de Malmortius"
-           : apCount>=2&&cData?.d!=="ad"&&!items.includes("Velo de Banshee")           ? "Velo de Banshee"
-           : healCount>=1&&!items.includes("Espada de Cadena Quimiopunk")              ? "Espada de Cadena Quimiopunk"
+           : apCount>=2&&cData?.d!=="ad"&&!items.includes("Velo de la Banshee")           ? "Velo de la Banshee"
+           : healCount>=1&&!items.includes("Sierraespada Quimpunk")              ? "Sierraespada Quimpunk"
            : ccCount>=3&&cData?.d==="ad"&&!items.includes("Cimitarra Mercurial")       ? "Cimitarra Mercurial"
            : tpl.core[3] || tpl.core[0]
 
@@ -72,12 +73,12 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
     const d = ITEMS[name] || {}
     let why = tr(d.desc || "Ítem esencial para este arquetipo.")
     if (i===0)                                     why = tr("Tu primer ítem de power spike. ") + why
-    if (name==="Espada de Cadena Quimiopunk")       why = tr("⚡ El rival tiene mucha curación. Heridas Graves la reduce un 40%.")
+    if (name==="Sierraespada Quimpunk")       why = tr("⚡ El rival tiene mucha curación. Heridas Graves la reduce un 40%.")
     if (name==="Fauces de Malmortius")              why = tr("⚡ Hay mucho AP enemigo. El escudo mágico puede absorberte el burst decisivo.")
-    if (name==="Espinos")                           why = tr("⚡ El rival ataca mucho físicamente. Cada golpe recibido les devuelve daño.")
+    if (name==="Cota de Espinas")                           why = tr("⚡ El rival ataca mucho físicamente. Cada golpe recibido les devuelve daño.")
     if (name==="Cimitarra Mercurial")               why = tr("⚡ Hay CC decisivo enemigo. Activa este ítem para liberarte instantáneamente.")
     if (name==="Twinguard de Amaranth")             why = tr("⚡ Hay mucho CC. Ganas resistencias mientras más tiempo estés en combate.")
-    if (name==="Velo de Banshee")                   why = tr("⚡ Hay mucho AP. El velo bloquea automáticamente el primer hechizo enemigo.")
+    if (name==="Velo de la Banshee")                   why = tr("⚡ Hay mucho AP. El velo bloquea automáticamente el primer hechizo enemigo.")
     return { nombre:tr(name), en:d.en||name.toLowerCase().replace(/ /g,"-"), tipo:d.t||"Híbrido", por_que:why }
   })
 
