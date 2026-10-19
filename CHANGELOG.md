@@ -5,6 +5,29 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.5] - 2026-10-19
+
+### Añadido
+- Política de privacidad y cookies, y términos y condiciones, en español e inglés: se leen sin internet desde Ajustes y también como páginas públicas (`docs/`, para GitHub Pages). Enlace de contacto a los issues del repositorio.
+- Botón "Probar clave" en Ajustes: explica si la clave es incorrecta, no tiene saldo o no hay conexión.
+- Estadísticas anónimas opcionales (GoatCounter, sin cookies), apagadas por defecto; piden consentimiento una vez y se pueden cambiar en Ajustes.
+
+### Cambiado
+- Íconos de campeones, ítems, runas y hechizos recomprimidos (de 4,5 MB a 1,8 MB) y carga diferida de imágenes; el APK pesa menos.
+
+### Seguridad
+- Respaldo en la nube desactivado (`allowBackup=false`): el almacenamiento de la app, que incluye tu clave de IA, ya no se copia a Google Drive.
+- Política de contenido (CSP) en el APK: solo scripts propios y conexión solo a GitHub, OpenRouter, Anthropic y OpenAI.
+- El `game.json` descargado o guardado se valida antes de aplicarlo; uno corrupto o malicioso se ignora (antes un caché dañado podía dejar la app en blanco en cada inicio).
+- Pantalla de recuperación si algo falla al dibujar, sin mostrar detalles técnicos; permite reiniciar los datos guardados.
+- Identificadores de partidas guardadas impredecibles (UUID) en lugar de la hora.
+- Tu clave de IA ahora se guarda cifrada (AES-256-GCM con una llave del Android Keystore) y ya no está en el almacenamiento normal de la app; si venías de una versión anterior, se migra sola.
+- Carpeta de archivos compartidos acotada a lo necesario; `npm audit` sin vulnerabilidades; las Actions de GitHub quedan fijadas por commit.
+- React 19.3.1; Dependabot semanal para npm, Gradle y GitHub Actions.
+
+### Calidad
+- Pruebas automáticas (`npm test`) del motor de builds, las sugerencias, el validador de datos y el servicio de IA, y CI en GitHub (lint, textos, pruebas, build y auditoría).
+
 ## [0.8.4] - 2026-10-19
 
 ### Añadido

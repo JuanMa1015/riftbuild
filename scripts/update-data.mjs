@@ -4,6 +4,7 @@
 // - patch label            : latest "Patch Notes X.Y" on the official news page
 // - icons                  : Riot Data Dragon (champions, items, runes, spells), only files that are missing
 // Build templates (public/data/game.json -> builds/items) are curated by hand: nothing public tells us the meta.
+import { shrink } from './optimize-images.mjs'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 
 const ROOT = new URL('../public/', import.meta.url)
@@ -65,7 +66,7 @@ async function save(dir, file, url) {
   const r = await fetch(url)
   if (!r.ok) return false
   mkdirSync(new URL(`${dir}/`, ROOT), { recursive: true })
-  writeFileSync(out, Buffer.from(await r.arrayBuffer()))
+  writeFileSync(out, await shrink(Buffer.from(await r.arrayBuffer())))
   return true
 }
 const got = { champs: 0, items: 0, runes: 0, spells: 0 }

@@ -64,6 +64,19 @@ async function ask({ provider, key, model, prompt }) {
   return JSON.parse(json)
 }
 
+// Settings > "Test key": one tiny call, so a wrong key or an empty balance is explained instead of failing later in a match
+export async function testKey({ provider, key, model }) {
+  const cfg = AI_PROVIDERS[provider]
+  try {
+    await ask({ provider, key, model: cfg.models.includes(model) ? model : cfg.models[0], prompt: 'Responde SOLO este JSON: {"ok":true}' })
+    return 'ok'
+  } catch (e) {
+    if (e.status === 401 || e.status === 403) return 'bad'
+    if (e.status === 402 || e.status === 429) return 'quota'
+    return e.status ? 'error' : 'net'
+  }
+}
+
 // Same question twice costs nothing: answers are cached on the device.
 const CACHE_KEY = 'wr-ai-cache'
 const readCache = () => { try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || {} } catch { return {} } }

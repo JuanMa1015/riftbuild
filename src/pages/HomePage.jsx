@@ -12,6 +12,8 @@ import StepFoes from '../components/flow/StepFoes'
 import BuildView from '../components/build/BuildView'
 import SettingsPage from './SettingsPage'
 import Onboarding, { isOnboarded } from '../components/Onboarding'
+import ConsentPrompt from '../components/ConsentPrompt'
+import { track } from '../lib/analytics'
 
 export default function HomePage() {
   const { step, setStep, view } = useMatchStore()
@@ -19,7 +21,7 @@ export default function HomePage() {
   const build = useBuild({ wide })
   const [onb, setOnb] = useState(() => !isOnboarded())
 
-  useEffect(() => { checkForUpdates() }, [])
+  useEffect(() => { checkForUpdates(); track('open') }, [])
 
   // Android back button walks the flow backwards before leaving the app
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function HomePage() {
     <div className="fixed inset-0 flex flex-col bg-felt text-chalk">
       <BubbleSync />
       {onb && <Onboarding onDone={() => setOnb(false)} />}
+      {!onb && <ConsentPrompt />}
       {view === 'flow' ? <TopBar /> : <div className="pt-safe" />}
       {body}
     </div>

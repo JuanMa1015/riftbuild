@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { loadKey, saveKey, migrateLegacyKey } from '../lib/secureKey'
 
 export const AI_PROVIDERS = {
   local:      { label:"Sin IA (local)",      icon:"📦" },
@@ -17,19 +18,35 @@ export const useAIStore = create(
       auto:     true,   // refine the build with the AI automatically when a key is set
       setAuto:  (v) => set({ auto: v }),
       setProvider: (p) => set({ provider: p, model: AI_PROVIDERS[p]?.models?.[0] || '' }),
-      setKey:      (k) => set({ key: k }),
+      keyError: false,   // secure storage failed: the key lives only until the app closes
+      setKey: (k) => {
+        set({ key: k, keyError: false })
+        clearTimeout(saveTimer)   // typing: write once the user pauses, not per keystroke
+        saveTimer = setTimeout(() => saveKey(k).catch(() => set({ keyError: true })), 400)
+      },
       setModel:    (m) => set({ model: m }),
     }),
-    { name: 'wr-ai-config' }
+    // the key is deliberately NOT persisted here: it goes to secure storage instead
+    { name: 'wr-ai-config', partialize: ({ key, keyError, ...rest }) => rest }
   )
 )
+
+let saveTimer
+// at startup: move a legacy key out of localStorage, then load the key from secure storage
+;(async () => {
+  try {
+    const legacy = await migrateLegacyKey()
+    const k = (await loadKey()) || legacy
+    if (k) useAIStore.setState({ key: k })
+  } catch { useAIStore.setState({ keyError: true }) }
+})()
 
 // Your own results: the only real match data this app can have
 export const useMatchLog = create(
   persist(
     (set) => ({
       entries: [],
-      add: (e) => set(s => ({ entries: [{ id: Date.now(), ...e }, ...s.entries].slice(0, 300) })),
+      add: (e) => set(s => ({ entries: [{ id: crypto.randomUUID(), ...e }, ...s.entries].slice(0, 300) })),
       remove: (id) => set(s => ({ entries: s.entries.filter(x => x.id !== id) })),
       update: (id, patch) => set(s => ({ entries: s.entries.map(x => x.id === id ? { ...x, ...patch } : x) })),
     }),

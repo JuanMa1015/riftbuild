@@ -123,9 +123,9 @@ function ResultLog({ r }) {
   const [note, setNote] = useState('')
   const [noted, setNoted] = useState(false)
   function save(win) {
-    const id = Date.now()
+    const id = crypto.randomUUID()
     add({ id, champ: myChamp.n, role: myRole, win, hints, items: r.build.map(b => b.en),
-      enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: id })
+      enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: Date.now() })
     setSaved(id)
   }
   if (saved && noted) return <p className="mt-6 text-sm text-chalk-dim">{t('noteSaved')}</p>

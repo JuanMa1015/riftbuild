@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { track } from './analytics'
 import { useMatchStore, useAIStore, useDataStore } from '../store'
 import { LANES } from '../data/champions'
 import { generateBuild, localBuild } from './aiService'
@@ -49,7 +50,7 @@ export function useBuild({ wide = false } = {}) {
       generateBuild(inputs()).then(res => {
         clearTimeout(t)
         if (req.current !== id) return
-        if (timedOut) { late.current = res; setAi('late') } else { setResult(res); setAi('done') }
+        if (timedOut) { late.current = res; setAi('late') } else { setResult(res); setAi('done'); track('build-ai') }
       }).catch(e => {
         clearTimeout(t)
         if (req.current !== id) return

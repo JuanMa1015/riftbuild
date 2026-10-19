@@ -15,7 +15,7 @@ const onErr = e => {
 
 function Img({ path, alt, size, className = '' }) {
   return <img src={import.meta.env.BASE_URL + path} data-path={path} alt={alt} width={size} height={size}
-    decoding="async"
+    decoding="async" loading="lazy"
     className={`object-cover bg-felt-3 ${className}`} style={{ width: size, height: size }} onError={onErr} />
 }
 

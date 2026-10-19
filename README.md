@@ -90,6 +90,14 @@ android/              Proyecto Capacitor + burbuja flotante (Java)
 scripts/              update-data.mjs, check-i18n.mjs
 ```
 
+### Seguridad y privacidad
+
+- **Sin servidor propio.** La app no tiene cuentas, base de datos ni endpoints; solo llama a GitHub (datos del juego) y, si tú lo configuras, a OpenRouter, Anthropic u OpenAI.
+- **Tu clave de IA** se guarda cifrada (AES-256-GCM, llave dentro del Android Keystore) y viaja solo al proveedor que elegiste. No hay respaldo en la nube (`allowBackup=false`). Aun así, usa una clave con límite de gasto.
+- **Política de contenido (CSP)** en el APK: solo ejecuta scripts de la propia app y solo se conecta a los cuatro servicios anteriores.
+- **Datos remotos validados:** el `game.json` descargado se comprueba antes de usarse; uno corrupto se descarta.
+- **La clave de firma y sus contraseñas** viven fuera del repo (`~/.riftbuild`). Si encuentras una vulnerabilidad, abre un issue sin datos sensibles.
+
 ### Límites conocidos
 
 - **No detecta tu partida.** Wild Rift no tiene API pública y Riot restringe leer el juego o la pantalla, así que la app es de entrada manual.

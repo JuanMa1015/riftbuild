@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- The app icon: the pitch mark (centre circle + halfway line) with the yellow token. Symbol kept inside the central 66% (Android adaptive safe zone). -->
+  <rect width="1024" height="1024" fill="#0f2a1f"/>
+  <g fill="none" stroke="#eef3ea" stroke-width="46" stroke-linecap="round">
+    <circle cx="512" cy="512" r="232"/>
+    <path d="M512 207 V380 M512 644 V817"/>
+  </g>
+  <circle cx="512" cy="512" r="88" fill="#ffd23f"/>
+</svg>

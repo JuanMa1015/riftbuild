@@ -1,4 +1,5 @@
 import bundled from '../../public/data/game.json'
+import { isValidGame } from './validate'
 
 // Single source of truth: public/data/game.json (champions, items, builds, translations).
 // The exports below are mutated in place when a newer copy arrives, so every importer sees the update.
@@ -23,5 +24,8 @@ export function applyGame(g) {
 applyGame(bundled)
 try {
   const cached = JSON.parse(localStorage.getItem('wr-game'))
-  if (cached?.version > bundled.version) applyGame(cached) // a newer app build always wins over an old cache
+  if (cached?.version > bundled.version) {   // a newer app build always wins over an old cache
+    if (isValidGame(cached)) applyGame(cached)
+    else localStorage.removeItem('wr-game')   // corrupt cache: drop it instead of crashing on every launch
+  }
 } catch { /* no cache, or storage blocked */ }

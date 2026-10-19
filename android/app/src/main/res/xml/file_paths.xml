@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Narrowed from the Capacitor template: the old external-path "." exposed the whole shared storage.
+     The app has no file inputs; this only keeps Capacitor's own camera/notification code paths working. -->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="my_images" path="." />
-    <cache-path name="my_cache_images" path="." />
+    <external-files-path name="app_pictures" path="Pictures/" />
+    <cache-path name="app_cache" path="." />
 </paths>

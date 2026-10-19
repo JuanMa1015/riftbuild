@@ -1,0 +1,16 @@
+# Weekly update PRs so dependencies and workflow actions do not rot. Review and merge; nothing is applied automatically.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly

@@ -4,6 +4,11 @@ import { useAIStore, AI_PROVIDERS, useMatchStore, useMatchLog, useTimerStore } f
 import { useT, useLang, LANGS } from '../i18n'
 import { GAME } from '../data/game'
 import { checkForUpdates } from '../lib/updater'
+import { secureAvailable } from '../lib/secureKey'
+import { testKey } from '../lib/aiService'
+import { analyticsAvailable, useConsent } from '../lib/analytics'
+import LegalDoc from '../components/LegalDoc'
+import { CONTACT } from '../i18n/legal'
 import { bubbleSupported, useBubble } from '../lib/bubble'
 import { SectionTitle } from '../components/ui'
 import { version } from '../../package.json'
@@ -14,13 +19,20 @@ export default function SettingsPage() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
   const { lang, setLang } = useLang()
-  const { provider, key, model, auto, setAuto, setProvider, setKey, setModel } = useAIStore()
+  const { provider, key, model, auto, keyError, setAuto, setProvider, setKey, setModel } = useAIStore()
   const { on, toggle } = useBubble()
   const [done, setDone] = useState(false)
+  const [doc, setDoc] = useState(null)         // 'privacy' | 'terms'
+  const [test, setTest] = useState(null)       // null | 'testing' | 'ok' | 'bad' | 'quota' | 'error' | 'net'
+  const { analytics, set: setAnalytics } = useConsent()
   const { entries, remove } = useMatchLog()
   const { secs, setSecs } = useTimerStore()
   const won = entries.filter(e => e.win).length
   const cfg = AI_PROVIDERS[provider]
+
+  async function runTest() { setTest('testing'); setTest(await testKey({ provider, key, model })) }
+
+  if (doc) return <LegalDoc doc={doc} onBack={() => setDoc(null)} />
 
   async function refresh() { await checkForUpdates(); setDone(true); setTimeout(() => setDone(false), 2500) }
 
@@ -66,8 +78,10 @@ export default function SettingsPage() {
           <div className="flex flex-col gap-3">
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-chalk-dim">API key</span>
-              <input type="password" value={key} onChange={e => setKey(e.target.value)} placeholder={`${t('aiKeyPlaceholder')} ${cfg?.label}`}
+              <input type="password" value={key} onChange={e => { setKey(e.target.value); setTest(null) }} placeholder={`${t('aiKeyPlaceholder')} ${cfg?.label}`}
+                autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
                 className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
+              {key.trim() && <span className="mt-1 block text-sm text-chalk-dim">{keyError ? t('keySecureErr') : secureAvailable ? t('keySecure') : ''}</span>}
             </label>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-chalk-dim">{t('aiModel')}</span>
@@ -76,6 +90,16 @@ export default function SettingsPage() {
                 {cfg?.models?.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </label>
+            {key.trim() && (
+              <div>
+                <button type="button" onClick={runTest} disabled={test === 'testing'} className="h-11 w-full rounded-xl border border-line bg-felt-2 font-semibold">
+                  {test === 'testing' ? t('keyTesting') : t('keyTest')}
+                </button>
+                {test && test !== 'testing' && (
+                  <p role="status" className={`mt-2 text-sm ${test === 'ok' ? 'text-ally' : 'text-foe'}`}>{t('keyRes_' + test)}</p>
+                )}
+              </div>
+            )}
             {key.trim() && <p className="text-sm text-chalk-dim">{t('aiKeyOn')}</p>}
             <label className="flex items-start gap-3">
               <input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} className="mt-1 h-5 w-5 accent-[var(--color-marker)]" />
@@ -139,6 +163,21 @@ export default function SettingsPage() {
           className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-felt-2 font-semibold">
           <RefreshCw size={18} aria-hidden /> {done ? t('refreshed') : t('refresh')}
         </button>
+      </section>
+
+      <section className="mb-8">
+        <SectionTitle>{t('legal')}</SectionTitle>
+        {analyticsAvailable && (
+          <label className="mb-3 flex items-start gap-3">
+            <input type="checkbox" checked={analytics === true} onChange={e => setAnalytics(e.target.checked)} className="mt-1 h-5 w-5 accent-[var(--color-marker)]" />
+            <span><span className="block font-medium">{t('statsTitle')}</span><span className="block text-sm text-chalk-dim">{t('statsBody')}</span></span>
+          </label>
+        )}
+        <div className="flex flex-col gap-2">
+          <button type="button" onClick={() => setDoc('privacy')} className="h-12 w-full rounded-xl border border-line bg-felt-2 font-semibold">{t('privacyDoc')}</button>
+          <button type="button" onClick={() => setDoc('terms')} className="h-12 w-full rounded-xl border border-line bg-felt-2 font-semibold">{t('termsDoc')}</button>
+          <a href={CONTACT} target="_blank" rel="noreferrer" className="flex h-12 w-full items-center justify-center rounded-xl border border-line bg-felt-2 font-semibold">{t('contact')}</a>
+        </div>
       </section>
 
       <p className="text-sm text-chalk-dim">{t('disclaimer')}</p>
