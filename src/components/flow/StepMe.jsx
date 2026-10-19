@@ -31,10 +31,10 @@ export default function StepMe({ onPicked, compact = false }) {
 
   return (
     <section aria-labelledby="me-title">
-      <SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle>
+      <div className="tiny:hidden"><SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle></div>
 
       {myChamp && (
-        <div className="mb-4 flex items-center gap-3 rounded-2xl border border-line bg-felt-2 p-3">
+        <div className="mb-4 tiny:mb-2 flex items-center gap-3 rounded-2xl border border-line bg-felt-2 p-3 tiny:p-2">
           <Token name={myChamp.n} side="me" lane={ROLE_LANE[myRole]} size={56} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-lg font-semibold leading-tight">{tr(myChamp.n)}</p>
@@ -58,7 +58,7 @@ export default function StepMe({ onPicked, compact = false }) {
             const on = myRole === o.value
             return (
               <button key={o.value} type="button" role="radio" aria-checked={on} onClick={() => setMyRole(o.value)}
-                className={`flex h-14 flex-col items-center justify-center gap-0.5 rounded-xl border text-xs font-semibold
+                className={`flex h-14 tiny:h-11 flex-col items-center justify-center gap-0.5 rounded-xl border text-xs font-semibold
                   ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk-dim'}`}>
                 <LaneGlyph lane={ROLE_LANE[o.value]} size={18} />
                 {t('role.' + o.value)}

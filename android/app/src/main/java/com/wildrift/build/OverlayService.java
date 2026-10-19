@@ -349,7 +349,15 @@ public class OverlayService extends Service {
     private void openAppWindow() {
         Intent i = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         try {
-            int w = dp(340), h = dp(520), x = Math.max(0, (screenW() - w) / 2), y = dp(90);
+            // size the window from the real screen: a fixed 340x520 dp ran off the bottom in landscape (~390 dp tall)
+            android.util.DisplayMetrics m = new android.util.DisplayMetrics();
+            wm.getDefaultDisplay().getRealMetrics(m);
+            int sw = m.widthPixels, sh = m.heightPixels, gap = dp(12), w, h, x, y;
+            if (sw > sh) {            // landscape: a tall column on the right, the game stays visible on the left
+                w = Math.min(dp(400), sw / 2); h = sh - 2 * gap; x = sw - w - gap; y = gap;
+            } else {                  // portrait: centered, never taller than the screen allows
+                w = Math.min(dp(360), sw - 2 * gap); h = Math.min(dp(560), sh * 7 / 10); x = (sw - w) / 2; y = dp(72);
+            }
             android.app.ActivityOptions o = android.app.ActivityOptions.makeBasic();
             o.setLaunchBounds(new android.graphics.Rect(x, y, x + w, y + h));
             startActivity(i, o.toBundle());

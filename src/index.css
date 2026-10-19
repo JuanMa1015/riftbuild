@@ -6,6 +6,7 @@
 
 /* Tactics board: bottle-green felt, chalk lines, blue allies, red rivals, marker yellow for the one primary action */
 @custom-variant short (@media (max-height: 520px));
+@custom-variant tiny (@media (max-height: 420px));
 
 @theme {
   --font-sans: "Barlow Semi Condensed", system-ui, sans-serif;

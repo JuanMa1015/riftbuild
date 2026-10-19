@@ -5,6 +5,15 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.3] - 2026-10-19
+
+### Corregido
+- El scroll en la ventana flotante no llegaba a lo de abajo (incluido el botón de pasos) porque la ventana era más alta que la pantalla. Además la app ahora toma la altura real de la ventana en vez de unidades de vista, que en ventanas flotantes de Android pueden medir la pantalla completa.
+- La ventana flotante del botón "Abrir" se salía por abajo en horizontal (tamaño fijo de 340×520 dp). Ahora se calcula con la pantalla real: en horizontal es una columna a la derecha y en vertical queda centrada, siempre dentro de la pantalla.
+
+### Cambiado
+- Ventanas muy bajas (≤ 420 px, como el modo ventana en horizontal): pasos y engranaje en una sola fila, tablero compacto sin etiquetas, buscador más bajo; en ventanas cortas ya no se oculta el selector de pasos.
+
 ## [0.8.2] - 2026-10-19
 
 ### Añadido

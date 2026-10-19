@@ -17,7 +17,7 @@ export function TopBar() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
   return (
-    <header className="pt-safe flex items-center gap-3 px-4 pb-2">
+    <header className="pt-safe flex items-center gap-3 px-4 pb-2 tiny:hidden">
       <span className="flex items-center gap-2 text-marker"><Mark /><span className="text-lg font-bold tracking-tight text-chalk">{t('appName')}</span></span>
       <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden">{t('patch')} {GAME.patch}</span>
       <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
@@ -29,17 +29,17 @@ export function TopBar() {
 // Three steps; later ones unlock as the previous is done.
 export function Stepper() {
   const { t } = useT()
-  const { step, setStep, myChamp } = useMatchStore()
+  const { step, setStep, myChamp, setView } = useMatchStore()
   const steps = [['stepMe', true], ['stepFoes', true], ['stepBuild', !!myChamp]]
   return (
-    <nav aria-label={t('menuFlow')} className="px-4 pb-3 short:hidden">
-      <ol className="grid grid-cols-3 gap-2">
+    <nav aria-label={t('menuFlow')} className="px-4 pb-3 short:pb-2 tiny:pt-2">
+      <ol className="grid grid-cols-3 gap-2 tiny:grid-cols-[1fr_1fr_1fr_auto] tiny:gap-1.5">
         {steps.map(([l, enabled], i) => {
           const cur = step === i, done = step > i
           return (
             <li key={l}>
               <button type="button" disabled={!enabled} onClick={() => setStep(i)} aria-current={cur ? 'step' : undefined}
-                className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold disabled:opacity-40
+                className={`flex h-11 short:h-9 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold disabled:opacity-40
                   ${cur ? 'border-marker text-chalk' : 'border-line text-chalk-dim'}`}>
                 <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${cur ? 'bg-marker text-marker-ink' : done ? 'bg-chalk text-felt' : 'border border-line'}`}>
                   {done ? <Check size={12} strokeWidth={3} /> : i + 1}
@@ -49,6 +49,10 @@ export function Stepper() {
             </li>
           )
         })}
+        <li className="hidden tiny:block">
+          <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-line text-chalk-dim"><Settings size={18} /></button>
+        </li>
       </ol>
     </nav>
   )

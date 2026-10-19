@@ -65,7 +65,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex h-dvh flex-col bg-felt text-chalk">
+    <div className="fixed inset-0 flex flex-col bg-felt text-chalk">
       <BubbleSync />
       {onb && <Onboarding onDone={() => setOnb(false)} />}
       {view === 'flow' ? <TopBar /> : <div className="pt-safe" />}

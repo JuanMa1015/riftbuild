@@ -51,8 +51,8 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
       <div className="sticky top-0 z-10 bg-felt pb-2 pt-1">
         {header}
         <label className="block">
-        {label && <span className="mb-1 block text-sm font-medium text-chalk-dim">{label}</span>}
-        <span className="flex h-12 items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 focus-within:border-marker">
+        {label && <span className="mb-1 block text-sm font-medium text-chalk-dim tiny:hidden">{label}</span>}
+        <span className="flex h-12 tiny:h-10 items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 focus-within:border-marker">
           <Search size={18} className="shrink-0 text-chalk-dim" aria-hidden />
           <input
             value={q}
@@ -74,7 +74,7 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           )}
         </span>
         </label>
-        <div role="radiogroup" aria-label="Lane" className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto">
+        <div role="radiogroup" aria-label="Lane" className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto tiny:hidden">
           {[...(auto ? ['auto'] : []), 'all', ...LANES.map(l => l.id)].map(id => {
             const on = id === 'auto' ? manual === null : (manual ?? (auto ? 'auto' : 'all')) === id
             return (
