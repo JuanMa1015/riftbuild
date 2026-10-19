@@ -5,12 +5,16 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
-## [0.8.5] - 2026-10-19
+## [0.8.6] - 2026-10-19
 
 ### Añadido
 - Selector de idioma ES / EN siempre visible en la cabecera (y en la primera pantalla), con el idioma activo resaltado.
 - Modo claro, oscuro o según el sistema (Ajustes → Apariencia).
 - Si cierras la burbuja con la ✕ sin querer, la notificación sigue ahí: tócala y la burbuja vuelve. El botón "Cerrar" de la notificación la apaga del todo.
+
+## [0.8.5] - 2026-10-19
+
+### Añadido
 - Política de privacidad y cookies, y términos y condiciones, en español e inglés: se leen sin internet desde Ajustes y también como páginas públicas (`docs/`, para GitHub Pages). Enlace de contacto a los issues del repositorio.
 - Botón "Probar clave" en Ajustes: explica si la clave es incorrecta, no tiene saldo o no hay conexión.
 - Estadísticas anónimas opcionales (GoatCounter, sin cookies), apagadas por defecto; piden consentimiento una vez y se pueden cambiar en Ajustes.
