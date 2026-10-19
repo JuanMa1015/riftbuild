@@ -52,6 +52,7 @@ function payload(r, t, lang, secs) {
     foot: `${r.runas?.[0]?.n} · ${r.hechizos?.join(' / ')}`,
     open: t('openApp'),
     close: t('close'),
+    notif: t('bubbleNotif'),
   })
 }
 

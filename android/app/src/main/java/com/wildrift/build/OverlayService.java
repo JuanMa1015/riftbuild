@@ -58,7 +58,12 @@ public class OverlayService extends Service {
         if (s != null) s.handler.post(s::applyHidden);
     }
 
-    private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted ? View.GONE : View.VISIBLE); }
+    // userHidden: the user pressed the bubble's X. The bubble goes away but the service and its notification stay,
+    // so tapping the notification brings it back (closing it by accident is not a dead end).
+    private boolean userHidden = false;
+    private String lastTitle = "", notifText = "";
+
+    private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted || userHidden ? View.GONE : View.VISIBLE); }
 
     private static final int BUBBLE_DP = 40, ICON_DP = 34, FOLD_MS = 7000;
     private WindowManager wm;
@@ -84,13 +89,26 @@ public class OverlayService extends Service {
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && "hide".equals(intent.getAction())) { closeAll(); return START_NOT_STICKY; }
+        if (intent != null && "show".equals(intent.getAction())) { userHidden = false; applyHidden(); return START_NOT_STICKY; }
         if (intent != null && intent.hasExtra("data")) {
-            try { closeLabel = new JSONObject(intent.getStringExtra("data")).optString("close", closeLabel); } catch (Exception ignored) { }
+            try {
+                JSONObject d = new JSONObject(intent.getStringExtra("data"));
+                closeLabel = d.optString("close", closeLabel);
+                notifText = d.optString("notif", notifText);
+                String title = d.optString("title", "");
+                if (!title.equals(lastTitle)) { lastTitle = title; userHidden = false; }   // a new build brings the bubble back
+            } catch (Exception ignored) { }
         }
         startFg();
         if (root == null) createView();
         if (intent != null && intent.hasExtra("data")) render(intent.getStringExtra("data"));
+        applyHidden();
         return START_NOT_STICKY;
+    }
+
+    private void dismissBubble() {
+        userHidden = true;
+        applyHidden();
     }
 
     private void closeAll() {
@@ -104,8 +122,11 @@ public class OverlayService extends Service {
         nm.createNotificationChannel(new NotificationChannel("overlay", "RiftBuild", NotificationManager.IMPORTANCE_MIN));
         PendingIntent close = PendingIntent.getService(this, 1, new Intent(this, OverlayService.class).setAction("hide"),
             PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent show = PendingIntent.getService(this, 2, new Intent(this, OverlayService.class).setAction("show"),
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         Notification n = new Notification.Builder(this, "overlay")
-            .setSmallIcon(R.drawable.ic_stat_riftbuild).setContentTitle("RiftBuild")
+            .setSmallIcon(R.drawable.ic_stat_riftbuild).setContentTitle("RiftBuild").setContentText(notifText.isEmpty() ? null : notifText)
+            .setContentIntent(show)
             .addAction(new Notification.Action.Builder(null, closeLabel, close).build()).build();
         if (Build.VERSION.SDK_INT >= 34) startForeground(1, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
         else startForeground(1, n);
@@ -231,7 +252,7 @@ public class OverlayService extends Service {
             head.addView(open, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(44)));
             View x = new CloseView(this);
             x.setContentDescription(d.optString("close", "Close"));
-            x.setOnClickListener(v -> closeAll());
+            x.setOnClickListener(v -> dismissBubble());
             head.addView(x, new LinearLayout.LayoutParams(dp(44), dp(44)));
             panel.addView(head);
 

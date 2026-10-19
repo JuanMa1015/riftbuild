@@ -27,6 +27,21 @@
   --text-xl: 1.5rem;
 }
 
+/* Light theme: same tokens, daylight values. The app writes data-theme on <html> (see src/lib/theme.js). */
+:root[data-theme="light"] {
+  --color-felt: #f3f6ef;
+  --color-felt-2: #e7eee2;
+  --color-felt-3: #d3dfcd;
+  --color-chalk: #11261b;
+  --color-chalk-dim: #4a6556;
+  --color-line: rgb(17 38 27 / 0.2);
+  --color-ally: #1565b8;
+  --color-foe: #c2361f;
+  --color-marker: #d9a400;
+  --color-marker-ink: #1d1a05;
+  color-scheme: light;
+}
+
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
   html, body, #root { height: 100%; }

@@ -2,6 +2,7 @@ import { MousePointerClick, PictureInPicture2, Sparkles } from 'lucide-react'
 import { useT } from '../i18n'
 import { bubbleSupported, setBubblePref, useBubble } from '../lib/bubble'
 import { Mark } from './flow/FlowChrome'
+import LangToggle from './LangToggle'
 
 export const isOnboarded = () => {
   try {
@@ -27,7 +28,7 @@ export default function Onboarding({ onDone }) {
   return (
     <div className="pt-safe pb-safe fixed inset-0 z-50 flex flex-col overflow-y-auto bg-felt px-6">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-8">
-        <span className="mb-4 text-marker"><Mark size={40} /></span>
+        <div className="mb-4 flex items-center justify-between"><span className="text-marker"><Mark size={40} /></span><LangToggle /></div>
         <h1 className="mb-6 text-2xl font-bold tracking-tight">{t('obTitle')}</h1>
         <ul className="mb-8 flex flex-col gap-4">
           {steps.map(([Icon, text], i) => (

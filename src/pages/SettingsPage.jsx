@@ -8,6 +8,7 @@ import { secureAvailable } from '../lib/secureKey'
 import { testKey } from '../lib/aiService'
 import { analyticsAvailable, useConsent } from '../lib/analytics'
 import LegalDoc from '../components/LegalDoc'
+import { useTheme } from '../lib/theme'
 import { CONTACT } from '../i18n/legal'
 import { bubbleSupported, useBubble } from '../lib/bubble'
 import { SectionTitle } from '../components/ui'
@@ -22,6 +23,7 @@ export default function SettingsPage() {
   const { provider, key, model, auto, keyError, setAuto, setProvider, setKey, setModel } = useAIStore()
   const { on, toggle } = useBubble()
   const [done, setDone] = useState(false)
+  const { mode, setMode } = useTheme()
   const [doc, setDoc] = useState(null)         // 'privacy' | 'terms'
   const [test, setTest] = useState(null)       // null | 'testing' | 'ok' | 'bad' | 'quota' | 'error' | 'net'
   const { analytics, set: setAnalytics } = useConsent()
@@ -49,6 +51,15 @@ export default function SettingsPage() {
         <div role="radiogroup" className="grid grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
           {Object.entries(LANGS).map(([k, l]) => (
             <button key={k} type="button" role="radio" aria-checked={lang === k} onClick={() => setLang(k)} className={seg(lang === k)}>{l}</button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <SectionTitle>{t('theme')}</SectionTitle>
+        <div role="radiogroup" aria-label={t('theme')} className="grid grid-cols-3 gap-1 rounded-xl border border-line bg-felt-2 p-1">
+          {[['system', 'themeSystem'], ['light', 'themeLight'], ['dark', 'themeDark']].map(([k, l]) => (
+            <button key={k} type="button" role="radio" aria-checked={mode === k} onClick={() => setMode(k)} className={seg(mode === k)}>{t(l)}</button>
           ))}
         </div>
       </section>

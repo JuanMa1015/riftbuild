@@ -1,4 +1,5 @@
 import { Settings, Check, ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react'
+import LangToggle from '../LangToggle'
 import { GAME } from '../../data/game'
 import { useMatchStore } from '../../store'
 import { useT } from '../../i18n'
@@ -21,9 +22,10 @@ export function TopBar() {
   return (
     <header className="pt-safe flex items-center gap-3 px-4 pb-2 tiny:hidden">
       <span className="flex items-center gap-2 text-marker"><Mark /><span className="text-lg font-bold tracking-tight text-chalk">{t('appName')}</span></span>
-      <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden">{t('patch')} {GAME.patch}</span>
+      <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden whitespace-nowrap"><span className="max-[400px]:hidden">{t('patch')} </span>{GAME.patch}</span>
+      <span className="ml-auto"><LangToggle /></span>
       <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
-        className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
+        className="flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
     </header>
   )
 }
