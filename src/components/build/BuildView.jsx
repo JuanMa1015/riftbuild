@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Sparkles, Lightbulb, Bubbles } from 'lucide-react'
+import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2 } from 'lucide-react'
 import { GAME } from '../../data/game'
-import { useMatchStore } from '../../store'
+import { useMatchStore, useMatchLog } from '../../store'
+import { LANES } from '../../data/champions'
 import { useT } from '../../i18n'
 import { bubbleSupported, useBubble } from '../../lib/bubble'
 import { useMedia } from '../../lib/useMedia'
@@ -94,11 +95,68 @@ function RunesTab({ r }) {
   )
 }
 
+// Floating bubble: shows this build on top of the game once you leave the app
+function BubbleButton() {
+  const { t } = useT()
+  const on = useBubble(s => s.on)
+  const toggle = useBubble(s => s.toggle)
+  if (!bubbleSupported) return null
+  return (
+    <button type="button" onClick={toggle} aria-pressed={on}
+      className={`flex h-11 shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
+      <PictureInPicture2 size={18} aria-hidden /> {on ? t('bubbleShortOn') : t('bubbleShortOff')}
+    </button>
+  )
+}
+
+const wl = (entries) => ({ w: entries.filter(e => e.win).length, l: entries.filter(e => !e.win).length })
+const pct = ({ w, l }) => (w + l ? Math.round((100 * w) / (w + l)) : 0)
+
+// After the match: one tap saves the result with the build you used
+function ResultLog({ r }) {
+  const { t } = useT()
+  const { myChamp, myRole, enemies, hints } = useMatchStore()
+  const add = useMatchLog(s => s.add)
+  const [saved, setSaved] = useState(false)
+  function save(win) {
+    add({ champ: myChamp.n, role: myRole, win, hints, items: r.build.map(b => b.en),
+      enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: Date.now() })
+    setSaved(true)
+  }
+  if (saved) return <p className="mt-6 text-sm text-chalk-dim">{t('logSaved')}</p>
+  return (
+    <div className="mt-6">
+      <p className="mb-2 font-semibold">{t('logAsk')}</p>
+      <div className="grid grid-cols-2 gap-2">
+        <button type="button" onClick={() => save(true)} className="h-12 rounded-xl border border-line bg-felt-2 font-semibold">{t('logWin')}</button>
+        <button type="button" onClick={() => save(false)} className="h-12 rounded-xl border border-line bg-felt-2 font-semibold">{t('logLoss')}</button>
+      </div>
+    </div>
+  )
+}
+
+function ChampStats() {
+  const { t } = useT()
+  const champ = useMatchStore(s => s.myChamp)
+  const entries = useMatchLog(s => s.entries)
+  const mine = entries.filter(e => e.champ === champ?.n)
+  const s = wl(mine)
+  return (
+    <div className="mb-6">
+      <SectionTitle>{t('statsWith')}</SectionTitle>
+      {mine.length === 0 ? <p className="text-sm text-chalk-dim">{t('statsNone')}</p> : (
+        <p className="text-lg font-semibold">{s.w} {t('wins')} · {s.l} {t('losses')} · {pct(s)}%</p>
+      )}
+    </div>
+  )
+}
+
 function PlanTab({ r }) {
   const { t } = useT()
   const skills = (r.orden_habilidades || '').split('>').map(s => s.split('—')[0].trim()).filter(Boolean)
   return (
     <>
+      <ChampStats />
       {r.consejo && (
         <div className="mb-6 flex gap-3 rounded-xl bg-felt-3 p-4">
           <Lightbulb size={20} className="mt-0.5 shrink-0 text-marker" aria-hidden />
@@ -142,8 +200,6 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
   const { t } = useT()
   const [tab, setTab] = useState('items')
   const myRole = useMatchStore(s => s.myRole)
-  const bubbleOn = useBubble(s => s.on)
-  const toggleBubble = useBubble(s => s.toggle)
 
   if (!r) return <p className="py-16 text-center text-chalk-dim">{t('buildEmpty')}</p>
 
@@ -151,12 +207,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
     <section aria-label="Build">
       <div className="mb-2 hidden items-center gap-2 short:flex">
         <p className="min-w-0 flex-1 truncate font-semibold">{r.campeon}</p>
-        {bubbleSupported && (
-          <button type="button" onClick={toggleBubble} aria-pressed={bubbleOn} aria-label={t('bubble')}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border ${bubbleOn ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2'}`}>
-            <Bubbles size={20} />
-          </button>
-        )}
+        <BubbleButton />
       </div>
       <header className="mb-4 flex items-center gap-3 short:hidden">
         <Token name={r.campeon} side="me" lane={ROLE_LANE[myRole]} size={56} />
@@ -164,12 +215,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
           <h1 className="truncate text-xl font-semibold leading-tight">{r.campeon}</h1>
           <p className="text-sm text-chalk-dim">{t('role.' + r.carril) !== 'role.' + r.carril ? t('role.' + r.carril) : r.carril} · {t('patch')} {GAME.patch}</p>
         </div>
-        {bubbleSupported && (
-          <button type="button" onClick={toggleBubble} aria-pressed={bubbleOn} aria-label={t('bubble')}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border ${bubbleOn ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2'}`}>
-            <Bubbles size={20} />
-          </button>
-        )}
+        <BubbleButton />
       </header>
 
       <div role="tablist" className="sticky top-0 z-10 mb-4 short:mb-2 grid grid-cols-3 gap-1 rounded-xl border border-line bg-felt-2 p-1">
@@ -182,6 +228,8 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
       {tab === 'items' && <ItemsTab r={r} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
+
+      <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
 
       {error && (
         <div role="alert" className="mt-6 rounded-xl border border-foe/50 p-3 text-sm">

@@ -31,5 +31,5 @@ export function useBuild() {
     }
   }
 
-  return { result: m.result, loading: m.loading, error: m.error, improve, canImprove: provider !== 'local' && !!key?.trim() && !!myChamp }
+  return { result: m.result, loading: m.loading, error: m.error, onImprove: improve, canImprove: provider !== 'local' && !!key?.trim() && !!myChamp }
 }

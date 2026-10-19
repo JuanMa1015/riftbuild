@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
-import { useAIStore, AI_PROVIDERS, useMatchStore } from '../store'
+import { useAIStore, AI_PROVIDERS, useMatchStore, useMatchLog } from '../store'
 import { useT, useLang, LANGS } from '../i18n'
 import { GAME } from '../data/game'
 import { checkForUpdates } from '../lib/updater'
@@ -16,6 +16,8 @@ export default function SettingsPage() {
   const { provider, key, model, setProvider, setKey, setModel } = useAIStore()
   const { on, toggle } = useBubble()
   const [done, setDone] = useState(false)
+  const { entries, remove } = useMatchLog()
+  const won = entries.filter(e => e.win).length
   const cfg = AI_PROVIDERS[provider]
 
   async function refresh() { await checkForUpdates(); setDone(true); setTimeout(() => setDone(false), 2500) }
@@ -78,6 +80,24 @@ export default function SettingsPage() {
               </p>
             )}
           </div>
+        )}
+      </section>
+
+      <section className="mb-8">
+        <SectionTitle>{t('history')}</SectionTitle>
+        {entries.length === 0 ? <p className="text-sm text-chalk-dim">{t('historyEmpty')}</p> : (
+          <>
+            <p className="mb-3 text-lg font-semibold">{won} {t('wins')} · {entries.length - won} {t('losses')} · {Math.round((100 * won) / entries.length)}%</p>
+            <ul className="flex flex-col gap-1.5">
+              {entries.slice(0, 8).map(e => (
+                <li key={e.id} className="flex items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 py-2 text-sm">
+                  <span className={`font-bold ${e.win ? 'text-ally' : 'text-foe'}`}>{e.win ? 'W' : 'L'}</span>
+                  <span className="min-w-0 flex-1 truncate">{e.champ} {t('vs')} {e.enemies.join(', ') || '—'}</span>
+                  <button type="button" onClick={() => remove(e.id)} className="h-9 rounded-lg px-2 text-chalk-dim">{t('delete')}</button>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
       </section>
 

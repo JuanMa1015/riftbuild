@@ -22,6 +22,18 @@ export const useAIStore = create(
   )
 )
 
+// Your own results: the only real match data this app can have
+export const useMatchLog = create(
+  persist(
+    (set) => ({
+      entries: [],
+      add: (e) => set(s => ({ entries: [{ id: Date.now(), ...e }, ...s.entries].slice(0, 300) })),
+      remove: (id) => set(s => ({ entries: s.entries.filter(x => x.id !== id) })),
+    }),
+    { name: 'wr-matchlog' }
+  )
+)
+
 // Bumped when game data is hot-swapped so components re-render
 export const useDataStore = create((set) => ({
   rev: 0,

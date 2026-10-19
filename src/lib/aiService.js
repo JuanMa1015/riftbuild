@@ -57,9 +57,9 @@ async function ask({ provider, key, model, prompt }) {
   }
   const data = await resp.json().catch(() => ({}))
   if (!resp.ok || data.error) throw new Error(data.error?.message || `HTTP ${resp.status}`)
-  const text = provider === 'anthropic' ? data.content.map(b => b.text || '').join('') : data.choices[0].message.content
+  const text = (provider === 'anthropic' ? data.content.map(b => b.text || '').join('') : data.choices?.[0]?.message?.content) || ''
   const json = text.match(/\{[\s\S]*\}/)?.[0]
-  if (!json) throw new Error('Respuesta sin JSON')
+  if (!json) throw new Error('El modelo no devolvió JSON (¿se quedó sin tokens pensando?)')
   return JSON.parse(json)
 }
 

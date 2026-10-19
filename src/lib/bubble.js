@@ -10,15 +10,29 @@ import { GAME } from '../data/game'
 const Overlay = registerPlugin('Overlay')
 export const bubbleSupported = Capacitor.isNativePlatform()
 
+// The bubble is on by default; the user's explicit "off" (toggle or the bubble's own X) is remembered.
+const store = (k, v) => { try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, v) } catch { /* storage blocked */ } }
+const stored = k => { try { return localStorage.getItem(k) } catch { return null } }
+const wantsBubble = () => stored('wr-bubble') !== 'off'
+
 export const useBubble = create((set, get) => ({
   on: false,
   async toggle() {
-    if (get().on) { await Overlay.hide(); return set({ on: false }) }
+    if (get().on) { await Overlay.hide(); store('wr-bubble', 'off'); return set({ on: false }) }
+    store('wr-bubble', 'on')
     const { granted } = await Overlay.canDraw()
-    if (!granted) return Overlay.requestPermission() // the user flips the switch in Settings, then taps again
-    set({ on: true })
+    if (granted) set({ on: true })
+    else await Overlay.requestPermission()   // on return, the resume handler below switches it on
   },
 }))
+
+// Turn it on when the preference says so and the permission is there. Asks for the permission once, at first launch.
+async function autoEnable() {
+  if (!bubbleSupported || !wantsBubble() || useBubble.getState().on) return
+  const { granted } = await Overlay.canDraw()
+  if (granted) return useBubble.setState({ on: true })
+  if (!stored('wr-bubble-asked')) { store('wr-bubble-asked', '1'); Overlay.requestPermission() }
+}
 
 // What the native bubble draws: icons come from the bundled assets by slug, text from here.
 const slug = n => n.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -41,7 +55,11 @@ function payload(r, t) {
 let appActive = true
 const syncHidden = () => Overlay.setHidden({ hidden: appActive }).catch(() => {})
 if (bubbleSupported) {
-  CapApp.addListener('appStateChange', ({ isActive }) => { appActive = isActive; if (useBubble.getState().on) syncHidden() })
+  CapApp.addListener('appStateChange', ({ isActive }) => {
+    appActive = isActive
+    if (isActive) autoEnable()   // back from the permission screen
+    if (useBubble.getState().on) syncHidden()
+  })
 }
 
 // Mount once: keeps the bubble text in sync with the current build and language.
@@ -49,6 +67,7 @@ export function BubbleSync() {
   const { t, lang } = useT()
   const result = useMatchStore(s => s.result)
   const on = useBubble(s => s.on)
+  useEffect(() => { autoEnable() }, [])
   useEffect(() => {
     if (on && result) Overlay.show({ data: payload(result, t) }).then(syncHidden).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,4 +76,4 @@ export function BubbleSync() {
 }
 
 // The overlay's own X (or its notification action) closes it natively: mirror that in the toggle.
-if (bubbleSupported) Overlay.addListener('closed', () => useBubble.setState({ on: false }))
+if (bubbleSupported) Overlay.addListener('closed', () => { store('wr-bubble', 'off'); useBubble.setState({ on: false }) })
