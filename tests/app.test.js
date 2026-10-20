@@ -30,6 +30,7 @@ describe('validator', () => {
     ['tier list naming an unknown champion', g => { g.tiers = { lanes: { top: { S: ['Nadie'] } } } }],
     ['override for an unknown champion', g => { g.overrides = { Nadie: { core: Object.keys(g.items).slice(0, 4) } } }],
     ['override with an unknown item', g => { g.overrides = { Jinx: { core: ['a', 'b', 'c', 'd'] } } }],
+    ['override with a bad fixed count', g => { g.overrides = { Jinx: { core: Object.keys(g.items).slice(0, 4), fixed: 4 } } }],
     ['override repeating an item', g => { const i = Object.keys(g.items)[0]; g.overrides = { Jinx: { core: [i, i, i, i] } } }],
   ])('rejects %s', (_, mutate) => { const g = clone(); mutate(g); expect(isValidGame(g)).toBe(false) })
 })
@@ -222,6 +223,16 @@ describe('situational builds', () => {
       const healItems = sit(r).filter(b => ITEMS[b.nombre].ans[0] === 'heal' || ITEMS[b.nombre].ans.includes('heal'))
       expect(healItems.length, c.n).toBeLessThanOrEqual(1)
     }
+  })
+  it('a champion with a guide keeps its first three core items and answers the rest of the game with two', () => {
+    const r = build('Gwen', 'Solo / Baron', ['Sett', 'Mel', 'Dr. Mundo', 'Caitlyn', 'Lux'])
+    const plain = names(build('Gwen', 'Solo / Baron', []))
+    expect(names(r).slice(0, 3)).toEqual(plain.slice(0, 3))
+    expect(sit(r).length).toBeLessThanOrEqual(2)
+    expect(sit(r).length).toBeGreaterThan(0)
+  })
+  it('shields bring the AP shield breaker for a mage', () => {
+    expect(names(build('Ahri', 'Mid', ['Janna', 'Lulu', 'Orianna']))).toContain("Oceanid's Trident")
   })
   it('the meta tiers lift a champion in the suggestions for its lane', () => {
     const top = game.tiers.lanes.top['S+'][0]

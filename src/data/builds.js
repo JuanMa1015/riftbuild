@@ -62,6 +62,7 @@ export function withOverride(base, ov) {
     sit: { ...base.sit, ...(ov.win ? { win: ov.win } : {}) },
     boots: { ...base.boots, ...(ov.boots ? { def: ov.boots } : {}) },
     ks: ov.ks || base.ks, ksn,
+    fixed: ov.fixed,   // how many leading core items never change (the guides give a core of three)
   }
 }
 
@@ -93,7 +94,7 @@ export function groupsOf(c, role) {
 
 // Up to three items that answer what the rival team brings, one per kind of problem (two healing items would not stack).
 // Items the class template already curates for that problem get a small bonus, so each class keeps its flavour.
-export function adaptiveItems(tpl, groups, counts, taken = []) {
+export function adaptiveItems(tpl, groups, counts, taken = [], max = 3) {
   const curated = new Set(Object.values(tpl.sit))
   const rows = []
   for (const [name, it] of Object.entries(ITEMS)) {
@@ -109,10 +110,13 @@ export function adaptiveItems(tpl, groups, counts, taken = []) {
   for (const r of rows) {
     if (r.score < MIN[out.length] || used.has(r.tag)) continue
     used.add(r.tag); out.push(r)
-    if (out.length === 3) break
+    if (out.length === max) break
   }
   return out
 }
+
+// how many leading items of this champion's build never change
+export const fixedCount = name => OVERRIDES[name]?.fixed || 2
 
 export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s => s) {
   const isSupp0 = role.toLowerCase().includes("support")
@@ -124,17 +128,18 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
   const isJg    = role.toLowerCase().includes("jungla")
   const isSupp  = role.toLowerCase().includes("support")
 
-  // The first two core items are the champion's identity and always stay. What the rivals bring decides the rest:
+  // The first core items (two by default, three for champions with a guide) are the champion's identity and always stay. What the rivals bring decides the rest:
   // up to three items that answer it go right after (urgent ones first), the remaining core items fill what is left.
-  const [c0, c1, c2, c3] = tpl.core
-  const picks = adaptiveItems(tpl, groupsOf(cData, role), counts, [c0, c1])
+  const nFixed = tpl.fixed || 2
+  const fixed = tpl.core.slice(0, nFixed), rest = tpl.core.slice(nFixed)
+  const picks = adaptiveItems(tpl, groupsOf(cData, role), counts, fixed, 5 - nFixed)
   const reasonOf = {}
   for (const p of picks) {
     const names = who[p.tag].slice(0, 3).join(", ") + (who[p.tag].length > 3 ? ` ${tr("y otros")}` : "")
     reasonOf[p.name] = tr(REASON[p.tag]).replace("{names}", names || tr("tus rivales"))
   }
   const urgent = picks.filter(p => p.score >= 4).map(p => p.name), later = picks.filter(p => p.score < 4).map(p => p.name)
-  const items = [...new Set([c0, c1, ...urgent, c2, ...later, c3, tpl.sit.win, ...Object.values(tpl.sit)].filter(Boolean))].slice(0, 5)
+  const items = [...new Set([...fixed, ...urgent, rest[0], ...later, ...rest.slice(1), tpl.sit.win, ...Object.values(tpl.sit)].filter(Boolean))].slice(0, 5)
 
   // magic-resist boots vs heavy AP, armor boots vs heavy AD (for AP champions); not every template has both, so fall back to the default
   const bootsName = (apCount>=3 && tpl.boots.ap) || (adCount>=3 && tpl.boots.ad) || tpl.boots.def

@@ -9,7 +9,9 @@ if (process.argv[1].endsWith('optimize-images.mjs')) {
   let before = 0, after = 0
   for (const dir of ['champs', 'items', 'runes', 'spells']) {
     for (const f of readdirSync(`public/${dir}`).filter(f => f.endsWith('.png'))) {
-      const p = `public/${dir}/${f}`, src = readFileSync(p), out = await shrink(src)
+      const p = `public/${dir}/${f}`, src = readFileSync(p)
+      if (src[25] === 3) { before += src.length; after += src.length; continue }   // PNG colour type 3 = indexed: already shrunk, a second pass would only lose quality
+      const out = await shrink(src)
       before += src.length; after += Math.min(src.length, out.length)
       if (out.length < src.length) writeFileSync(p, out)
     }

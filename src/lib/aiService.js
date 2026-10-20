@@ -1,5 +1,5 @@
 import { AI_PROVIDERS } from '../store'
-import { buildLocalBuild, ITEMS, groupsOf, rivalTags } from '../data/builds'
+import { buildLocalBuild, ITEMS, groupsOf, rivalTags, fixedCount } from '../data/builds'
 import { GAME } from '../data/game'
 import { CHAMPIONS } from '../data/champions'
 import { makeTr } from '../i18n'
@@ -33,7 +33,7 @@ function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base, 
 Build base del motor: ${base.items.join(', ')} | botas ${base.boots}.
 Rasgos de los rivales (lo que traen): ${traitLine(enemies)}.
 Elige 5 ítems distintos (el sexto espacio son las botas) SOLO de esta lista, en orden de compra: ${gear.join(' | ')}.
-Los 2 primeros ítems de la build base son el núcleo del campeón: consérvalos. Los otros 3 deben responder a lo que traen los rivales (curación → anti-curación, escudos → rompe-escudos, tanques → penetración, mucho daño mágico o físico → resistencias, control → limpieza). Qué responde cada ítem situacional: ${answers(gear)}.
+Los ${fixedCount(myChamp)} primeros ítems de la build base son el núcleo del campeón: consérvalos. Los demás deben responder a lo que traen los rivales (curación → anti-curación, escudos → rompe-escudos, tanques → penetración, mucho daño mágico o físico → resistencias, control → limpieza). Qué responde cada ítem situacional: ${answers(gear)}.
 En "w" nombra a los rivales que justifican cada ítem.
 Botas SOLO de: ${BOOTS.join(' | ')}.
 Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida","coach":{"pick":"máx 22 palabras: ¿conviene ${myChamp} contra esta composición? si no, qué campeón del carril sería mejor","threat":"máx 22 palabras: la mayor amenaza del equipo rival y cómo responderle","lane":"máx 22 palabras: cómo jugar tu carril","watch":"máx 22 palabras: qué vigilar en la partida"}}

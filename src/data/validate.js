@@ -28,6 +28,7 @@ export function isValidGame(g) {
         if (o.win !== undefined && !known.has(o.win)) return false
         if (o.boots !== undefined && !known.has(o.boots)) return false
         if (o.ks !== undefined && !keystones.has(o.ks)) return false
+        if (o.fixed !== undefined && ![2, 3].includes(o.fixed)) return false
       }
     }
     // optional item tags (what it answers / who can use it) and champion traits: only the known vocabulary

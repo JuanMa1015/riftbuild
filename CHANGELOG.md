@@ -5,6 +5,17 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.9.1] - 2026-10-20
+
+### Añadido
+- **Catálogo casi completo:** 122 ítems (antes 56). Se suman 55 ítems de la lista oficial de Wild Rift (Kraken Slayer, Phantom Dancer, Bloodthirster, Luden's Echo, Nashor, Rylai, Titanic Hydra, Goredrinker, ítems de soporte…) y las botas que usan las guías: Grebas del Berserker, Botas de Maná, Grebas Glotonas, Botas de Dinamismo y más. Seis ítems y dos botas exclusivos de Wild Rift no existen en Data Dragon: llevan sus iniciales como ícono y nombre en inglés hasta tener fuente.
+- **Builds de 81 campeones** hechas con la meta del parche 7.3b (guías de wildriftfire.com): ítems y botas reales, con los tres primeros ítems fijos y dos que se adaptan a los rivales. Antes eran 29, hechas de memoria.
+- Los magos usan Botas de Maná y los tiradores, Grebas del Berserker por defecto.
+
+### Cambiado
+- Las guías enseñaron dos contras: Oceanid's Trident rompe escudos para magos y Báculo del Vacío responde a tanques.
+- Ítems sin ícono en Data Dragon se muestran con sus iniciales.
+
 ## [0.9.0] - 2026-10-20
 
 ### Añadido

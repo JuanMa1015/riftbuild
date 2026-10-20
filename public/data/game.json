@@ -1,5 +1,5 @@
 {
- "version": "2026-10-20T05:13",
+ "version": "2026-10-20T05:52",
  "patch": "7.3b",
  "champions": [
   {
@@ -1418,7 +1418,9 @@
    "en": "void-staff",
    "t": "Ofensivo",
    "desc": "40% de penetración mágica. Obligatorio cuando los rivales construyen RM.",
-   "ans": [],
+   "ans": [
+    "hp"
+   ],
    "fit": [
     "ap"
    ]
@@ -1764,6 +1766,617 @@
    "fit": [
     "tank"
    ]
+  },
+  "Báculo del Arcángel": {
+   "t": "Ofensivo",
+   "desc": "Convierte tu maná en poder de habilidad. Para magos que escalan con maná.",
+   "en": "archangels-staff",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Guadaña de Niebla Oscura": {
+   "t": "Híbrido",
+   "desc": "Ítem de soporte que mejora tu economía y la de tu aliado.",
+   "en": "black-mist-scythe",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Antorcha de Fuegoscuro": {
+   "t": "Ofensivo",
+   "desc": "Tus habilidades queman al rival con el tiempo y limpian oleadas. Para magos.",
+   "en": "blackfire-torch",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Maldición de la Vampiresa": {
+   "t": "Ofensivo",
+   "desc": "Poder de habilidad y vida; tu daño reduce la resistencia mágica del rival. Para magos y luchadores AP.",
+   "en": "bloodletters-curse",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "La Sanguinaria": {
+   "t": "Ofensivo",
+   "desc": "Robo de vida y un escudo con tu daño de ataque. Para carries que aguantan peleas largas.",
+   "en": "bloodthirster",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Baluarte de la Montaña": {
+   "t": "Defensivo",
+   "desc": "Ítem de soporte defensivo que protege a tu aliado.",
+   "en": "bulwark-of-the-mountain",
+   "ans": [],
+   "fit": [
+    "sup",
+    "tank"
+   ]
+  },
+  "Impulso Cósmico": {
+   "t": "Ofensivo",
+   "desc": "Mucha reducción de enfriamiento y velocidad al usar habilidades. Para magos de combos.",
+   "en": "cosmic-drive",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Criptorretoño": {
+   "t": "Ofensivo",
+   "desc": "Penetración mágica porcentual y curación al dañar. Para magos contra rivales con resistencia.",
+   "en": "cryptbloom",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Dawnshroud": {
+   "t": "Híbrido",
+   "desc": "Potencia tus curas y escudos. Para soportes.",
+   "en": "dawnshroud",
+   "ans": [],
+   "fit": [
+    "sup",
+    "ap"
+   ]
+  },
+  "Diadema Musical": {
+   "t": "Híbrido",
+   "desc": "Potencia tus curas y escudos y te da maná. Para soportes.",
+   "en": "diadem-of-songs",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Cercenador Divino": {
+   "t": "Ofensivo",
+   "desc": "Tu ataque tras una habilidad hace daño según la vida del rival. Contra tanques.",
+   "en": "divine-sunderer",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Ocaso y Alba": {
+   "t": "Ofensivo",
+   "desc": "Poder de habilidad y velocidad de ataque; tras una habilidad, tu siguiente ataque se potencia.",
+   "en": "dusk-and-dawn",
+   "ans": [],
+   "fit": [
+    "ap",
+    "ad"
+   ]
+  },
+  "Hoja Crepuscular de Draktharr": {
+   "t": "Ofensivo",
+   "desc": "Más daño y sigilo tras eliminar rivales. Para asesinos AD.",
+   "en": "duskblade-of-draktharr",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Ecos de Helia": {
+   "t": "Híbrido",
+   "desc": "Parte de tu daño y tus curas se convierte en curación para tus aliados. Para soportes.",
+   "en": "echoes-of-helia",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Saqueador de Esencias": {
+   "t": "Ofensivo",
+   "desc": "Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná. Para luchadores y tiradores.",
+   "en": "essence-reaver",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Placa Hexperimental": {
+   "t": "Ofensivo",
+   "desc": "Más velocidad de ataque y vida, con un impulso al usar tu definitiva. Para luchadores.",
+   "en": "experimental-hexplate",
+   "ans": [],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Proyectiles Cazademonios": {
+   "t": "Ofensivo",
+   "desc": "Velocidad de ataque y crítico con más alcance. Para tiradores.",
+   "en": "fiendhunter-bolts",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Invierno Nórdico": {
+   "t": "Defensivo",
+   "desc": "Mucha vida y maná, y un escudo al gastar maná. Para magos y tanques.",
+   "en": "fimbulwinter",
+   "ans": [],
+   "fit": [
+    "ap",
+    "tank"
+   ]
+  },
+  "Fuerza del Viento": {
+   "t": "Ofensivo",
+   "desc": "Al activarlo te lanzas y disparas proyectiles; mucho daño crítico. Para tiradores.",
+   "en": "galeforce",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Armadura Pétrea": {
+   "t": "Defensivo",
+   "desc": "Armadura y resistencia mágica; al activarlo te vuelves más resistente. Contra equipos mixtos.",
+   "en": "gargoyle-stoneplate",
+   "ans": [
+    "ad",
+    "ap"
+   ],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Bebedor de Sangre": {
+   "t": "Ofensivo",
+   "desc": "Al activarlo dañas alrededor y te curas. Para luchadores.",
+   "en": "goredrinker",
+   "ans": [],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Espadafuria de Guinsoo": {
+   "t": "Ofensivo",
+   "desc": "Daño de ataque y de habilidad con un efecto al golpear que se acumula. Para luchadores híbridos.",
+   "en": "guinsoos-rageblade",
+   "ans": [],
+   "fit": [
+    "ad",
+    "ap"
+   ]
+  },
+  "Harmonic Echo": {
+   "t": "Híbrido",
+   "desc": "Ítem de soporte que potencia a tus aliados.",
+   "en": "harmonic-echo",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Hexóptica C44": {
+   "t": "Ofensivo",
+   "desc": "Daño crítico que crece con la distancia al objetivo. Para tiradores de largo alcance.",
+   "en": "hexoptics-c44",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Cinturón Cohete Hextech": {
+   "t": "Ofensivo",
+   "desc": "Al activarlo te impulsas hacia delante con una explosión. Para magos y asesinos AP.",
+   "en": "hextech-rocketbelt",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Resplandor Vacío": {
+   "t": "Defensivo",
+   "desc": "Resistencia mágica y un escudo al inmovilizar enemigos. Contra mucho daño mágico.",
+   "en": "hollow-radiance",
+   "ans": [
+    "ap"
+   ],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Enfoque al Horizonte": {
+   "t": "Ofensivo",
+   "desc": "Más daño a quien inmovilizas. Para magos de largo alcance.",
+   "en": "horizon-focus",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Rompecascos": {
+   "t": "Ofensivo",
+   "desc": "Más fuerte peleando solo y contra torres. Para luchadores de línea.",
+   "en": "hullbreaker",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Guantelete del Hijo del Hielo": {
+   "t": "Defensivo",
+   "desc": "Armadura y ralentiza a los rivales cercanos. Contra daño físico.",
+   "en": "iceborn-gauntlet",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Arcoescudo Inmortal": {
+   "t": "Ofensivo",
+   "desc": "Te da un escudo cuando estás a punto de morir. Para tiradores contra daño explosivo.",
+   "en": "immortal-shieldbow",
+   "ans": [
+    "burst"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Infinity Orb": {
+   "t": "Ofensivo",
+   "desc": "Ítem de poder de habilidad para magos.",
+   "en": "infinity-orb",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Promesa del Caballero": {
+   "t": "Defensivo",
+   "desc": "Te unes a un aliado y absorbes parte de su daño. Para tanques y soportes.",
+   "en": "knights-vow",
+   "ans": [],
+   "fit": [
+    "sup",
+    "tank"
+   ]
+  },
+  "Matakrakens": {
+   "t": "Ofensivo",
+   "desc": "Cada tercer ataque hace daño extra. Para tiradores.",
+   "en": "kraken-slayer",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Maldición del Liche": {
+   "t": "Ofensivo",
+   "desc": "Tras una habilidad, tu siguiente ataque hace daño mágico extra y corres más. Para magos de combate cercano.",
+   "en": "lich-bane",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Eco de Luden": {
+   "t": "Ofensivo",
+   "desc": "Daño explosivo extra al lanzar habilidades. Para magos.",
+   "en": "ludens-echo",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Maldad": {
+   "t": "Ofensivo",
+   "desc": "Mucho poder de habilidad y menos enfriamientos, y potencia tu definitiva. Para magos.",
+   "en": "malignance",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Manamune": {
+   "t": "Ofensivo",
+   "desc": "Convierte tu maná en daño de ataque. Para campeones con maná.",
+   "en": "manamune",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Mantle of the Twelfth Hour": {
+   "t": "Defensivo",
+   "desc": "Ítem defensivo para campeones de habilidades.",
+   "en": "mantle-of-the-twelfth-hour",
+   "ans": [],
+   "fit": [
+    "ap",
+    "sup"
+   ]
+  },
+  "Muramaná": {
+   "t": "Ofensivo",
+   "desc": "Convierte tu maná en daño y potencia tus habilidades. Para campeones con maná.",
+   "en": "muramana",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Diente de Nashor": {
+   "t": "Ofensivo",
+   "desc": "Velocidad de ataque y poder de habilidad; tus ataques hacen daño mágico extra. Para magos de ataques.",
+   "en": "nashors-tooth",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Cuchillas Raudas de Navori": {
+   "t": "Ofensivo",
+   "desc": "Reduce los enfriamientos de tus habilidades al atacar. Para tiradores de habilidades.",
+   "en": "navori-quickblades",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Oceanid's Trident": {
+   "t": "Defensivo",
+   "desc": "Ítem defensivo para magos y tanques.",
+   "en": "oceanids-trident",
+   "ans": [
+    "shield"
+   ],
+   "fit": [
+    "ap",
+    "tank"
+   ]
+  },
+  "Cota Sangrienta del Soberano": {
+   "t": "Defensivo",
+   "desc": "Vida y daño que crece con tu vida. Para tanques ofensivos.",
+   "en": "overlords-bloodmail",
+   "ans": [],
+   "fit": [
+    "tank",
+    "ad"
+   ]
+  },
+  "Bailarín Espectral": {
+   "t": "Ofensivo",
+   "desc": "Más velocidad al atacar y un escudo con poca vida. Para tiradores.",
+   "en": "phantom-dancer",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Virtud Radiante": {
+   "t": "Defensivo",
+   "desc": "Aura que da resistencias y reduce enfriamientos a tus aliados. Para tanques y soportes.",
+   "en": "radiant-virtue",
+   "ans": [],
+   "fit": [
+    "sup",
+    "tank"
+   ]
+  },
+  "Agrietador": {
+   "t": "Ofensivo",
+   "desc": "Más daño cuanto más tiempo peleas y curación con tu daño. Para magos y luchadores AP.",
+   "en": "riftmaker",
+   "ans": [],
+   "fit": [
+    "ap",
+    "tank"
+   ]
+  },
+  "Vara de las Edades": {
+   "t": "Ofensivo",
+   "desc": "Vida, maná y poder que crecen con el tiempo. Para peleas largas.",
+   "en": "rod-of-ages",
+   "ans": [],
+   "fit": [
+    "ap",
+    "tank"
+   ]
+  },
+  "Cetro de Cristal de Rylai": {
+   "t": "Ofensivo",
+   "desc": "Tus habilidades ralentizan a los rivales. Para magos.",
+   "en": "rylais-crystal-scepter",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Canto de Guerra de Shurelya": {
+   "t": "Híbrido",
+   "desc": "Al activarlo das velocidad a tus aliados cercanos. Para soportes.",
+   "en": "shurelyas-battlesong",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Staff of Flowing Waters": {
+   "t": "Híbrido",
+   "desc": "Ítem de soporte que potencia curas y escudos.",
+   "en": "staff-of-flowing-waters",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Filo de la Tormenta": {
+   "t": "Ofensivo",
+   "desc": "Velocidad de ataque y crítico; el primer golpe tras moverte hace daño extra. Para tiradores.",
+   "en": "stormrazor",
+   "ans": [],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Descarga Tormentosa": {
+   "t": "Ofensivo",
+   "desc": "Penetración mágica y velocidad; tras mucho daño cae una tormenta. Para magos.",
+   "en": "stormsurge",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Rompeavances": {
+   "t": "Ofensivo",
+   "desc": "Al activarlo ralentiza y daña alrededor; velocidad al pelear. Para luchadores.",
+   "en": "stridebreaker",
+   "ans": [],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Terminus": {
+   "t": "Ofensivo",
+   "desc": "Atraviesa armadura y resistencia mágica con tus ataques. Contra tanques.",
+   "en": "terminus",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Hidra Titánica": {
+   "t": "Ofensivo",
+   "desc": "Tus ataques dañan en área según tu vida. Para luchadores y tanques.",
+   "en": "titanic-hydra",
+   "ans": [],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Tiara Susurrante": {
+   "t": "Híbrido",
+   "desc": "Potencia curas y escudos y da maná. Para soportes.",
+   "en": "whispering-circlet",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
+  },
+  "Umbral del Invierno": {
+   "t": "Defensivo",
+   "desc": "Mucha vida y maná; ganas vida al gastar maná. Para magos y tanques.",
+   "en": "winters-approach",
+   "ans": [],
+   "fit": [
+    "tank",
+    "ap"
+   ]
+  },
+  "Grebas del Berserker": {
+   "t": "Botas",
+   "desc": "Velocidad de ataque y de movimiento. Las mejores botas para tiradores.",
+   "en": "berserkers-greaves",
+   "ans": [],
+   "fit": []
+  },
+  "Grebas de Armacero": {
+   "t": "Botas",
+   "desc": "Velocidad de ataque, robo de vida y movimiento. Para luchadores de daño físico.",
+   "en": "gunmetal-greaves",
+   "ans": [],
+   "fit": []
+  },
+  "Trituradoras Aceradas": {
+   "t": "Botas",
+   "desc": "Resistencia mágica y movimiento. Contra daño mágico.",
+   "en": "chainlaced-crushers",
+   "ans": [],
+   "fit": []
+  },
+  "Blindadas de Avance": {
+   "t": "Botas",
+   "desc": "Armadura y movimiento. Contra daño físico.",
+   "en": "armored-advance",
+   "ans": [],
+   "fit": []
+  },
+  "Botas de Lucidez Carmesí": {
+   "t": "Botas",
+   "desc": "Reducción de enfriamientos y movimiento. Para soportes y magos.",
+   "en": "crimson-lucidity",
+   "ans": [],
+   "fit": []
+  },
+  "Zapatos de Lanzahechizos": {
+   "t": "Botas",
+   "desc": "Penetración mágica y movimiento. Para magos.",
+   "en": "spellslingers-shoes",
+   "ans": [],
+   "fit": []
+  },
+  "Grebas Glotonas": {
+   "t": "Botas",
+   "desc": "Botas de combate usadas por luchadores, asesinos y algunos tiradores.",
+   "en": "gluttonous-greaves",
+   "ans": [],
+   "fit": []
+  },
+  "Boots of Mana": {
+   "t": "Botas",
+   "desc": "Botas con maná y movimiento. Las más usadas por los magos.",
+   "en": "boots-of-mana",
+   "ans": [],
+   "fit": []
+  },
+  "Boots of Dynamism": {
+   "t": "Botas",
+   "desc": "Botas de movilidad para asesinos y tiradores de habilidades.",
+   "en": "boots-of-dynamism",
+   "ans": [],
+   "fit": []
   }
  },
  "builds": {
@@ -1838,7 +2451,7 @@
     "win": "El Tormento de Liandry"
    },
    "boots": {
-    "def": "Botas del Hechicero",
+    "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Arcane Comet",
@@ -2002,7 +2615,7 @@
     "win": "Báculo del Vacío"
    },
    "boots": {
-    "def": "Botas del Hechicero",
+    "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Sorcerer's",
@@ -2054,7 +2667,7 @@
     "win": "Flechas Salvajes de Yun Tal"
    },
    "boots": {
-    "def": "Punteras de Acero Revestidas",
+    "def": "Grebas del Berserker",
     "ap": "Botas de Mercurio"
    },
    "enc": "Gluttonous",
@@ -2106,7 +2719,7 @@
     "win": "Filo del Infinito"
    },
    "boots": {
-    "def": "Punteras de Acero Revestidas",
+    "def": "Grebas del Berserker",
     "ap": "Botas de Mercurio"
    },
    "enc": "Gluttonous",
@@ -2159,7 +2772,7 @@
     "win": "Abrazo del Serafín"
    },
    "boots": {
-    "def": "Botas del Hechicero",
+    "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
    "enc": "Sorcerer's",
@@ -2663,7 +3276,139 @@
   "tus rivales": "your enemies",
   "y otros": "and others",
   "Situacional": "Situational",
-  "Escudos enemigos": "Enemy shields"
+  "Escudos enemigos": "Enemy shields",
+  "Báculo del Arcángel": "Archangel's Staff",
+  "Convierte tu maná en poder de habilidad. Para magos que escalan con maná.": "Turns your mana into ability power. For mages that scale with mana.",
+  "Guadaña de Niebla Oscura": "Black Mist Scythe",
+  "Ítem de soporte que mejora tu economía y la de tu aliado.": "Support item that improves your economy and your ally's.",
+  "Antorcha de Fuegoscuro": "Blackfire Torch",
+  "Tus habilidades queman al rival con el tiempo y limpian oleadas. Para magos.": "Your abilities burn the target over time and clear waves. For mages.",
+  "Maldición de la Vampiresa": "Bloodletter's Curse",
+  "Poder de habilidad y vida; tu daño reduce la resistencia mágica del rival. Para magos y luchadores AP.": "Ability power and health; your damage lowers the target's magic resistance. For mages and AP fighters.",
+  "La Sanguinaria": "Bloodthirster",
+  "Robo de vida y un escudo con tu daño de ataque. Para carries que aguantan peleas largas.": "Life steal and a shield with your attack damage. For carries that hold long fights.",
+  "Baluarte de la Montaña": "Bulwark of the Mountain",
+  "Ítem de soporte defensivo que protege a tu aliado.": "Defensive support item that protects your ally.",
+  "Impulso Cósmico": "Cosmic Drive",
+  "Mucha reducción de enfriamiento y velocidad al usar habilidades. Para magos de combos.": "Lots of cooldown reduction and speed when casting abilities. For combo mages.",
+  "Criptorretoño": "Cryptbloom",
+  "Penetración mágica porcentual y curación al dañar. Para magos contra rivales con resistencia.": "Percent magic penetration and healing when dealing damage. For mages against resistant enemies.",
+  "Dawnshroud": "Dawnshroud",
+  "Potencia tus curas y escudos. Para soportes.": "Strengthens your heals and shields. For supports.",
+  "Diadema Musical": "Diadem of Songs",
+  "Potencia tus curas y escudos y te da maná. Para soportes.": "Strengthens your heals and shields and gives you mana. For supports.",
+  "Cercenador Divino": "Divine Sunderer",
+  "Tu ataque tras una habilidad hace daño según la vida del rival. Contra tanques.": "Your attack after a spell deals damage based on the target's health. Against tanks.",
+  "Ocaso y Alba": "Dusk and Dawn",
+  "Poder de habilidad y velocidad de ataque; tras una habilidad, tu siguiente ataque se potencia.": "Ability power and attack speed; after a spell, your next attack is empowered.",
+  "Hoja Crepuscular de Draktharr": "Duskblade of Draktharr",
+  "Más daño y sigilo tras eliminar rivales. Para asesinos AD.": "More damage and stealth after takedowns. For AD assassins.",
+  "Ecos de Helia": "Echoes of Helia",
+  "Parte de tu daño y tus curas se convierte en curación para tus aliados. Para soportes.": "Part of your damage and heals becomes healing for your allies. For supports.",
+  "Saqueador de Esencias": "Essence Reaver",
+  "Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná. Para luchadores y tiradores.": "After a spell, your next attack hits hard and returns mana. For fighters and marksmen.",
+  "Placa Hexperimental": "Experimental Hexplate",
+  "Más velocidad de ataque y vida, con un impulso al usar tu definitiva. Para luchadores.": "More attack speed and health, with a boost when you use your ultimate. For fighters.",
+  "Proyectiles Cazademonios": "Fiendhunter Bolts",
+  "Velocidad de ataque y crítico con más alcance. Para tiradores.": "Attack speed and crit with extra range. For marksmen.",
+  "Invierno Nórdico": "Fimbulwinter",
+  "Mucha vida y maná, y un escudo al gastar maná. Para magos y tanques.": "Lots of health and mana, and a shield when you spend mana. For mages and tanks.",
+  "Fuerza del Viento": "Galeforce",
+  "Al activarlo te lanzas y disparas proyectiles; mucho daño crítico. Para tiradores.": "Activate to dash and fire missiles; lots of crit damage. For marksmen.",
+  "Armadura Pétrea": "Gargoyle Stoneplate",
+  "Armadura y resistencia mágica; al activarlo te vuelves más resistente. Contra equipos mixtos.": "Armor and magic resistance; activate to become sturdier. Against mixed teams.",
+  "Bebedor de Sangre": "Goredrinker",
+  "Al activarlo dañas alrededor y te curas. Para luchadores.": "Activate to damage nearby enemies and heal. For fighters.",
+  "Espadafuria de Guinsoo": "Guinsoo's Rageblade",
+  "Daño de ataque y de habilidad con un efecto al golpear que se acumula. Para luchadores híbridos.": "Attack and ability damage with an on-hit effect that stacks. For hybrid fighters.",
+  "Harmonic Echo": "Harmonic Echo",
+  "Ítem de soporte que potencia a tus aliados.": "Support item that empowers your allies.",
+  "Hexóptica C44": "Hexoptics C44",
+  "Daño crítico que crece con la distancia al objetivo. Para tiradores de largo alcance.": "Crit damage that grows with the distance to the target. For long-range marksmen.",
+  "Cinturón Cohete Hextech": "Hextech Rocketbelt",
+  "Al activarlo te impulsas hacia delante con una explosión. Para magos y asesinos AP.": "Activate to dash forward with an explosion. For mages and AP assassins.",
+  "Resplandor Vacío": "Hollow Radiance",
+  "Resistencia mágica y un escudo al inmovilizar enemigos. Contra mucho daño mágico.": "Magic resistance and a shield when you immobilize enemies. Against lots of magic damage.",
+  "Enfoque al Horizonte": "Horizon Focus",
+  "Más daño a quien inmovilizas. Para magos de largo alcance.": "More damage to those you immobilize. For long-range mages.",
+  "Rompecascos": "Hullbreaker",
+  "Más fuerte peleando solo y contra torres. Para luchadores de línea.": "Stronger when fighting alone and against turrets. For lane fighters.",
+  "Guantelete del Hijo del Hielo": "Iceborn Gauntlet",
+  "Armadura y ralentiza a los rivales cercanos. Contra daño físico.": "Armor, and it slows nearby enemies. Against physical damage.",
+  "Arcoescudo Inmortal": "Immortal Shieldbow",
+  "Te da un escudo cuando estás a punto de morir. Para tiradores contra daño explosivo.": "Gives you a shield when you are about to die. For marksmen against burst damage.",
+  "Infinity Orb": "Infinity Orb",
+  "Ítem de poder de habilidad para magos.": "Ability power item for mages.",
+  "Promesa del Caballero": "Knight's Vow",
+  "Te unes a un aliado y absorbes parte de su daño. Para tanques y soportes.": "You pair with an ally and absorb part of their damage. For tanks and supports.",
+  "Matakrakens": "Kraken Slayer",
+  "Cada tercer ataque hace daño extra. Para tiradores.": "Every third attack deals extra damage. For marksmen.",
+  "Maldición del Liche": "Lich Bane",
+  "Tras una habilidad, tu siguiente ataque hace daño mágico extra y corres más. Para magos de combate cercano.": "After a spell, your next attack deals extra magic damage and you run faster. For close-range mages.",
+  "Eco de Luden": "Luden's Echo",
+  "Daño explosivo extra al lanzar habilidades. Para magos.": "Extra burst damage when casting abilities. For mages.",
+  "Maldad": "Malignance",
+  "Mucho poder de habilidad y menos enfriamientos, y potencia tu definitiva. Para magos.": "Lots of ability power and shorter cooldowns, and it empowers your ultimate. For mages.",
+  "Manamune": "Manamune",
+  "Convierte tu maná en daño de ataque. Para campeones con maná.": "Turns your mana into attack damage. For champions with mana.",
+  "Mantle of the Twelfth Hour": "Mantle of the Twelfth Hour",
+  "Ítem defensivo para campeones de habilidades.": "Defensive item for ability-based champions.",
+  "Muramaná": "Muramana",
+  "Convierte tu maná en daño y potencia tus habilidades. Para campeones con maná.": "Turns your mana into damage and empowers your abilities. For champions with mana.",
+  "Diente de Nashor": "Nashor's Tooth",
+  "Velocidad de ataque y poder de habilidad; tus ataques hacen daño mágico extra. Para magos de ataques.": "Attack speed and ability power; your attacks deal extra magic damage. For attacking mages.",
+  "Cuchillas Raudas de Navori": "Navori Quickblades",
+  "Reduce los enfriamientos de tus habilidades al atacar. Para tiradores de habilidades.": "Reduces your ability cooldowns when attacking. For ability-based marksmen.",
+  "Oceanid's Trident": "Oceanid's Trident",
+  "Ítem defensivo para magos y tanques.": "Defensive item for mages and tanks.",
+  "Cota Sangrienta del Soberano": "Overlord's Bloodmail",
+  "Vida y daño que crece con tu vida. Para tanques ofensivos.": "Health and damage that grows with your health. For offensive tanks.",
+  "Bailarín Espectral": "Phantom Dancer",
+  "Más velocidad al atacar y un escudo con poca vida. Para tiradores.": "More speed when attacking and a shield at low health. For marksmen.",
+  "Virtud Radiante": "Radiant Virtue",
+  "Aura que da resistencias y reduce enfriamientos a tus aliados. Para tanques y soportes.": "Aura that gives resistances and reduces cooldowns for your allies. For tanks and supports.",
+  "Agrietador": "Riftmaker",
+  "Más daño cuanto más tiempo peleas y curación con tu daño. Para magos y luchadores AP.": "More damage the longer you fight, and healing from your damage. For mages and AP fighters.",
+  "Vara de las Edades": "Rod of Ages",
+  "Vida, maná y poder que crecen con el tiempo. Para peleas largas.": "Health, mana and power that grow over time. For long games.",
+  "Cetro de Cristal de Rylai": "Rylai's Crystal Scepter",
+  "Tus habilidades ralentizan a los rivales. Para magos.": "Your abilities slow enemies. For mages.",
+  "Canto de Guerra de Shurelya": "Shurelya's Battlesong",
+  "Al activarlo das velocidad a tus aliados cercanos. Para soportes.": "Activate to give speed to nearby allies. For supports.",
+  "Staff of Flowing Waters": "Staff of Flowing Waters",
+  "Ítem de soporte que potencia curas y escudos.": "Support item that strengthens heals and shields.",
+  "Filo de la Tormenta": "Stormrazor",
+  "Velocidad de ataque y crítico; el primer golpe tras moverte hace daño extra. Para tiradores.": "Attack speed and crit; the first hit after moving deals extra damage. For marksmen.",
+  "Descarga Tormentosa": "Stormsurge",
+  "Penetración mágica y velocidad; tras mucho daño cae una tormenta. Para magos.": "Magic penetration and speed; after lots of damage a storm strikes. For mages.",
+  "Rompeavances": "Stridebreaker",
+  "Al activarlo ralentiza y daña alrededor; velocidad al pelear. Para luchadores.": "Activate to slow and damage nearby enemies; speed when fighting. For fighters.",
+  "Terminus": "Terminus",
+  "Atraviesa armadura y resistencia mágica con tus ataques. Contra tanques.": "Your attacks pierce armor and magic resistance. Against tanks.",
+  "Hidra Titánica": "Titanic Hydra",
+  "Tus ataques dañan en área según tu vida. Para luchadores y tanques.": "Your attacks deal area damage based on your health. For fighters and tanks.",
+  "Tiara Susurrante": "Whispering Circlet",
+  "Potencia curas y escudos y da maná. Para soportes.": "Strengthens heals and shields and gives mana. For supports.",
+  "Umbral del Invierno": "Winter's Approach",
+  "Mucha vida y maná; ganas vida al gastar maná. Para magos y tanques.": "Lots of health and mana; you gain health when you spend mana. For mages and tanks.",
+  "Grebas del Berserker": "Berserker's Greaves",
+  "Velocidad de ataque y de movimiento. Las mejores botas para tiradores.": "Attack speed and movement speed. The best boots for marksmen.",
+  "Grebas de Armacero": "Gunmetal Greaves",
+  "Velocidad de ataque, robo de vida y movimiento. Para luchadores de daño físico.": "Attack speed, life steal and movement speed. For physical-damage fighters.",
+  "Trituradoras Aceradas": "Chainlaced Crushers",
+  "Resistencia mágica y movimiento. Contra daño mágico.": "Magic resistance and movement speed. Against magic damage.",
+  "Blindadas de Avance": "Armored Advance",
+  "Armadura y movimiento. Contra daño físico.": "Armor and movement speed. Against physical damage.",
+  "Botas de Lucidez Carmesí": "Crimson Lucidity",
+  "Reducción de enfriamientos y movimiento. Para soportes y magos.": "Cooldown reduction and movement speed. For supports and mages.",
+  "Zapatos de Lanzahechizos": "Spellslinger's Shoes",
+  "Penetración mágica y movimiento. Para magos.": "Magic penetration and movement speed. For mages.",
+  "Grebas Glotonas": "Gluttonous Greaves",
+  "Botas de combate usadas por luchadores, asesinos y algunos tiradores.": "Combat boots used by fighters, assassins and some marksmen.",
+  "Boots of Mana": "Boots of Mana",
+  "Botas con maná y movimiento. Las más usadas por los magos.": "Boots with mana and movement speed. The most used by mages.",
+  "Boots of Dynamism": "Boots of Dynamism",
+  "Botas de movilidad para asesinos y tiradores de habilidades.": "Mobility boots for assassins and ability-based marksmen."
  },
  "timers": [
   {
@@ -2691,255 +3436,339 @@
  "overrides": {
   "Jinx": {
    "core": [
-    "Filo del Infinito",
-    "Huracán de Runaan",
-    "Daga de Statikk",
-    "Cañón de Fuego Rápido"
+    "El Coleccionista",
+    "Filo de la Tormenta",
+    "Recuerdos de Lord Dominik",
+    "Huracán de Runaan"
    ],
-   "ks": "Presa de la Flota"
+   "win": "La Sanguinaria",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Caitlyn": {
    "core": [
-    "Filo del Infinito",
-    "Flechas Salvajes de Yun Tal",
-    "Cañón de Fuego Rápido",
-    "El Coleccionista"
+    "Filo de la Tormenta",
+    "Hexóptica C44",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Presa de la Flota"
+   "win": "La Sanguinaria",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Ashe": {
    "core": [
-    "Filo del Infinito",
-    "Cañón de Fuego Rápido",
-    "Daga de Statikk",
-    "El Coleccionista"
+    "Matakrakens",
+    "Filo de la Tormenta",
+    "Recuerdos de Lord Dominik",
+    "Hexóptica C44"
    ],
-   "ks": "Presa de la Flota"
+   "win": "Filo del Infinito",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Miss Fortune": {
    "core": [
-    "Fuerza de la Trinidad",
+    "Hoja Crepuscular de Draktharr",
     "El Coleccionista",
-    "Filo del Infinito",
-    "Huracán de Runaan"
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Electrocutar"
+   "win": "Filo de la Tormenta",
+   "boots": "Boots of Dynamism",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Vayne": {
    "core": [
-    "Espada del Rey Arruinado",
-    "Huracán de Runaan",
-    "Filo del Infinito",
-    "Daga de Statikk"
+    "Matakrakens",
+    "Espadafuria de Guinsoo",
+    "Terminus",
+    "Espada del Rey Arruinado"
    ],
-   "ks": "Presa de la Flota"
+   "win": "Twinguard de Amaranth",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Draven": {
    "core": [
-    "El Coleccionista",
-    "Filo del Infinito",
-    "Daga de Statikk",
-    "Cañón de Fuego Rápido"
+    "La Sanguinaria",
+    "Hexóptica C44",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Electrocutar"
+   "win": "Filo de la Tormenta",
+   "boots": "Grebas del Berserker",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Lucian": {
    "core": [
-    "Fuerza de la Trinidad",
-    "El Coleccionista",
-    "Filo del Infinito",
-    "Lanza de Shojin"
+    "Saqueador de Esencias",
+    "Filo de la Tormenta",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Presa de la Flota"
+   "win": "La Sanguinaria",
+   "boots": "Grebas Glotonas",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Jhin": {
    "core": [
     "El Coleccionista",
-    "Cañón de Fuego Rápido",
-    "Filo del Infinito",
-    "Huracán de Runaan"
+    "Filo de la Tormenta",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Electrocutar"
+   "win": "La Sanguinaria",
+   "boots": "Boots of Dynamism",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Tristana": {
    "core": [
-    "Cañón de Fuego Rápido",
+    "Flechas Salvajes de Yun Tal",
     "Filo del Infinito",
-    "Huracán de Runaan",
-    "El Coleccionista"
+    "Recuerdos de Lord Dominik",
+    "Hexóptica C44"
    ],
-   "ks": "Presa de la Flota"
+   "win": "La Sanguinaria",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Twitch": {
    "core": [
+    "El Coleccionista",
     "Huracán de Runaan",
-    "Filo del Infinito",
-    "Daga de Statikk",
-    "Espada del Rey Arruinado"
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Presa de la Flota"
+   "win": "Espada del Rey Arruinado",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Yasuo": {
    "core": [
-    "Daga de Statikk",
-    "Filo del Infinito",
-    "Danza de la Muerte",
-    "Guantelete de Sterak"
+    "Espada del Rey Arruinado",
+    "Arcoescudo Inmortal",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Presa de la Flota"
+   "win": "Ángel Guardián",
+   "boots": "Grebas del Berserker",
+   "ks": "Presa de la Flota",
+   "fixed": 3
   },
   "Yone": {
    "core": [
-    "Filo del Infinito",
-    "Daga de Statikk",
-    "Danza de la Muerte",
-    "Guantelete de Sterak"
+    "Espada del Rey Arruinado",
+    "Arcoescudo Inmortal",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
    ],
-   "ks": "Conquistador"
+   "win": "Ángel Guardián",
+   "boots": "Grebas del Berserker",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Tryndamere": {
    "core": [
+    "Espada del Rey Arruinado",
+    "Filo de la Tormenta",
     "Filo del Infinito",
-    "Danza de la Muerte",
-    "Guantelete de Sterak",
-    "Espada del Rey Arruinado"
+    "Recuerdos de Lord Dominik"
    ],
-   "ks": "Conquistador"
+   "win": "Ángel Guardián",
+   "boots": "Grebas del Berserker",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Fiora": {
    "core": [
     "Fuerza de la Trinidad",
-    "Espada del Rey Arruinado",
-    "Danza de la Muerte",
-    "Guantelete de Sterak"
+    "Eclipse",
+    "Rompecascos",
+    "Danza de la Muerte"
    ],
-   "ks": "Conquistador"
+   "win": "Ángel Guardián",
+   "boots": "Punteras de Acero Revestidas",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Jax": {
    "core": [
-    "Fuerza de la Trinidad",
-    "Danza de la Muerte",
-    "Guantelete de Sterak",
-    "Cota de Espinas"
+    "Ocaso y Alba",
+    "Espada del Rey Arruinado",
+    "Rompecascos",
+    "Reloj de Arena de Zhonya"
    ],
-   "ks": "Conquistador"
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Irelia": {
    "core": [
+    "Espada del Rey Arruinado",
+    "Rompecascos",
     "Fuerza de la Trinidad",
-    "Danza de la Muerte",
-    "Guantelete de Sterak",
-    "Espada del Rey Arruinado"
+    "Danza de la Muerte"
    ],
-   "ks": "Conquistador"
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Master Yi": {
    "core": [
+    "Matakrakens",
+    "Espadafuria de Guinsoo",
     "Espada del Rey Arruinado",
-    "Huracán de Runaan",
-    "Filo del Infinito",
-    "Danza de la Muerte"
+    "Terminus"
    ],
-   "ks": "Conquistador"
+   "win": "Danza de la Muerte",
+   "boots": "Grebas del Berserker",
+   "ks": "Conquistador",
+   "fixed": 3
   },
   "Zed": {
    "core": [
-    "Espada Fantasma de Youmuu",
-    "El Coleccionista",
-    "Cuchilla Oscura",
-    "Guantelete de Sterak"
+    "Eclipse",
+    "Fuerza de la Trinidad",
+    "Rencor de Serylda",
+    "Lanza de Shojin"
    ],
-   "ks": "Electrocutar"
+   "win": "Ángel Guardián",
+   "boots": "Botas Jonias de la Lucidez",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Kha'Zix": {
    "core": [
-    "El Coleccionista",
     "Espada Fantasma de Youmuu",
-    "Filo del Infinito",
-    "Fuerza de la Trinidad"
+    "Colmillo de Serpiente",
+    "Rencor de Serylda",
+    "Eclipse"
    ],
-   "ks": "Electrocutar"
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Talon": {
    "core": [
     "Espada Fantasma de Youmuu",
-    "El Coleccionista",
-    "Cuchilla Oscura",
+    "Colmillo de Serpiente",
+    "Rencor de Serylda",
     "Fuerza de la Trinidad"
    ],
-   "ks": "Electrocutar"
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Rengar": {
    "core": [
-    "Espada Fantasma de Youmuu",
+    "Saqueador de Esencias",
     "El Coleccionista",
-    "Cuchilla Oscura",
-    "Guantelete de Sterak"
+    "Filo del Infinito",
+    "Recuerdos de Lord Dominik"
    ],
-   "ks": "Electrocutar"
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Akali": {
    "core": [
-    "Lumbría",
+    "Descarga Tormentosa",
+    "Infinity Orb",
     "Sombrero Mortífero de Rabadon",
-    "Reloj de Arena de Zhonya",
-    "Velo de la Banshee"
+    "Báculo del Vacío"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Katarina": {
    "core": [
-    "Lumbría",
+    "Infinity Orb",
+    "Descarga Tormentosa",
     "Sombrero Mortífero de Rabadon",
-    "Reloj de Arena de Zhonya",
     "Báculo del Vacío"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Fizz": {
    "core": [
-    "Lumbría",
+    "Maldición del Liche",
     "Sombrero Mortífero de Rabadon",
-    "Reloj de Arena de Zhonya",
-    "Báculo del Vacío"
+    "Báculo del Vacío",
+    "Infinity Orb"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Veigar": {
    "core": [
+    "Descarga Tormentosa",
     "Sombrero Mortífero de Rabadon",
-    "Lumbría",
-    "Reloj de Arena de Zhonya",
-    "Báculo del Vacío"
+    "Enfoque al Horizonte",
+    "Criptorretoño"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Ahri": {
    "core": [
-    "Lumbría",
+    "Eco de Luden",
+    "Maldición del Liche",
     "Sombrero Mortífero de Rabadon",
-    "Reloj de Arena de Zhonya",
-    "Báculo del Vacío"
+    "Infinity Orb"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Brand": {
    "core": [
+    "Antorcha de Fuegoscuro",
     "El Tormento de Liandry",
     "Sombrero Mortífero de Rabadon",
-    "Lumbría",
-    "Reloj de Arena de Zhonya"
+    "Báculo del Vacío"
    ],
-   "ks": "Electrocutar"
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Ryze": {
    "core": [
-    "El Tormento de Liandry",
     "Abrazo del Serafín",
+    "Vara de las Edades",
     "Sombrero Mortífero de Rabadon",
-    "Reloj de Arena de Zhonya"
+    "Infinity Orb"
    ],
-   "ks": "Electrocutar"
+   "win": "Báculo del Vacío",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   },
   "Dr. Mundo": {
    "core": [
@@ -2948,7 +3777,582 @@
     "Desesperación Eterna",
     "Twinguard de Amaranth"
    ],
-   "ks": "Agarre de los No Muertos"
+   "win": "Fuerza de la Naturaleza",
+   "boots": "Punteras de Acero Revestidas",
+   "ks": "Agarre de los No Muertos",
+   "fixed": 3
+  },
+  "Gwen": {
+   "core": [
+    "Ocaso y Alba",
+    "Diente de Nashor",
+    "Sombrero Mortífero de Rabadon",
+    "Infinity Orb"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Samira": {
+   "core": [
+    "El Coleccionista",
+    "Filo del Infinito",
+    "Recuerdos de Lord Dominik",
+    "La Sanguinaria"
+   ],
+   "win": "Arcoescudo Inmortal",
+   "boots": "Grebas Glotonas",
+   "fixed": 3
+  },
+  "Xayah": {
+   "core": [
+    "Flechas Salvajes de Yun Tal",
+    "Filo de la Tormenta",
+    "Recuerdos de Lord Dominik",
+    "Filo del Infinito"
+   ],
+   "win": "La Sanguinaria",
+   "boots": "Grebas del Berserker",
+   "fixed": 3
+  },
+  "Ezreal": {
+   "core": [
+    "Muramaná",
+    "Fuerza de la Trinidad",
+    "Rencor de Serylda",
+    "Lanza de Shojin"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "fixed": 3
+  },
+  "Kog'Maw": {
+   "core": [
+    "Espadafuria de Guinsoo",
+    "Cuchillas Raudas de Navori",
+    "Espada del Rey Arruinado",
+    "Terminus"
+   ],
+   "win": "Huracán de Runaan",
+   "boots": "Grebas del Berserker",
+   "fixed": 3
+  },
+  "Varus": {
+   "core": [
+    "Espada del Rey Arruinado",
+    "Espadafuria de Guinsoo",
+    "Terminus",
+    "Huracán de Runaan"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Grebas del Berserker",
+   "fixed": 3
+  },
+  "Smolder": {
+   "core": [
+    "Muramaná",
+    "Fuerza de la Trinidad",
+    "Rencor de Serylda",
+    "Lanza de Shojin"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "fixed": 3
+  },
+  "Kai'Sa": {
+   "core": [
+    "Matakrakens",
+    "Espadafuria de Guinsoo",
+    "Terminus",
+    "Huracán de Runaan"
+   ],
+   "win": "Espada del Rey Arruinado",
+   "boots": "Grebas del Berserker",
+   "fixed": 3
+  },
+  "Shen": {
+   "core": [
+    "Corazón de Acero",
+    "Égida de Fuego Solar",
+    "Cota de Espinas",
+    "Desesperación Eterna"
+   ],
+   "win": "Dawnshroud",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Malphite": {
+   "core": [
+    "Guantelete del Hijo del Hielo",
+    "Cota de Espinas",
+    "Corazón de Hielo",
+    "Fuerza de la Naturaleza"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Mordekaiser": {
+   "core": [
+    "El Tormento de Liandry",
+    "Agrietador",
+    "Cinturón Cohete Hextech",
+    "Maldición de la Vampiresa"
+   ],
+   "win": "Sombrero Mortífero de Rabadon",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Ambessa": {
+   "core": [
+    "Eclipse",
+    "Danza de la Muerte",
+    "Rencor de Serylda",
+    "Lanza de Shojin"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "K'Sante": {
+   "core": [
+    "Guantelete del Hijo del Hielo",
+    "Desesperación Eterna",
+    "Cota de Espinas",
+    "Twinguard de Amaranth"
+   ],
+   "win": "Armadura Pétrea",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Poppy": {
+   "core": [
+    "Corazón de Acero",
+    "Égida de Fuego Solar",
+    "Cota de Espinas",
+    "Fuerza de la Naturaleza"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Ornn": {
+   "core": [
+    "Corazón de Acero",
+    "Égida de Fuego Solar",
+    "Cota de Espinas",
+    "Desesperación Eterna"
+   ],
+   "win": "Rukerno Kaénico",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Cho'Gath": {
+   "core": [
+    "Corazón de Acero",
+    "Égida de Fuego Solar",
+    "Cota de Espinas",
+    "Desesperación Eterna"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Riven": {
+   "core": [
+    "Eclipse",
+    "Cielo Desgarrado",
+    "Danza de la Muerte",
+    "Rencor de Serylda"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Darius": {
+   "core": [
+    "Rompeavances",
+    "Guantelete de Sterak",
+    "Twinguard de Amaranth",
+    "Fuerza de la Naturaleza"
+   ],
+   "win": "Presagio de Randuin",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Rammus": {
+   "core": [
+    "Cota de Espinas",
+    "Guantelete del Hijo del Hielo",
+    "Twinguard de Amaranth",
+    "Dawnshroud"
+   ],
+   "win": "Presagio de Randuin",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Nocturne": {
+   "core": [
+    "Hoja Crepuscular de Draktharr",
+    "Colmillo de Serpiente",
+    "Rencor de Serylda",
+    "Eclipse"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Boots of Dynamism",
+   "fixed": 3
+  },
+  "Skarner": {
+   "core": [
+    "Desesperación Eterna",
+    "Armadura de Warmog",
+    "Twinguard de Amaranth",
+    "Cota de Espinas"
+   ],
+   "win": "Corazón de Hielo",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Lillia": {
+   "core": [
+    "El Tormento de Liandry",
+    "Agrietador",
+    "Sombrero Mortífero de Rabadon",
+    "Maldición de la Vampiresa"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Hecarim": {
+   "core": [
+    "Muramaná",
+    "Cuchilla Oscura",
+    "Danza de la Muerte",
+    "Lanza de Shojin"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Ekko": {
+   "core": [
+    "Ocaso y Alba",
+    "Diente de Nashor",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Infinity Orb",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Nidalee": {
+   "core": [
+    "Maldición del Liche",
+    "Infinity Orb",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Jarvan IV": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "Virtud Radiante",
+    "Fuerza de la Naturaleza",
+    "Corazón de Hielo"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Amumu": {
+   "core": [
+    "El Tormento de Liandry",
+    "Égida de Fuego Solar",
+    "Máscara Abisal",
+    "Twinguard de Amaranth"
+   ],
+   "win": "Cota de Espinas",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Lee Sin": {
+   "core": [
+    "Espada Fantasma de Youmuu",
+    "Fuerza de la Trinidad",
+    "Rencor de Serylda",
+    "Colmillo de Serpiente"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Grebas Glotonas",
+   "fixed": 3
+  },
+  "Lissandra": {
+   "core": [
+    "Maldad",
+    "Criptorretoño",
+    "Sombrero Mortífero de Rabadon",
+    "Infinity Orb"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Hwei": {
+   "core": [
+    "Antorcha de Fuegoscuro",
+    "Infinity Orb",
+    "El Tormento de Liandry",
+    "Criptorretoño"
+   ],
+   "win": "Sombrero Mortífero de Rabadon",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Syndra": {
+   "core": [
+    "Descarga Tormentosa",
+    "Infinity Orb",
+    "Sombrero Mortífero de Rabadon",
+    "Criptorretoño"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Annie": {
+   "core": [
+    "Maldad",
+    "Cinturón Cohete Hextech",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Infinity Orb",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Galio": {
+   "core": [
+    "Resplandor Vacío",
+    "Cota de Espinas",
+    "Desesperación Eterna",
+    "Agrietador"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Botas de Mercurio",
+   "fixed": 3
+  },
+  "Taliyah": {
+   "core": [
+    "Eco de Luden",
+    "Infinity Orb",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Aurelion Sol": {
+   "core": [
+    "Cetro de Cristal de Rylai",
+    "El Tormento de Liandry",
+    "Criptorretoño",
+    "Sombrero Mortífero de Rabadon"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Orianna": {
+   "core": [
+    "Abrazo del Serafín",
+    "Antorcha de Fuegoscuro",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Infinity Orb",
+   "boots": "Boots of Mana",
+   "fixed": 3
+  },
+  "Leona": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Armadura de Warmog",
+    "Virtud Radiante",
+    "Dawnshroud"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Rakan": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Mandato Imperial",
+    "Convergencia de Zeke",
+    "Armadura de Warmog"
+   ],
+   "win": "Promesa del Caballero",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Rell": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Armadura de Warmog",
+    "Virtud Radiante",
+    "Cota de Espinas"
+   ],
+   "win": "Twinguard de Amaranth",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Janna": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Diadema Musical",
+    "Harmonic Echo",
+    "Pebetero Ardiente"
+   ],
+   "win": "Staff of Flowing Waters",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Soraka": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Diadema Musical",
+    "Pebetero Ardiente",
+    "Harmonic Echo"
+   ],
+   "win": "Redención",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Sona": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Diadema Musical",
+    "Ecos de Helia",
+    "Harmonic Echo"
+   ],
+   "win": "Pebetero Ardiente",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Braum": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Promesa del Caballero",
+    "Armadura de Warmog",
+    "Virtud Radiante"
+   ],
+   "win": "Mantle of the Twelfth Hour",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Nami": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Diadema Musical",
+    "Ecos de Helia",
+    "Pebetero Ardiente"
+   ],
+   "win": "Harmonic Echo",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Thresh": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Armadura de Warmog",
+    "Fuerza de la Naturaleza",
+    "Cota de Espinas"
+   ],
+   "win": "Corazón de Hielo",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Zilean": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Ecos de Helia",
+    "Pebetero Ardiente",
+    "Harmonic Echo"
+   ],
+   "win": "Promesa del Caballero",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Lulu": {
+   "core": [
+    "Guadaña de Niebla Oscura",
+    "Pebetero Ardiente",
+    "Harmonic Echo",
+    "Redención"
+   ],
+   "win": "Promesa del Caballero",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Milio": {
+   "core": [
+    "Baluarte de la Montaña",
+    "Pebetero Ardiente",
+    "Harmonic Echo",
+    "Redención"
+   ],
+   "win": "Promesa del Caballero",
+   "boots": "Botas Jonias de la Lucidez",
+   "fixed": 3
+  },
+  "Camille": {
+   "core": [
+    "Fuerza de la Trinidad",
+    "Rompecascos",
+    "Eclipse",
+    "Danza de la Muerte"
+   ],
+   "win": "Lanza de Shojin",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Aatrox": {
+   "core": [
+    "Eclipse",
+    "Danza de la Muerte",
+    "Rencor de Serylda",
+    "Lanza de Shojin"
+   ],
+   "win": "Ángel Guardián",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Sett": {
+   "core": [
+    "Corazón de Acero",
+    "Cota Sangrienta del Soberano",
+    "Rompeavances",
+    "Cuchilla Oscura"
+   ],
+   "win": "Lanza de Shojin",
+   "boots": "Punteras de Acero Revestidas",
+   "fixed": 3
+  },
+  "Teemo": {
+   "core": [
+    "El Tormento de Liandry",
+    "Diente de Nashor",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Descarga Tormentosa",
+   "boots": "Boots of Mana",
+   "fixed": 3
   }
  },
  "traits": {

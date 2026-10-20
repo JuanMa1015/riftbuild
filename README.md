@@ -104,7 +104,7 @@ scripts/              update-data.mjs, check-i18n.mjs
 
 - **No detecta tu partida.** Wild Rift no tiene API pública y Riot restringe leer el juego o la pantalla, así que la app es de entrada manual.
 - El motor local adapta los ítems a lo que traen los rivales (curación, escudos, tanques, daño mágico o físico, control, daño explosivo). Esas etiquetas de campeones son un primer lote hecho a mano y pueden tener errores. No sustituye tu criterio.
-- La referencia de meta (tier list del parche) viene de wildriftfire.com y se actualiza a mano; los ítems, de la wiki oficial de Wild Rift y de Data Dragon.
+- La meta (tier list y las builds de 81 campeones) se tomó a mano de wildriftfire.com para el parche 7.3b y puede quedar desactualizada tras un parche; la lista de ítems viene de la wiki oficial de Wild Rift y los nombres e íconos, de Data Dragon.
 - Algunas runas exclusivas de Wild Rift no tienen ícono en Data Dragon y se muestran con un "?".
 - La burbuja solo muestra texto y no se probó en todos los fabricantes de Android.
 
