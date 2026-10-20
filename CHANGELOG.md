@@ -5,6 +5,13 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.9] - 2026-10-20
+
+### Cambiado
+- Versión web y pantallas anchas: los tres pasos quedan siempre a la vista y numerados (1 Tu campeón, 2 Rivales y aliados, 3 Tu build), con una marca ✓ cuando un paso está listo. En pantallas de 1280 px o más son tres columnas, cada una con su propio desplazamiento; en tablets, el paso 1 y 2 a la izquierda y la build a la derecha. La cabecera se alinea con el contenido y el ancho máximo sube a 1500 px. El teléfono y las ventanas pequeñas no cambian.
+- La tarjeta de tu campeón se acomoda en columnas estrechas (los botones bajan a una segunda línea en vez de aplastar el nombre).
+- El mensaje de "aún no hay build" explica los pasos 1 y 2.
+
 ## [0.8.8] - 2026-10-20
 
 ### Añadido

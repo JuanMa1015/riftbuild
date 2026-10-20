@@ -11,7 +11,7 @@ import PickStatus from './PickStatus'
 import { NewMatchButton } from './FlowChrome'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
-export default function StepMe({ onPicked, compact = false }) {
+export default function StepMe({ onPicked, compact = false, hideTitle = false, roomy = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
   const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
@@ -32,18 +32,21 @@ export default function StepMe({ onPicked, compact = false }) {
 
   return (
     <section aria-labelledby="me-title">
-      <div className="flex items-start justify-between gap-2 tiny:hidden">
-        <SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle>
-        {compact && myChamp && <NewMatchButton />}
-      </div>
+      {!hideTitle && (
+        <div className="flex items-start justify-between gap-2 tiny:hidden">
+          <SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle>
+          {compact && myChamp && <NewMatchButton />}
+        </div>
+      )}
 
       {myChamp && (
-        <div className="mb-4 tiny:mb-2 flex items-center gap-3 rounded-2xl border border-line bg-felt-2 p-3 tiny:p-2">
+        <div className="mb-4 tiny:mb-2 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-line bg-felt-2 p-3 tiny:p-2">
           <Token name={myChamp.n} side="me" lane={ROLE_LANE[myRole]} size={56} />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 basis-28">
             <p className="truncate text-lg font-semibold leading-tight">{tr(myChamp.n)}</p>
             <p className="text-sm text-chalk-dim">{t('role.' + myRole)}</p>
           </div>
+          <div className="ml-auto flex items-center gap-3">
           {compact && !changing && (
             <button type="button" onClick={() => setChanging(true)} className="h-11 rounded-xl border border-line px-4 text-sm font-semibold">{t('change')}</button>
           )}
@@ -51,6 +54,7 @@ export default function StepMe({ onPicked, compact = false }) {
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim"><Star size={18} className={inPool ? 'fill-current text-marker' : ''} /></button>
           <button type="button" onClick={clearPick} aria-label={t('clearPick')} title={t('clearPick')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim hover:text-chalk"><X size={18} /></button>
+          </div>
         </div>
       )}
 
@@ -73,7 +77,7 @@ export default function StepMe({ onPicked, compact = false }) {
         </div>
       )}
 
-      {(!compact || !myChamp || changing) && <Suggestions onPick={c => pick(c, { keepRole: true })} />}
+      {(!compact || !myChamp || changing || roomy) && <Suggestions onPick={c => pick(c, { keepRole: true })} />}
 
       {(!compact || !myChamp || changing) && <ChampSearch
         placeholder={t('meSearch')}

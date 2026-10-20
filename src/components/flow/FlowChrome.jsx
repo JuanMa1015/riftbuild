@@ -20,7 +20,7 @@ export function TopBar() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
   return (
-    <header className="pt-safe flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2 tiny:hidden">
+    <header className="pt-safe mx-auto flex w-full max-w-[1500px] flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2 md:px-6 tiny:hidden">
       <span className="flex items-center gap-2 text-marker"><Mark /><span className="text-lg font-bold tracking-tight text-chalk">{t('appName')}</span></span>
       <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-chalk-dim short:hidden whitespace-nowrap"><span className="max-[400px]:hidden">{t('patch')} </span>{GAME.patch}</span>
       <span className="ml-auto flex items-center gap-1">
@@ -29,6 +29,19 @@ export function TopBar() {
           className="flex h-11 w-11 items-center justify-center rounded-full text-chalk-dim hover:bg-felt-2 hover:text-chalk"><Settings size={22} /></button>
       </span>
     </header>
+  )
+}
+
+// Numbered step title for the wide layouts (the phone has the Stepper instead): the three steps are always visible.
+export function StepHeading({ n, title, done = false, locked = false, action = null }) {
+  return (
+    <div className={`mb-3 flex items-center gap-2 short:hidden ${locked ? 'opacity-50' : ''}`}>
+      <span aria-hidden className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${done ? 'border-2 border-marker text-marker' : 'bg-marker text-marker-ink'}`}>
+        {done ? <Check size={16} /> : n}
+      </span>
+      <h2 className="min-w-0 flex-1 truncate text-lg font-semibold">{title}</h2>
+      {action}
+    </div>
   )
 }
 
