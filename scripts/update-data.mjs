@@ -74,7 +74,7 @@ for (const c of game.champions) {
   const meta = ddByName[norm(game.en[c.n] ?? c.n)] ?? ddByName[norm(c.n)] ?? (c.n === 'Nunu y Willump' ? champs.data.Nunu : null)
   if (meta && await save('champs', `${norm(c.n)}.png`, `${dd}/img/champion/${meta.image.full}`)) got.champs++
 }
-const ddItem = Object.fromEntries(Object.entries(items.data).map(([id, i]) => [norm(i.name), id]))
+const ddItem = Object.fromEntries(Object.entries(items.data).filter(([, i]) => i.maps?.['11'] !== false).map(([id, i]) => [norm(i.name), id]))   // skip Arena-only duplicates
 for (const [es_, it] of Object.entries(game.items)) {
   const id = ddItem[norm(game.en[es_] ?? es_)]
   if (id && await save('items', `${it.en}.png`, `${dd}/img/item/${id}.png`)) got.items++

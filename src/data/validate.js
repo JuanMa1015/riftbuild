@@ -30,6 +30,22 @@ export function isValidGame(g) {
         if (o.ks !== undefined && !keystones.has(o.ks)) return false
       }
     }
+    // optional item tags (what it answers / who can use it) and champion traits: only the known vocabulary
+    const ANS = new Set(['heal', 'shield', 'hp', 'ap', 'ad', 'cc', 'burst']), FIT = new Set(['ad', 'ap', 'tank', 'sup'])
+    for (const i of Object.values(g.items)) {
+      if (i.ans !== undefined && !(Array.isArray(i.ans) && i.ans.every(x => ANS.has(x)))) return false
+      if (i.fit !== undefined && !(Array.isArray(i.fit) && i.fit.every(x => FIT.has(x)))) return false
+    }
+    if (g.traits !== undefined) {
+      if (!isObj(g.traits)) return false
+      const names = new Set(g.champions.map(c => c.n))
+      for (const [n, tags] of Object.entries(g.traits)) if (!names.has(n) || !Array.isArray(tags) || !tags.every(x => ANS.has(x))) return false
+    }
+    if (g.tiers !== undefined) {
+      if (!isObj(g.tiers) || !isObj(g.tiers.lanes)) return false
+      const names = new Set(g.champions.map(c => c.n))
+      for (const lane of Object.values(g.tiers.lanes)) for (const list of Object.values(lane)) if (!Array.isArray(list) || !list.every(n => names.has(n))) return false
+    }
     if (g.timers !== undefined && !(Array.isArray(g.timers) && g.timers.every(t => isObj(t) && str(t.id) && str(t.es) && str(t.en) && Number.isFinite(t.secs) && t.secs >= 10 && t.secs <= 900))) return false
     return true
   } catch { return false }

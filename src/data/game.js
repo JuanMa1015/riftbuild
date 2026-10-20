@@ -8,6 +8,8 @@ export const GAME = { version: '', patch: '', en: {}, timers: [] }
 export const CHAMPIONS = []
 export const ITEMS = {}
 export const BUILDS = {}
+export const TRAITS = {}      // what a rival champion brings: heal | shield | hp | cc | burst (class adds hp / burst)
+export const TIERS = {}       // meta reference per lane for the current patch (S+ / S)
 export const OVERRIDES = {}   // per-champion tweaks on top of the class template (core items, boots, keystone)
 
 export function applyGame(g) {
@@ -16,7 +18,7 @@ export function applyGame(g) {
   GAME.en = g.en || {}
   GAME.timers = g.timers || []
   CHAMPIONS.splice(0, CHAMPIONS.length, ...g.champions)
-  for (const [target, src] of [[ITEMS, g.items], [BUILDS, g.builds], [OVERRIDES, g.overrides || {}]]) {
+  for (const [target, src] of [[ITEMS, g.items], [BUILDS, g.builds], [OVERRIDES, g.overrides || {}], [TRAITS, g.traits || {}], [TIERS, g.tiers || {}]]) {
     for (const k of Object.keys(target)) delete target[k]
     Object.assign(target, src)
   }

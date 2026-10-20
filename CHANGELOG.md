@@ -5,6 +5,20 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.9.0] - 2026-10-20
+
+### Añadido
+- **Builds situacionales:** los 2 primeros ítems de cada build (el sello del campeón) no cambian, y hasta 3 más se eligen según lo que traen los rivales: curación (Heridas Graves), escudos (rompe-escudos), tanques (penetración de armadura), mucho daño mágico o físico (resistencias), control y daño explosivo. Cada ítem dice contra quién y por qué ("Contra Dr. Mundo, Darius: las Heridas Graves recortan su curación") y lleva la marca **Situacional**. Nunca dos ítems para el mismo problema, y solo los que le sirven a ese tipo de campeón.
+- **16 ítems nuevos** con ícono: Recordatorio Mortal, Morellonomicón, Colmillo de Serpiente, Recuerdos de Lord Dominik, Rencor de Serylda, Fuerza de la Naturaleza, Máscara Abisal, Rukerno Kaénico, Presagio de Randuin, Placa del Hombre Muerto, Corazón de Hielo, Ángel Guardián, Égida de Fuego Solar, Filo de la Noche, Corazón de Acero y Desesperación Eterna.
+- **Etiquetas de campeones** (curación, escudos, vida alta, control, daño explosivo) para 95 campeones; la clase aporta "tanque" y "asesino". Primer lote hecho a mano: puede tener errores.
+- **Tier list del parche 7.3b** (referencia: wildriftfire.com) como pequeño empujón en las sugerencias de campeón: "Está entre lo mejor del parche en este carril".
+- Build propia para Dr. Mundo (Corazón de Acero, Cota de Espinas, Desesperación Eterna, Twinguard).
+- La IA recibe los rasgos de los rivales y solo los ítems que le sirven al campeón, y justifica cada ítem nombrando a los rivales.
+
+### Cambiado
+- Los supports ya no cuentan como amenaza de daño AP o AD al decidir resistencias y botas.
+- El aviso "Escudos enemigos" aparece entre las amenazas.
+
 ## [0.8.9] - 2026-10-20
 
 ### Cambiado

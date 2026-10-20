@@ -1,5 +1,5 @@
 import { AI_PROVIDERS } from '../store'
-import { buildLocalBuild, ITEMS } from '../data/builds'
+import { buildLocalBuild, ITEMS, groupsOf, rivalTags } from '../data/builds'
 import { GAME } from '../data/game'
 import { CHAMPIONS } from '../data/champions'
 import { makeTr } from '../i18n'
@@ -18,15 +18,23 @@ export function localBuild({ myChamp, myRole, allies, enemies, hints, lang = 'es
 // The model only chooses from OUR item list, so every item has a name, an icon and a translation.
 // Runes, spells and skill order stay from the local engine. Short output = cheap calls.
 const BOOTS = Object.keys(ITEMS).filter(k => ITEMS[k].t === 'Botas')
-const GEAR  = Object.keys(ITEMS).filter(k => ITEMS[k].t !== 'Botas')
+const ANS_LBL = { heal: 'curación', shield: 'escudos', hp: 'tanques/armadura', ap: 'daño mágico', ad: 'daño físico', cc: 'control', burst: 'daño explosivo' }
+// only items this kind of champion can use, so the model does not hand an assassin a tank item
+const gearFor = groups => Object.keys(ITEMS).filter(k => ITEMS[k].t !== 'Botas' && (ITEMS[k].fit || []).some(g => groups.has(g)))
 
-function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base }) {
+const traitLine = enemies => enemies.map(e => `${e.name}: ${[...rivalTags(e.name, CHAMPIONS.find(c => c.n === e.name))].map(t => ANS_LBL[t]).join('/') || 'sin rasgo especial'}`).join('; ') || 'ninguno'
+const answers = gear => gear.filter(k => ITEMS[k].ans?.length).map(k => `${k} → ${ITEMS[k].ans.map(t => ANS_LBL[t]).join('/')}`).join('; ')
+
+function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base, gear }) {
   const hp = Object.keys(HINT_LBL).filter(k => hints[k]).map(k => HINT_LBL[k]).join(', ')
   const list = a => a.map(x => `${x.lane}:${x.name}`).join(', ') || 'ninguno'
   const out = lang === 'en' ? 'inglés' : 'español latinoamericano'
   return `Wild Rift, parche ${GAME.patch}. Mejora la build de ${myChamp} (${myRole}) contra estos rivales: ${list(enemies)}${hp ? ` (${hp})` : ''}. Aliados: ${list(allies)}.
 Build base del motor: ${base.items.join(', ')} | botas ${base.boots}.
-Elige 5 ítems distintos (el sexto espacio son las botas) SOLO de esta lista, en orden de compra: ${GEAR.join(' | ')}.
+Rasgos de los rivales (lo que traen): ${traitLine(enemies)}.
+Elige 5 ítems distintos (el sexto espacio son las botas) SOLO de esta lista, en orden de compra: ${gear.join(' | ')}.
+Los 2 primeros ítems de la build base son el núcleo del campeón: consérvalos. Los otros 3 deben responder a lo que traen los rivales (curación → anti-curación, escudos → rompe-escudos, tanques → penetración, mucho daño mágico o físico → resistencias, control → limpieza). Qué responde cada ítem situacional: ${answers(gear)}.
+En "w" nombra a los rivales que justifican cada ítem.
 Botas SOLO de: ${BOOTS.join(' | ')}.
 Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida","coach":{"pick":"máx 22 palabras: ¿conviene ${myChamp} contra esta composición? si no, qué campeón del carril sería mejor","threat":"máx 22 palabras: la mayor amenaza del equipo rival y cómo responderle","lane":"máx 22 palabras: cómo jugar tu carril","watch":"máx 22 palabras: qué vigilar en la partida"}}
 Si aún faltan rivales, razona con lo que hay. Los textos "w", "tip" y "coach" en ${out}. Los nombres de ítems se copian tal cual de la lista.`
@@ -94,13 +102,13 @@ export async function generateBuild({ myChamp, myRole, allies, enemies, hints, l
 
   const cfg = AI_PROVIDERS[provider]
   const m = cfg.models.includes(model) ? model : cfg.models[0]   // a stale saved model falls back to the default
-  const ck = JSON.stringify(['v2', GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
+  const ck = JSON.stringify(['v3', GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
   let ans = readCache()[ck]
   if (!ans) {
     const es = localBuild({ myChamp, myRole, allies, enemies, hints, lang: 'es' }) // canonical names for the prompt
     ans = await ask({
       provider, key, model: m, signal,
-      prompt: makePrompt({ myChamp, myRole, allies, enemies, hints, lang, base: { items: es.build.map(b => b.nombre), boots: es.botas.nombre } }),
+      prompt: makePrompt({ myChamp, myRole, allies, enemies, hints, lang, base: { items: es.build.map(b => b.nombre), boots: es.botas.nombre }, gear: gearFor(groupsOf(CHAMPIONS.find(c => c.n === myChamp), myRole)) }),
     })
     writeCache(ck, ans)
   }

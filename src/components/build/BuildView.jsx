@@ -18,7 +18,7 @@ const TABS = [['items', 'tabItems'], ['runes', 'tabRunes'], ['plan', 'tabPlan']]
 
 // The play: items numbered on a chalk path; tap a row to read why.
 function ItemRow({ item, index, last }) {
-  const { tr } = useT()
+  const { t, tr } = useT()
   const short = useMedia('(max-height: 520px)')   // glance mode in small windows: smaller rows, more items per screen
   const [open, setOpen] = useState(false)
   return (
@@ -31,7 +31,10 @@ function ItemRow({ item, index, last }) {
           <ItemImg en={item.en} alt="" size={short ? 32 : 44} className="rounded-lg" />
           <span className="min-w-0 flex-1">
             <span className="block font-semibold leading-tight">{item.nombre}</span>
-            <span className="short:hidden"><TypeTag>{tr(item.tipo)}</TypeTag></span>
+            <span className="flex flex-wrap items-center gap-1.5 short:hidden">
+              <TypeTag>{tr(item.tipo)}</TypeTag>
+              {item.sit && <span className="rounded-full border border-marker px-2 py-0.5 text-xs font-semibold text-marker">{t('situational')}</span>}
+            </span>
           </span>
           <ChevronDown size={18} className={`shrink-0 text-chalk-dim transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
         </span>

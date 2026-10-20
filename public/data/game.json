@@ -1,5 +1,5 @@
 {
- "version": "2026-10-19T18:49",
+ "version": "2026-10-20T05:13",
  "patch": "7.3b",
  "champions": [
   {
@@ -1205,137 +1205,280 @@
   "Eclipse": {
    "en": "eclipse",
    "t": "Ofensivo",
-   "desc": "Escudo activo tras habilidades. Core para bruisers AD que entran y salen."
+   "desc": "Escudo activo tras habilidades. Core para bruisers AD que entran y salen.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Cuchilla Oscura": {
    "en": "black-cleaver",
    "t": "Ofensivo",
-   "desc": "Reduce armadura del rival con cada golpe. Escala con campeones que atacan seguido."
+   "desc": "Reduce armadura del rival con cada golpe. Escala con campeones que atacan seguido.",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad",
+    "tank"
+   ]
   },
   "Danza de la Muerte": {
    "en": "deaths-dance",
    "t": "Híbrido",
-   "desc": "Convierte parte del daño en sangrado. Matas a alguien y te curas."
+   "desc": "Convierte parte del daño en sangrado. Matas a alguien y te curas.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Guantelete de Sterak": {
    "en": "steraks-gage",
    "t": "Defensivo",
-   "desc": "Escudo enorme cuando estás a punto de morir. Esencial contra asesinos y burst."
+   "desc": "Escudo enorme cuando estás a punto de morir. Esencial contra asesinos y burst.",
+   "ans": [
+    "burst"
+   ],
+   "fit": [
+    "ad",
+    "tank"
+   ]
   },
   "Fauces de Malmortius": {
    "en": "maw-of-malmortius",
    "t": "Defensivo",
-   "desc": "Escudo mágico + RM + AD. Imprescindible contra mucho AP."
+   "desc": "Escudo mágico + RM + AD. Imprescindible contra mucho AP.",
+   "ans": [
+    "ap",
+    "burst"
+   ],
+   "fit": [
+    "ad"
+   ]
   },
   "Sierraespada Quimpunk": {
    "en": "chempunk-chainsword",
    "t": "Ofensivo",
-   "desc": "Aplica Heridas Graves (reduce curación 40%). Contra rivales con mucha sustain."
+   "desc": "Aplica Heridas Graves (reduce curación 40%). Contra rivales con mucha sustain.",
+   "ans": [
+    "heal"
+   ],
+   "fit": [
+    "ad",
+    "tank"
+   ]
   },
   "Cota de Espinas": {
    "en": "thornmail",
    "t": "Defensivo",
-   "desc": "Devuelve daño al atacante y aplica Heridas Graves. Contra carries AD."
+   "desc": "Devuelve daño al atacante y aplica Heridas Graves. Contra carries AD.",
+   "ans": [
+    "ad",
+    "heal"
+   ],
+   "fit": [
+    "tank",
+    "ad"
+   ]
   },
   "Twinguard de Amaranth": {
    "en": "amaranths-twinguard",
    "t": "Defensivo",
-   "desc": "Gana resistencias al estar en combate. Contra equipos mixtos con mucho CC."
+   "desc": "Gana resistencias al estar en combate. Contra equipos mixtos con mucho CC.",
+   "ans": [
+    "cc"
+   ],
+   "fit": [
+    "tank",
+    "ad"
+   ]
   },
   "Lanza de Shojin": {
    "en": "spear-of-shojin",
    "t": "Ofensivo",
-   "desc": "Reduce cooldowns al atacar. Ideal cuando vas ganando y necesitas spam de habilidades."
+   "desc": "Reduce cooldowns al atacar. Ideal cuando vas ganando y necesitas spam de habilidades.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Cimitarra Mercurial": {
    "en": "mercurial-scimitar",
    "t": "Defensivo",
-   "desc": "Limpia cualquier CC activo instantáneamente. Contra supresión o CC decisivo."
+   "desc": "Limpia cualquier CC activo instantáneamente. Contra supresión o CC decisivo.",
+   "ans": [
+    "cc"
+   ],
+   "fit": [
+    "ad"
+   ]
   },
   "Fuerza de la Trinidad": {
    "en": "trinity-force",
    "t": "Híbrido",
-   "desc": "Stats balanceadas + empowered attack tras cada habilidad. Core bruiser Q-AA-Q."
+   "desc": "Stats balanceadas + empowered attack tras cada habilidad. Core bruiser Q-AA-Q.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Cielo Desgarrado": {
    "en": "sundered-sky",
    "t": "Ofensivo",
-   "desc": "Cura al golpear con habilidades en campeones. Sustain para fighters."
+   "desc": "Cura al golpear con habilidades en campeones. Sustain para fighters.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Filo del Infinito": {
    "en": "infinity-edge",
    "t": "Ofensivo",
-   "desc": "El ítem de crítico más poderoso. Amplifica enormemente los golpes críticos."
+   "desc": "El ítem de crítico más poderoso. Amplifica enormemente los golpes críticos.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Huracán de Runaan": {
    "en": "runaans-hurricane",
    "t": "Ofensivo",
-   "desc": "Proyectiles a 2 enemigos cercanos. Limpias oleadas y dañas varios en teamfights."
+   "desc": "Proyectiles a 2 enemigos cercanos. Limpias oleadas y dañas varios en teamfights.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Cañón de Fuego Rápido": {
    "en": "rapid-firecannon",
    "t": "Ofensivo",
-   "desc": "Carga un ataque de largo alcance. Para ADCs que atacan desde la mayor distancia."
+   "desc": "Carga un ataque de largo alcance. Para ADCs que atacan desde la mayor distancia.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "El Coleccionista": {
    "en": "the-collector",
    "t": "Ofensivo",
-   "desc": "Ejecuta al rival con menos del 5% de vida. Para asesinos AD y carries."
+   "desc": "Ejecuta al rival con menos del 5% de vida. Para asesinos AD y carries.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "El Tormento de Liandry": {
    "en": "liandrys-torment",
    "t": "Ofensivo",
-   "desc": "Quema basada en la vida máxima del rival. Core contra campeones con mucha HP."
+   "desc": "Quema basada en la vida máxima del rival. Core contra campeones con mucha HP.",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ap",
+    "tank"
+   ]
   },
   "Sombrero Mortífero de Rabadon": {
    "en": "rabadons-deathcap",
    "t": "Ofensivo",
-   "desc": "Aumenta TODO tu AP en 40%. El ítem de AP más eficiente del juego."
+   "desc": "Aumenta TODO tu AP en 40%. El ítem de AP más eficiente del juego.",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
   },
   "Reloj de Arena de Zhonya": {
    "en": "zhonyas-hourglass",
    "t": "Defensivo",
-   "desc": "Invulnerabilidad de 2.5 segundos. Para magos que hacen engage o vs asesinos AD."
+   "desc": "Invulnerabilidad de 2.5 segundos. Para magos que hacen engage o vs asesinos AD.",
+   "ans": [
+    "burst"
+   ],
+   "fit": [
+    "ap",
+    "sup"
+   ]
   },
   "Velo de la Banshee": {
    "en": "banshees-veil",
    "t": "Defensivo",
-   "desc": "Bloquea el primer hechizo enemigo. Contra magos de rango o CC clave del rival."
+   "desc": "Bloquea el primer hechizo enemigo. Contra magos de rango o CC clave del rival.",
+   "ans": [
+    "ap",
+    "cc"
+   ],
+   "fit": [
+    "ap",
+    "sup",
+    "tank"
+   ]
   },
   "Báculo del Vacío": {
    "en": "void-staff",
    "t": "Ofensivo",
-   "desc": "40% de penetración mágica. Obligatorio cuando los rivales construyen RM."
+   "desc": "40% de penetración mágica. Obligatorio cuando los rivales construyen RM.",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
   },
   "Lumbría": {
    "en": "shadowflame",
    "t": "Ofensivo",
-   "desc": "Penetración mágica fija alta. Devastador contra rivales con poca RM."
+   "desc": "Penetración mágica fija alta. Devastador contra rivales con poca RM.",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
   },
   "Mandato Imperial": {
    "en": "imperial-mandate",
    "t": "Híbrido",
-   "desc": "Tus habilidades marcan al rival para que tus aliados hagan más daño."
+   "desc": "Tus habilidades marcan al rival para que tus aliados hagan más daño.",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
   },
   "Redención": {
    "en": "redemption",
    "t": "Defensivo",
-   "desc": "Sana a aliados cercanos desde lejos. Cambia teamfights críticas."
+   "desc": "Sana a aliados cercanos desde lejos. Cambia teamfights críticas.",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
   },
   "Pebetero Ardiente": {
    "en": "ardent-censer",
    "t": "Híbrido",
-   "desc": "Da velocidad de ataque y daño extra a aliados que proteges."
+   "desc": "Da velocidad de ataque y daño extra a aliados que proteges.",
+   "ans": [],
+   "fit": [
+    "sup"
+   ]
   },
   "Convergencia de Zeke": {
    "en": "zekes-convergence",
    "t": "Híbrido",
-   "desc": "Al usar CC, tú y un aliado se potencian. Excelente con carry AD fuerte."
+   "desc": "Al usar CC, tú y un aliado se potencian. Excelente con carry AD fuerte.",
+   "ans": [],
+   "fit": [
+    "sup",
+    "tank"
+   ]
   },
   "Bendición de Mikael": {
    "en": "mikaels-blessing",
    "t": "Defensivo",
-   "desc": "Limpia el CC de un aliado. Contra CC masivo que bloquea a tu carry."
+   "desc": "Limpia el CC de un aliado. Contra CC masivo que bloquea a tu carry.",
+   "ans": [
+    "cc"
+   ],
+   "fit": [
+    "sup"
+   ]
   },
   "Punteras de Acero Revestidas": {
    "en": "plated-steelcaps",
@@ -1365,42 +1508,262 @@
   "Espada Fantasma de Youmuu": {
    "en": "youmuus-ghostblade",
    "t": "Ofensivo",
-   "desc": "Más velocidad de movimiento y letalidad. Para asesinos que necesitan entrar y salir rápido."
+   "desc": "Más velocidad de movimiento y letalidad. Para asesinos que necesitan entrar y salir rápido.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Relicario de los Solari de Hierro": {
    "en": "locket-of-the-iron-solari",
    "t": "Defensivo",
-   "desc": "Escudo para el equipo cercano al activarlo. Esencial para soportes tanque contra burst."
+   "desc": "Escudo para el equipo cercano al activarlo. Esencial para soportes tanque contra burst.",
+   "ans": [],
+   "fit": [
+    "sup",
+    "tank"
+   ]
   },
   "Armadura de Warmog": {
    "en": "warmogs-armor",
    "t": "Defensivo",
-   "desc": "Mucha vida y regeneración fuera de combate. Para tanques que aguantan peleas largas."
+   "desc": "Mucha vida y regeneración fuera de combate. Para tanques que aguantan peleas largas.",
+   "ans": [],
+   "fit": [
+    "tank"
+   ]
   },
   "Daga de Statikk": {
    "en": "statikk-shiv",
    "t": "Ofensivo",
-   "desc": "Tus ataques encadenan rayos a varios enemigos. Limpia oleadas y daña en grupo."
+   "desc": "Tus ataques encadenan rayos a varios enemigos. Limpia oleadas y daña en grupo.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Flechas Salvajes de Yun Tal": {
    "en": "yun-tal-wildarrows",
    "t": "Ofensivo",
-   "desc": "Ítem de tirador enfocado en críticos y daño sostenido."
+   "desc": "Ítem de tirador enfocado en críticos y daño sostenido.",
+   "fit": [
+    "ad"
+   ],
+   "ans": []
   },
   "Abrazo del Serafín": {
    "en": "seraphs-embrace",
    "t": "Híbrido",
-   "desc": "Escudo basado en maná cuando bajas de vida. Para magos que quieren sobrevivir a un burst."
+   "desc": "Escudo basado en maná cuando bajas de vida. Para magos que quieren sobrevivir a un burst.",
+   "ans": [],
+   "fit": [
+    "ap"
+   ]
   },
   "Espada del Rey Arruinado": {
    "en": "blade-of-the-ruined-king",
    "t": "Ofensivo",
-   "desc": "Daño según la vida actual del rival, más curación. Fuerte contra tanques."
+   "desc": "Daño según la vida actual del rival, más curación. Fuerte contra tanques.",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad"
+   ]
   },
   "Al Filo de la Cordura": {
    "en": "wits-end",
    "t": "Híbrido",
-   "desc": "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP."
+   "desc": "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP.",
+   "ans": [
+    "ap"
+   ],
+   "fit": [
+    "ad",
+    "tank"
+   ]
+  },
+  "Recordatorio Mortal": {
+   "t": "Ofensivo",
+   "desc": "Sus golpes aplican Heridas Graves y atraviesan armadura. Contra rivales que se curan y contra tanques.",
+   "en": "mortal-reminder",
+   "ans": [
+    "heal",
+    "hp"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Morellonomicón": {
+   "t": "Ofensivo",
+   "desc": "Tu daño mágico aplica Heridas Graves. Para magos contra rivales que se curan.",
+   "en": "morellonomicon",
+   "ans": [
+    "heal"
+   ],
+   "fit": [
+    "ap"
+   ]
+  },
+  "Colmillo de Serpiente": {
+   "t": "Ofensivo",
+   "desc": "Tu daño reduce los escudos del rival. Contra equipos que viven de escudos.",
+   "en": "serpents-fang",
+   "ans": [
+    "shield"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Recuerdos de Lord Dominik": {
+   "t": "Ofensivo",
+   "desc": "Atraviesa armadura y pega más fuerte a quien tiene más vida que tú. Contra tanques.",
+   "en": "lord-dominiks-regards",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Rencor de Serylda": {
+   "t": "Ofensivo",
+   "desc": "Atraviesa armadura y ralentiza al golpear. Contra rivales con mucha armadura que se te escapan.",
+   "en": "serylda",
+   "ans": [
+    "hp"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Fuerza de la Naturaleza": {
+   "t": "Defensivo",
+   "desc": "Mucha resistencia mágica y velocidad de movimiento. Contra equipos con mucho daño mágico.",
+   "en": "force-of-nature",
+   "ans": [
+    "ap"
+   ],
+   "fit": [
+    "tank",
+    "ad"
+   ]
+  },
+  "Máscara Abisal": {
+   "t": "Defensivo",
+   "desc": "Resistencia mágica y reduce la de los rivales cercanos. Contra peleas con mucho daño mágico.",
+   "en": "abyssal-mask",
+   "ans": [
+    "ap"
+   ],
+   "fit": [
+    "tank",
+    "sup"
+   ]
+  },
+  "Rukerno Kaénico": {
+   "t": "Defensivo",
+   "desc": "Vida, resistencia mágica y un escudo contra daño mágico. Contra magos que revientan de golpe.",
+   "en": "kaenic-rookern",
+   "ans": [
+    "ap",
+    "burst"
+   ],
+   "fit": [
+    "tank",
+    "ad"
+   ]
+  },
+  "Presagio de Randuin": {
+   "t": "Defensivo",
+   "desc": "Armadura y reduce el daño de los ataques básicos. Contra tiradores y luchadores de golpes básicos.",
+   "en": "randuins-omen",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Placa del Hombre Muerto": {
+   "t": "Defensivo",
+   "desc": "Armadura, vida y velocidad al correr. Contra equipos de daño físico.",
+   "en": "dead-mans-plate",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank",
+    "ad"
+   ]
+  },
+  "Corazón de Hielo": {
+   "t": "Defensivo",
+   "desc": "Mucha armadura y baja la velocidad de ataque de los rivales cercanos. Contra tiradores.",
+   "en": "frozen-heart",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank",
+    "ap"
+   ]
+  },
+  "Ángel Guardián": {
+   "t": "Defensivo",
+   "desc": "Te revive una vez tras morir. Contra equipos con mucho daño explosivo.",
+   "en": "guardian-angel",
+   "ans": [
+    "burst"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Égida de Fuego Solar": {
+   "t": "Defensivo",
+   "desc": "Armadura, vida y quema a los rivales cercanos. Contra equipos de daño físico en peleas largas.",
+   "en": "sunfire-aegis",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Filo de la Noche": {
+   "t": "Defensivo",
+   "desc": "Bloquea el primer hechizo enemigo que te alcanza. Contra picks y control dirigido a ti.",
+   "en": "edge-of-night",
+   "ans": [
+    "cc",
+    "burst"
+   ],
+   "fit": [
+    "ad"
+   ]
+  },
+  "Corazón de Acero": {
+   "t": "Defensivo",
+   "desc": "Vida que crece con el tiempo y un golpe extra al pelear. Núcleo de tanques que aguantan peleas largas.",
+   "en": "heartsteel",
+   "ans": [],
+   "fit": [
+    "tank"
+   ]
+  },
+  "Desesperación Eterna": {
+   "t": "Defensivo",
+   "desc": "Armadura y vida que daña y cura a quien tienes cerca. Para tanques en peleas largas.",
+   "en": "unending-despair",
+   "ans": [
+    "ad"
+   ],
+   "fit": [
+    "tank"
+   ]
   }
  },
  "builds": {
@@ -2257,7 +2620,50 @@
   "Espada del Rey Arruinado": "Blade of the Ruined King",
   "Daño según la vida actual del rival, más curación. Fuerte contra tanques.": "Damage based on the target's current health, plus lifesteal. Strong against tanks.",
   "Al Filo de la Cordura": "Wit's End",
-  "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP.": "Attack speed, magic resist and on-hit magic damage. Against heavy-AP teams."
+  "Velocidad de ataque, resistencia mágica y daño mágico al golpear. Contra equipos con mucho AP.": "Attack speed, magic resist and on-hit magic damage. Against heavy-AP teams.",
+  "Recordatorio Mortal": "Mortal Reminder",
+  "Sus golpes aplican Heridas Graves y atraviesan armadura. Contra rivales que se curan y contra tanques.": "Its hits apply Grievous Wounds and pierce armor. Against healing enemies and tanks.",
+  "Morellonomicón": "Morellonomicon",
+  "Tu daño mágico aplica Heridas Graves. Para magos contra rivales que se curan.": "Your magic damage applies Grievous Wounds. For mages against healing enemies.",
+  "Colmillo de Serpiente": "Serpent's Fang",
+  "Tu daño reduce los escudos del rival. Contra equipos que viven de escudos.": "Your damage reduces the rival's shields. Against teams that live on shields.",
+  "Recuerdos de Lord Dominik": "Lord Dominik's Regards",
+  "Atraviesa armadura y pega más fuerte a quien tiene más vida que tú. Contra tanques.": "Pierces armor and hits harder against targets with more health than you. Against tanks.",
+  "Rencor de Serylda": "Serylda's Grudge",
+  "Atraviesa armadura y ralentiza al golpear. Contra rivales con mucha armadura que se te escapan.": "Pierces armor and slows on hit. Against high-armor enemies that slip away.",
+  "Fuerza de la Naturaleza": "Force of Nature",
+  "Mucha resistencia mágica y velocidad de movimiento. Contra equipos con mucho daño mágico.": "A lot of magic resistance and movement speed. Against teams with lots of magic damage.",
+  "Máscara Abisal": "Abyssal Mask",
+  "Resistencia mágica y reduce la de los rivales cercanos. Contra peleas con mucho daño mágico.": "Magic resistance that also lowers the nearby enemies'. Against fights with lots of magic damage.",
+  "Rukerno Kaénico": "Kaenic Rookern",
+  "Vida, resistencia mágica y un escudo contra daño mágico. Contra magos que revientan de golpe.": "Health, magic resistance and a shield against magic damage. Against mages that burst you down.",
+  "Presagio de Randuin": "Randuin's Omen",
+  "Armadura y reduce el daño de los ataques básicos. Contra tiradores y luchadores de golpes básicos.": "Armor that reduces basic attack damage. Against marksmen and basic-attack fighters.",
+  "Placa del Hombre Muerto": "Dead Man's Plate",
+  "Armadura, vida y velocidad al correr. Contra equipos de daño físico.": "Armor, health and speed while running. Against physical-damage teams.",
+  "Corazón de Hielo": "Frozen Heart",
+  "Mucha armadura y baja la velocidad de ataque de los rivales cercanos. Contra tiradores.": "A lot of armor and lowers the attack speed of nearby enemies. Against marksmen.",
+  "Ángel Guardián": "Guardian Angel",
+  "Te revive una vez tras morir. Contra equipos con mucho daño explosivo.": "Revives you once after dying. Against teams with lots of burst damage.",
+  "Égida de Fuego Solar": "Sunfire Aegis",
+  "Armadura, vida y quema a los rivales cercanos. Contra equipos de daño físico en peleas largas.": "Armor, health and burns nearby enemies. Against physical-damage teams in long fights.",
+  "Filo de la Noche": "Edge of Night",
+  "Bloquea el primer hechizo enemigo que te alcanza. Contra picks y control dirigido a ti.": "Blocks the first enemy spell that hits you. Against picks and crowd control aimed at you.",
+  "Corazón de Acero": "Heartsteel",
+  "Vida que crece con el tiempo y un golpe extra al pelear. Núcleo de tanques que aguantan peleas largas.": "Health that grows over time and an extra hit when fighting. Core for tanks that hold long fights.",
+  "Desesperación Eterna": "Unending Despair",
+  "Armadura y vida que daña y cura a quien tienes cerca. Para tanques en peleas largas.": "Armor and health that damages enemies near you and heals you. For tanks in long fights.",
+  "⚡ Contra {names}: las Heridas Graves recortan su curación.": "⚡ Against {names}: Grievous Wounds cut their healing.",
+  "⚡ Contra {names}: reduce los escudos que se ponen.": "⚡ Against {names}: reduces the shields they cast.",
+  "⚡ Contra {names}: atraviesa la armadura de los tanques.": "⚡ Against {names}: pierces the armor of the tanks.",
+  "⚡ Contra {names}: resistencia mágica frente a tanto daño mágico.": "⚡ Against {names}: magic resistance against so much magic damage.",
+  "⚡ Contra {names}: armadura frente a tanto daño físico.": "⚡ Against {names}: armor against so much physical damage.",
+  "⚡ Contra {names}: te protege del control que traen.": "⚡ Against {names}: protects you from the crowd control they bring.",
+  "⚡ Contra {names}: ayuda a sobrevivir a su daño explosivo.": "⚡ Against {names}: helps you survive their burst damage.",
+  "tus rivales": "your enemies",
+  "y otros": "and others",
+  "Situacional": "Situational",
+  "Escudos enemigos": "Enemy shields"
  },
  "timers": [
   {
@@ -2534,6 +2940,501 @@
     "Reloj de Arena de Zhonya"
    ],
    "ks": "Electrocutar"
+  },
+  "Dr. Mundo": {
+   "core": [
+    "Corazón de Acero",
+    "Cota de Espinas",
+    "Desesperación Eterna",
+    "Twinguard de Amaranth"
+   ],
+   "ks": "Agarre de los No Muertos"
+  }
+ },
+ "traits": {
+  "Aatrox": [
+   "heal"
+  ],
+  "Alistar": [
+   "cc"
+  ],
+  "Amumu": [
+   "cc"
+  ],
+  "Annie": [
+   "shield",
+   "cc",
+   "burst"
+  ],
+  "Ashe": [
+   "cc"
+  ],
+  "Bard": [
+   "cc"
+  ],
+  "Blitzcrank": [
+   "cc"
+  ],
+  "Brand": [
+   "burst"
+  ],
+  "Braum": [
+   "shield",
+   "cc"
+  ],
+  "Camille": [
+   "shield"
+  ],
+  "Cho'Gath": [
+   "cc"
+  ],
+  "Darius": [
+   "heal"
+  ],
+  "Diana": [
+   "shield"
+  ],
+  "Dr. Mundo": [
+   "heal"
+  ],
+  "Ekko": [
+   "heal",
+   "shield"
+  ],
+  "Fiddlesticks": [
+   "heal",
+   "cc"
+  ],
+  "Fiora": [
+   "heal"
+  ],
+  "Galio": [
+   "shield",
+   "cc"
+  ],
+  "Garen": [
+   "hp"
+  ],
+  "Gragas": [
+   "cc"
+  ],
+  "Gwen": [
+   "heal"
+  ],
+  "Hecarim": [
+   "cc"
+  ],
+  "Heimerdinger": [
+   "cc"
+  ],
+  "Hwei": [
+   "burst"
+  ],
+  "Irelia": [
+   "heal"
+  ],
+  "Janna": [
+   "shield",
+   "cc"
+  ],
+  "Jarvan IV": [
+   "cc"
+  ],
+  "K'Sante": [
+   "shield"
+  ],
+  "Karma": [
+   "shield"
+  ],
+  "Kayle": [
+   "heal"
+  ],
+  "Kayn": [
+   "heal"
+  ],
+  "Kennen": [
+   "cc"
+  ],
+  "Lee Sin": [
+   "heal",
+   "cc"
+  ],
+  "Leona": [
+   "shield",
+   "cc"
+  ],
+  "Lissandra": [
+   "heal",
+   "cc"
+  ],
+  "Lulu": [
+   "shield",
+   "cc"
+  ],
+  "Lux": [
+   "shield",
+   "cc",
+   "burst"
+  ],
+  "Malphite": [
+   "shield",
+   "cc"
+  ],
+  "Maokai": [
+   "cc"
+  ],
+  "Master Yi": [
+   "heal"
+  ],
+  "Milio": [
+   "heal",
+   "shield"
+  ],
+  "Mordekaiser": [
+   "shield",
+   "hp"
+  ],
+  "Morgana": [
+   "shield",
+   "cc"
+  ],
+  "Nami": [
+   "heal"
+  ],
+  "Nasus": [
+   "hp"
+  ],
+  "Nautilus": [
+   "shield",
+   "cc"
+  ],
+  "Nidalee": [
+   "heal"
+  ],
+  "Nilah": [
+   "heal"
+  ],
+  "Nocturne": [
+   "cc"
+  ],
+  "Nunu y Willump": [
+   "heal",
+   "cc"
+  ],
+  "Olaf": [
+   "heal"
+  ],
+  "Orianna": [
+   "shield",
+   "cc"
+  ],
+  "Ornn": [
+   "cc"
+  ],
+  "Pantheon": [
+   "burst"
+  ],
+  "Poppy": [
+   "shield",
+   "cc"
+  ],
+  "Pyke": [
+   "cc"
+  ],
+  "Rakan": [
+   "heal",
+   "cc"
+  ],
+  "Rammus": [
+   "cc"
+  ],
+  "Rell": [
+   "cc"
+  ],
+  "Renekton": [
+   "heal"
+  ],
+  "Ryze": [
+   "shield"
+  ],
+  "Samira": [
+   "heal"
+  ],
+  "Seraphine": [
+   "heal",
+   "shield"
+  ],
+  "Sett": [
+   "heal",
+   "shield",
+   "cc"
+  ],
+  "Shen": [
+   "shield"
+  ],
+  "Shyvana": [
+   "hp"
+  ],
+  "Singed": [
+   "cc"
+  ],
+  "Sion": [
+   "shield",
+   "cc"
+  ],
+  "Sivir": [
+   "shield"
+  ],
+  "Skarner": [
+   "cc"
+  ],
+  "Sona": [
+   "heal"
+  ],
+  "Soraka": [
+   "heal"
+  ],
+  "Swain": [
+   "heal",
+   "cc"
+  ],
+  "Syndra": [
+   "cc",
+   "burst"
+  ],
+  "Taliyah": [
+   "cc"
+  ],
+  "Thresh": [
+   "cc"
+  ],
+  "Tryndamere": [
+   "heal"
+  ],
+  "Twisted Fate": [
+   "cc"
+  ],
+  "Varus": [
+   "cc"
+  ],
+  "Veigar": [
+   "cc",
+   "burst"
+  ],
+  "Vel'Koz": [
+   "cc"
+  ],
+  "Vex": [
+   "burst"
+  ],
+  "Vi": [
+   "cc"
+  ],
+  "Viego": [
+   "heal"
+  ],
+  "Viktor": [
+   "shield"
+  ],
+  "Vladimir": [
+   "heal"
+  ],
+  "Volibear": [
+   "heal",
+   "hp"
+  ],
+  "Warwick": [
+   "heal",
+   "hp"
+  ],
+  "Xin Zhao": [
+   "heal",
+   "cc"
+  ],
+  "Yone": [
+   "shield"
+  ],
+  "Yuumi": [
+   "heal"
+  ],
+  "Ziggs": [
+   "cc"
+  ],
+  "Zilean": [
+   "cc"
+  ],
+  "Zoe": [
+   "burst"
+  ],
+  "Zyra": [
+   "cc"
+  ]
+ },
+ "tiers": {
+  "patch": "7.3b",
+  "source": "wildriftfire.com/tier-list",
+  "lanes": {
+   "top": {
+    "S+": [
+     "Shen",
+     "Malphite",
+     "Mordekaiser",
+     "Ambessa",
+     "K'Sante",
+     "Gwen",
+     "Jax",
+     "Poppy",
+     "Ornn",
+     "Cho'Gath",
+     "Riven"
+    ],
+    "S": [
+     "Dr. Mundo",
+     "Jayce",
+     "Aatrox",
+     "Wukong",
+     "Yone",
+     "Camille",
+     "Gnar",
+     "Volibear",
+     "Sion",
+     "Darius",
+     "Irelia",
+     "Teemo",
+     "Singed",
+     "Sett",
+     "Olaf",
+     "Vayne",
+     "Fiora",
+     "Kennen"
+    ]
+   },
+   "jg": {
+    "S+": [
+     "Rammus",
+     "Nocturne",
+     "Skarner",
+     "Cho'Gath",
+     "Ambessa",
+     "Zed",
+     "Gwen",
+     "Lillia",
+     "Hecarim",
+     "Ekko",
+     "Nidalee",
+     "Jarvan IV",
+     "Amumu",
+     "Nunu y Willump"
+    ],
+    "S": [
+     "Darius",
+     "Kayn",
+     "Aatrox",
+     "Camille",
+     "Fiddlesticks",
+     "Nilah",
+     "Pantheon",
+     "Warwick",
+     "Diana",
+     "Vi",
+     "Olaf",
+     "Lee Sin",
+     "Xin Zhao",
+     "Rengar",
+     "Kha'Zix",
+     "Wukong",
+     "Talon",
+     "Kindred",
+     "Riven",
+     "Yone",
+     "Evelynn"
+    ]
+   },
+   "mid": {
+    "S+": [
+     "Lissandra",
+     "Hwei",
+     "Syndra",
+     "Ahri",
+     "Annie",
+     "Galio",
+     "Taliyah",
+     "Aurelion Sol",
+     "Orianna"
+    ],
+    "S": [
+     "Ryze",
+     "Vex",
+     "Kennen",
+     "Vladimir",
+     "Katarina",
+     "Ekko",
+     "Heimerdinger",
+     "Jayce",
+     "Twisted Fate",
+     "Yone",
+     "Zoe",
+     "Morgana",
+     "Aurora",
+     "Akali",
+     "Brand",
+     "Teemo"
+    ]
+   },
+   "adc": {
+    "S+": [
+     "Xayah",
+     "Samira",
+     "Ashe",
+     "Kog'Maw",
+     "Smolder",
+     "Ezreal",
+     "Varus"
+    ],
+    "S": [
+     "Jhin",
+     "Senna",
+     "Yunara",
+     "Caitlyn",
+     "Zeri",
+     "Vayne",
+     "Kai'Sa",
+     "Corki",
+     "Kalista",
+     "Jinx"
+    ]
+   },
+   "sup": {
+    "S+": [
+     "Galio",
+     "Leona",
+     "Rakan",
+     "Rell",
+     "Ornn",
+     "Janna",
+     "Soraka",
+     "Sona",
+     "Braum",
+     "Nami",
+     "Thresh",
+     "Zilean"
+    ],
+    "S": [
+     "Senna",
+     "Pyke",
+     "Yuumi",
+     "Alistar",
+     "Bard",
+     "Lulu",
+     "Milio",
+     "Nautilus",
+     "Seraphine",
+     "Karma",
+     "Zyra",
+     "Blitzcrank",
+     "Maokai"
+    ]
+   }
   }
  }
 }

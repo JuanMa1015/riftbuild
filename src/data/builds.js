@@ -1,29 +1,39 @@
-import { ITEMS, BUILDS, OVERRIDES } from './game'
+import { ITEMS, BUILDS, OVERRIDES, TRAITS } from './game'
 export { ITEMS, BUILDS }
 
 // ── Threat/synergy analysis ────────────────────────────
-const HEAL_N = ["Soraka","Yuumi","Nami","Sona","Seraphine","Aatrox","Vladimir","Sylas","Warwick","Olaf","Darius","Gwen","Nilah","Samira"]
-const CC_N   = ["Leona","Malphite","Amumu","Alistar","Blitzcrank","Thresh","Nautilus","Lux","Sett","Vi","Jarvan IV","Rell","Lissandra","Annie","Morgana","Ashe","Varus"]
+// What a rival brings: traits from game.json (heal, shield, cc, hp) plus what the class already says (tank = hp, assassin = burst)
+export function rivalTags(name, data) {
+  const tags = new Set(TRAITS[name] || [])
+  if (data?.t === 'tank') tags.add('hp')
+  if (data?.t === 'assassin') tags.add('burst')
+  return tags
+}
 
 // hints = quick chips ({ap,ad,heal,cc,tank}); a chip raises its count to the threshold that triggers the matching item
 export function analyzeThreats(enemies, hints = {}, tr = s => s) {
-  const champs = enemies.map(e => e.data).filter(Boolean)
-  const names  = enemies.map(e => e.name)
-  const apCount   = Math.max(champs.filter(c => c.d==="ap").length,      hints.ap   ? 3 : 0)
-  const adCount   = Math.max(champs.filter(c => c.d==="ad").length,      hints.ad   ? 3 : 0)
-  const tankCount = Math.max(champs.filter(c => c.t==="tank").length,    hints.tank ? 2 : 0)
-  const healCount = Math.max(names.filter(n => HEAL_N.some(h => n.includes(h))).length, hints.heal ? 1 : 0)
-  const assCount  = champs.filter(c => c.t==="assassin").length
-  const ccCount   = Math.max(names.filter(n => CC_N.some(h => n.includes(h))).length,   hints.cc   ? 3 : 0)
+  const who = { heal: [], shield: [], hp: [], cc: [], burst: [], ap: [], ad: [] }
+  for (const e of enemies) {
+    for (const tag of rivalTags(e.name, e.data)) who[tag].push(e.name)
+    // supports rarely deal the damage you have to itemize against
+    if (e.data?.t !== 'support' && e.data?.d === 'ap') who.ap.push(e.name)
+    if (e.data?.t !== 'support' && e.data?.d === 'ad') who.ad.push(e.name)
+  }
+  const counts = {
+    ap: Math.max(who.ap.length, hints.ap ? 3 : 0), ad: Math.max(who.ad.length, hints.ad ? 3 : 0),
+    hp: Math.max(who.hp.length, hints.tank ? 2 : 0), heal: Math.max(who.heal.length, hints.heal ? 1 : 0),
+    cc: Math.max(who.cc.length, hints.cc ? 3 : 0), shield: who.shield.length, burst: who.burst.length,
+  }
   const threats = []
-  if (apCount>=2)   threats.push({l:tr("Mucho daño mágico (AP)"),  cls:"tag-b"})
-  if (adCount>=3)   threats.push({l:tr("Mucho daño físico (AD)"),  cls:"tag-r"})
-  if (tankCount>=2) threats.push({l:tr("Equipo muy tanky"),         cls:"tag-gold"})
-  if (healCount>=1) threats.push({l:tr("Mucha curación enemiga"),   cls:"tag-p"})
-  if (assCount>=2)  threats.push({l:tr("Muchos asesinos"),          cls:"tag-r"})
-  if (ccCount>=2)   threats.push({l:tr("CC masivo"),                cls:"tag-b"})
+  if (counts.ap >= 2)    threats.push({l:tr("Mucho daño mágico (AP)"),  cls:"tag-b"})
+  if (counts.ad >= 3)    threats.push({l:tr("Mucho daño físico (AD)"),  cls:"tag-r"})
+  if (counts.hp >= 2)    threats.push({l:tr("Equipo muy tanky"),         cls:"tag-gold"})
+  if (counts.heal >= 1)  threats.push({l:tr("Mucha curación enemiga"),   cls:"tag-p"})
+  if (counts.shield >= 1) threats.push({l:tr("Escudos enemigos"),        cls:"tag-p"})
+  if (counts.burst >= 2) threats.push({l:tr("Muchos asesinos"),          cls:"tag-r"})
+  if (counts.cc >= 2)    threats.push({l:tr("CC masivo"),                cls:"tag-b"})
   if (!threats.length) threats.push({l:tr("Composición balanceada"), cls:"tag-g"})
-  return {threats, apCount, adCount, tankCount, healCount, assCount, ccCount}
+  return { threats, who, counts, apCount: counts.ap, adCount: counts.ad, tankCount: counts.hp, healCount: counts.heal, assCount: counts.burst, ccCount: counts.cc }
 }
 
 export function analyzeSynergies(allies, tr = s => s) {
@@ -55,34 +65,76 @@ export function withOverride(base, ov) {
   }
 }
 
+// How much each thing the rivals bring is worth to the item that answers it
+const W = {
+  heal:   n => (n >= 2 ? 6 : n === 1 ? 4 : 0),
+  shield: n => (n >= 2 ? 5 : n === 1 ? 2.5 : 0),
+  hp:     n => (n >= 3 ? 5 : n === 2 ? 3.5 : n === 1 ? 1 : 0),
+  cc:     n => (n >= 3 ? 4 : n === 2 ? 2 : 0),
+  burst:  n => (n >= 2 ? 4 : n === 1 ? 1.5 : 0),
+  ap:     n => (n >= 3 ? 5 : n === 2 ? 2.5 : 0),
+  ad:     n => (n >= 3 ? 5 : n === 2 ? 2.5 : 0),
+}
+const REASON = {
+  heal:   '⚡ Contra {names}: las Heridas Graves recortan su curación.',
+  shield: '⚡ Contra {names}: reduce los escudos que se ponen.',
+  hp:     '⚡ Contra {names}: atraviesa la armadura de los tanques.',
+  ap:     '⚡ Contra {names}: resistencia mágica frente a tanto daño mágico.',
+  ad:     '⚡ Contra {names}: armadura frente a tanto daño físico.',
+  cc:     '⚡ Contra {names}: te protege del control que traen.',
+  burst:  '⚡ Contra {names}: ayuda a sobrevivir a su daño explosivo.',
+}
+
+// who can use an item: tanks and supports have their own, the rest by damage type
+export function groupsOf(c, role) {
+  if (/support/i.test(role)) return new Set(c?.t === 'tank' ? ['sup'] : [!c || c.t === 'support' ? 'sup' : c.d === 'ap' ? 'ap' : 'ad', 'sup'])
+  return new Set([!c ? 'ad' : c.t === 'tank' ? 'tank' : c.t === 'support' ? 'sup' : c.d === 'ap' ? 'ap' : 'ad'])
+}
+
+// Up to three items that answer what the rival team brings, one per kind of problem (two healing items would not stack).
+// Items the class template already curates for that problem get a small bonus, so each class keeps its flavour.
+export function adaptiveItems(tpl, groups, counts, taken = []) {
+  const curated = new Set(Object.values(tpl.sit))
+  const rows = []
+  for (const [name, it] of Object.entries(ITEMS)) {
+    if (it.t === 'Botas' || taken.includes(name) || !it.ans?.length || !it.fit?.some(g => groups.has(g))) continue
+    let best = null, score = 0
+    for (const tag of it.ans) { const w = W[tag](counts[tag] || 0); score += w; if (w > 0 && (!best || w > best.w)) best = { tag, w } }
+    if (!best) continue
+    rows.push({ name, score: score + (curated.has(name) ? 1 : 0), tag: best.tag })
+  }
+  rows.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+  const out = [], used = new Set()
+  const MIN = [2.5, 3, 4]   // the second and third swaps need a clearer reason than the first
+  for (const r of rows) {
+    if (r.score < MIN[out.length] || used.has(r.tag)) continue
+    used.add(r.tag); out.push(r)
+    if (out.length === 3) break
+  }
+  return out
+}
+
 export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s => s) {
   const isSupp0 = role.toLowerCase().includes("support")
   const key = isSupp0 && cData?.t === "tank" ? "tank_support" : cData ? `${cData.t}_${cData.d}` : "fighter_ad"
   const base = BUILDS[key] || BUILDS.fighter_ad
   const tpl  = withOverride(base, OVERRIDES[cData?.n])
-  const {threats,apCount,adCount,tankCount,healCount,assCount,ccCount} = analyzeThreats(enemies, hints, tr)
+  const {threats,who,counts,apCount,adCount,ccCount} = analyzeThreats(enemies, hints, tr)
   const syns   = analyzeSynergies(allies, tr)
   const isJg    = role.toLowerCase().includes("jungla")
   const isSupp  = role.toLowerCase().includes("support")
 
-  let items = [...tpl.core.slice(0,4)]
-  const i5 = apCount>=3&&tpl.sit.ap         ? tpl.sit.ap
-           : healCount>=1&&tpl.sit.heal      ? tpl.sit.heal
-           : tankCount>=2&&tpl.sit.tank      ? tpl.sit.tank
-           : adCount>=3&&tpl.sit.adatk       ? tpl.sit.adatk
-           : ccCount>=3&&tpl.sit.cc          ? tpl.sit.cc
-           : tpl.sit.win || tpl.core[0]
-
-  const i6 = apCount>=2&&cData?.d==="ad"&&!items.includes("Fauces de Malmortius")     ? "Fauces de Malmortius"
-           : apCount>=2&&cData?.d!=="ad"&&!items.includes("Velo de la Banshee")           ? "Velo de la Banshee"
-           : healCount>=1&&!items.includes("Sierraespada Quimpunk")              ? "Sierraespada Quimpunk"
-           : ccCount>=3&&cData?.d==="ad"&&!items.includes("Cimitarra Mercurial")       ? "Cimitarra Mercurial"
-           : tpl.core[3] || tpl.core[0]
-
-  // 6 inventory slots, boots take one: 4 core items + the one that answers this game = 5 items, boots are returned separately
-  const extra = [i5, i6, tpl.sit.win, ...Object.values(tpl.sit)].find(x => x && !items.includes(x))
-  if (extra) items.push(extra)
-  items = [...new Set(items)].slice(0,5)
+  // The first two core items are the champion's identity and always stay. What the rivals bring decides the rest:
+  // up to three items that answer it go right after (urgent ones first), the remaining core items fill what is left.
+  const [c0, c1, c2, c3] = tpl.core
+  const picks = adaptiveItems(tpl, groupsOf(cData, role), counts, [c0, c1])
+  const reasonOf = {}
+  for (const p of picks) {
+    const names = who[p.tag].slice(0, 3).join(", ") + (who[p.tag].length > 3 ? ` ${tr("y otros")}` : "")
+    reasonOf[p.name] = tr(REASON[p.tag]).replace("{names}", names || tr("tus rivales"))
+  }
+  const urgent = picks.filter(p => p.score >= 4).map(p => p.name), later = picks.filter(p => p.score < 4).map(p => p.name)
+  const items = [...new Set([c0, c1, ...urgent, c2, ...later, c3, tpl.sit.win, ...Object.values(tpl.sit)].filter(Boolean))].slice(0, 5)
 
   // magic-resist boots vs heavy AP, armor boots vs heavy AD (for AP champions); not every template has both, so fall back to the default
   const bootsName = (apCount>=3 && tpl.boots.ap) || (adCount>=3 && tpl.boots.ad) || tpl.boots.def
@@ -90,14 +142,9 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
   const build = items.map((name, i) => {
     const d = ITEMS[name] || {}
     let why = tr(d.desc || "Ítem esencial para este arquetipo.")
-    if (i===0)                                     why = tr("Tu primer ítem de power spike. ") + why
-    if (name==="Sierraespada Quimpunk")       why = tr("⚡ El rival tiene mucha curación. Heridas Graves la reduce un 40%.")
-    if (name==="Fauces de Malmortius")              why = tr("⚡ Hay mucho AP enemigo. El escudo mágico puede absorberte el burst decisivo.")
-    if (name==="Cota de Espinas")                           why = tr("⚡ El rival ataca mucho físicamente. Cada golpe recibido les devuelve daño.")
-    if (name==="Cimitarra Mercurial")               why = tr("⚡ Hay CC decisivo enemigo. Activa este ítem para liberarte instantáneamente.")
-    if (name==="Twinguard de Amaranth")             why = tr("⚡ Hay mucho CC. Ganas resistencias mientras más tiempo estés en combate.")
-    if (name==="Velo de la Banshee")                   why = tr("⚡ Hay mucho AP. El velo bloquea automáticamente el primer hechizo enemigo.")
-    return { nombre:tr(name), en:d.en||name.toLowerCase().replace(/ /g,"-"), tipo:d.t||"Híbrido", por_que:why }
+    if (i===0) why = tr("Tu primer ítem de power spike. ") + why
+    if (reasonOf[name]) why = reasonOf[name]
+    return { nombre:tr(name), en:d.en||name.toLowerCase().replace(/ /g,"-"), tipo:d.t||"Híbrido", por_que:why, sit:!!reasonOf[name] }
   })
 
   let runas = [{slot:"Keystone", n:tpl.ks, p:tpl.ksn}, ...tpl.runas].map(r => ({...r, n:tr(r.n), p:tr(r.p)}))

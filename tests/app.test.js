@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import game from '../public/data/game.json'
 import { isValidGame } from '../src/data/validate'
-import { ITEMS } from '../src/data/builds'
+import { ITEMS, groupsOf } from '../src/data/builds'
 import { CHAMPIONS } from '../src/data/game'
 import { ROLE_OPTIONS } from '../src/data/champions'
 import { localBuild, generateBuild } from '../src/lib/aiService'
@@ -23,6 +23,11 @@ describe('validator', () => {
     ['build naming an unknown item', g => { Object.values(g.builds)[0].core[0] = 'No existe' }],
     ['timer out of range', g => { g.timers = [{ id: 'x', es: 'a', en: 'b', secs: 5 }] }],
     ['missing version', g => { delete g.version }],
+    ['item with an unknown answer tag', g => { g.items[Object.keys(g.items)[0]].ans = ['magic'] }],
+    ['item with an unknown fit group', g => { g.items[Object.keys(g.items)[0]].fit = ['jungle'] }],
+    ['trait for an unknown champion', g => { g.traits = { Nadie: ['heal'] } }],
+    ['trait with an unknown tag', g => { g.traits = { Jinx: ['flying'] } }],
+    ['tier list naming an unknown champion', g => { g.tiers = { lanes: { top: { S: ['Nadie'] } } } }],
     ['override for an unknown champion', g => { g.overrides = { Nadie: { core: Object.keys(g.items).slice(0, 4) } } }],
     ['override with an unknown item', g => { g.overrides = { Jinx: { core: ['a', 'b', 'c', 'd'] } } }],
     ['override repeating an item', g => { const i = Object.keys(g.items)[0]; g.overrides = { Jinx: { core: [i, i, i, i] } } }],
@@ -51,7 +56,7 @@ describe('per-champion overrides', () => {
     for (const n of Object.keys(game.overrides)) {
       const c = CHAMPIONS.find(x => x.n === n)
       const r = ask(n, ROLE_OPTIONS.find(x => x.value.startsWith(c.r[0] === 'ADC' ? 'ADC' : c.r[0]))?.value || 'Mid')
-      expect(r.build).toHaveLength(5)
+      expect(r.build, n).toHaveLength(5)
       expect(new Set(r.build.map(b => b.nombre)).size).toBe(5)
     }
   })
@@ -174,5 +179,54 @@ describe('new match', () => {
     expect(n.myChamp).toBeNull(); expect(n.result).toBeNull()
     expect(n.enemies.top).toBe(''); expect(n.allies.mid).toBe('')
     expect(n.hints.ap).toBe(false); expect(n.locked).toBe(false); expect(n.step).toBe(0)
+  })
+})
+
+describe('situational builds', () => {
+  const build = (myChamp, myRole, foes, hints = {}) => localBuild({ myChamp, myRole, allies: [], hints, enemies: foes.map(name => ({ name })) })
+  const names = r => r.build.map(b => b.nombre)
+  const sit = r => r.build.filter(b => b.sit)
+
+  it('a healer in the enemy team brings anti-heal and the reason names them', () => {
+    const r = build('Garen', 'Solo / Baron', ['Dr. Mundo', 'Darius'])
+    const healers = sit(r).filter(b => ITEMS[b.nombre].ans.includes('heal'))
+    expect(healers).toHaveLength(1)
+    expect(healers[0].por_que).toContain('Dr. Mundo')
+  })
+  it('shields bring a shield breaker for a marksman', () => {
+    expect(names(build('Jinx', 'ADC / Duo', ['Janna', 'Lulu']))).toContain('Colmillo de Serpiente')
+  })
+  it('a mage gets the mage anti-heal, not the physical one', () => {
+    const n = names(build('Ahri', 'Mid', ['Soraka', 'Zed']))
+    expect(n).toContain('Morellonomicón'); expect(n).not.toContain('Recordatorio Mortal')
+  })
+  it('with nothing to answer the build is the plain template', () => {
+    expect(sit(build('Garen', 'Solo / Baron', []))).toHaveLength(0)
+    expect(sit(build('Garen', 'Solo / Baron', ['Ahri']))).toHaveLength(0)   // one mage is not a reason to change
+  })
+  it('the first two core items never change, whatever the enemy brings', () => {
+    const mixes = [['Dr. Mundo', 'Soraka', 'Janna'], ['Malphite', 'Ornn', 'Sion', 'Zed'], ['Jinx', 'Zed', 'Yasuo', 'Darius', 'Garen']]
+    for (const c of CHAMPIONS.slice(0, 60)) {
+      const role = ROLE_OPTIONS.find(o => o.value.startsWith(c.r[0] === 'ADC' ? 'ADC' : c.r[0]))?.value || 'Mid'
+      const plain = names(build(c.n, role, [])).slice(0, 2)
+      for (const m of mixes) expect(names(build(c.n, role, m.filter(x => x !== c.n))).slice(0, 2), c.n).toEqual(plain)
+    }
+  })
+  it('at most three swaps, never two for the same problem, and every item fits the champion', () => {
+    for (const c of CHAMPIONS) {
+      const role = ROLE_OPTIONS.find(o => o.value.startsWith(c.r[0] === 'ADC' ? 'ADC' : c.r[0]))?.value || 'Mid'
+      const r = build(c.n, role, ['Dr. Mundo', 'Soraka', 'Janna', 'Malphite', 'Zed'].filter(x => x !== c.n))
+      expect(sit(r).length, c.n).toBeLessThanOrEqual(3)
+      expect(new Set(r.build.map(b => b.nombre)).size, c.n).toBe(r.build.length)
+      for (const b of sit(r)) expect(ITEMS[b.nombre].fit.some(g => groupsOf(c, role).has(g)), `${c.n}: ${b.nombre}`).toBe(true)
+      const healItems = sit(r).filter(b => ITEMS[b.nombre].ans[0] === 'heal' || ITEMS[b.nombre].ans.includes('heal'))
+      expect(healItems.length, c.n).toBeLessThanOrEqual(1)
+    }
+  })
+  it('the meta tiers lift a champion in the suggestions for its lane', () => {
+    const top = game.tiers.lanes.top['S+'][0]
+    const foes = [CHAMPIONS[5].n]
+    const a = recommend({ enemies: foes, allies: [], lane: 'top', limit: 200 }).find(x => x.c.n === top)
+    expect(a === undefined || a.score >= 0.5).toBe(true)
   })
 })

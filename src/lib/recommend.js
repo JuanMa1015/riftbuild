@@ -1,5 +1,6 @@
 import { CHAMPIONS } from '../data/champions'
 import { historyBonus } from './stats'
+import { TIERS } from '../data/game'
 
 // Rule-based "who should I pick": class matchups + damage balance. NOT win-rate statistics (none are public for Wild Rift).
 // MATRIX[mine][theirs] > 0 means "my class does well against theirs".
@@ -38,6 +39,10 @@ function scoreAll({ enemies, allies, lane, pool = [], recents = [], history = []
       if (mates.length >= 2 && ((c.d === 'ap' && ad > ap) || (c.d === 'ad' && ap > ad))) { score += 1; why = why || { v: 1, key: 'why.balance' } }
       if (pool.includes(c.n)) score += 0.75
       if (recents.includes(c.n)) score += 0.25
+      // patch meta (reference tier list): a small push, the class rules still decide
+      const tier = lane !== 'all' ? (TIERS.lanes?.[lane]?.['S+']?.includes(c.n) ? 0.5 : TIERS.lanes?.[lane]?.S?.includes(c.n) ? 0.25 : 0) : 0
+      score += tier
+      if (tier >= 0.5 && !why) why = { v: tier, key: 'why.meta' }
       // your own results with this champion (only once there are enough games)
       const h = historyBonus(history, c.n)
       score += h.bonus
