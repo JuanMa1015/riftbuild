@@ -5,6 +5,9 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+### Añadido
+- Versión web en https://juanma1015.github.io/riftbuild/ (GitHub Pages), publicada automáticamente con cada cambio en `main`. En la web no hay burbuja ni temporizadores, y la clave de IA se guarda sin cifrar en el navegador (la app lo avisa en Ajustes).
+
 ## [0.8.7] - 2026-10-19
 
 ### Añadido

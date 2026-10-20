@@ -2,6 +2,8 @@
 
 **Builds de Wild Rift en dos toques.** Elige tu campeón, toca a los rivales y la app te da ítems, botas, runas, hechizos y un consejo táctico adaptados a esa partida. En Android, una burbuja flotante te deja consultarla sin salir del juego.
 
+**Pruébala en el navegador:** https://juanma1015.github.io/riftbuild/ (la burbuja flotante y los temporizadores solo existen en Android).
+
 > Proyecto de fans, no afiliado a Riot Games. *League of Legends: Wild Rift* y todos sus nombres e imágenes son marca de Riot Games, Inc.
 
 [Español](#español-latam) · [English](#english)

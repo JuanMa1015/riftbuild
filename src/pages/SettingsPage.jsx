@@ -100,7 +100,7 @@ export default function SettingsPage() {
               <input type="password" value={key} onChange={e => { setKey(e.target.value); setTest(null) }} placeholder={`${t('aiKeyPlaceholder')} ${cfg?.label}`}
                 autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
                 className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
-              {key.trim() && <span className="mt-1 block text-sm text-chalk-dim">{keyError ? t('keySecureErr') : secureAvailable ? t('keySecure') : ''}</span>}
+              {key.trim() && <span className="mt-1 block text-sm text-chalk-dim">{keyError ? t('keySecureErr') : secureAvailable ? t('keySecure') : t('keyWeb')}</span>}
             </label>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-chalk-dim">{t('aiModel')}</span>

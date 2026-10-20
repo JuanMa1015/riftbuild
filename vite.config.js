@@ -24,5 +24,7 @@ const cspPlugin = {
 }
 
 export default defineConfig({
+  // GitHub Pages serves the web app from /riftbuild/ (WEB_BASE); the Android build keeps the root
+  base: process.env.WEB_BASE || '/',
   plugins: [react(), tailwindcss(), cspPlugin],
 })
