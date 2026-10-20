@@ -18,7 +18,7 @@ import { track } from '../lib/analytics'
 export default function HomePage() {
   const { step, setStep, view } = useMatchStore()
   const wide = useMedia('(min-width: 768px)')   // window / tablet mode: inputs left, build right
-  const build = useBuild({ wide })
+  const build = useBuild()
   const [onb, setOnb] = useState(() => !isOnboarded())
 
   useEffect(() => { checkForUpdates(); track('open') }, [])

@@ -109,6 +109,7 @@ export const useMatchStore = create((set) => ({
   result:   null,
   loading:  false,
   error:    null,
+  coach:    { state: 'idle', data: null, error: '' },   // live AI notes: idle | thinking | ready | paused | error
 
   setMyChamp:  (c)        => set({ myChamp: c, locked: false }),
   setLocked:   (v)        => set({ locked: v }),
@@ -119,8 +120,12 @@ export const useMatchStore = create((set) => ({
   setView:     (v)        => set({ view: v }),
   setSide:     (v)        => set({ side: v }),
   toggleHint:  (k)        => set(s => ({ hints: { ...s.hints, [k]: !s.hints[k] } })),
+  // everything a finished match leaves behind, back to the first step (lane and your pool/recents stay)
+  newMatch:    ()         => set({ myChamp: null, allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false, step: 0, side: 'enemy', result: null, loading: false, error: null, coach: { state: 'idle', data: null, error: '' } }),
   clearTeams:  ()         => set({ allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false }),
   setResult:   (r)        => set({ result: r, loading: false, error: null }),
   setLoading:  (v)        => set({ loading: v, error: null }),
   setError:    (e)        => set({ error: e,   loading: false }),
+  // idle/paused/error drop the old notes (they would describe another match state); thinking keeps them dimmed
+  setCoach:    (c)        => set(s => ({ coach: { ...s.coach, ...(c.state === 'thinking' || c.state === 'ready' ? {} : { data: null }), error: '', ...c } })),
 }))

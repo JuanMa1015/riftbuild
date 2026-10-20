@@ -26,9 +26,9 @@ export default function PickStatus() {
   if (!ev.known) return null
 
   const lockBtn = (
-    <button type="button" onClick={() => setLocked(!locked)} aria-pressed={locked}
+    <button type="button" onClick={() => setLocked(!locked)} aria-pressed={locked} title={t('lockHelp')}
       className={`flex h-10 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold ${locked ? 'border-marker bg-marker text-marker-ink' : 'border-line'}`}>
-      <Lock size={14} aria-hidden /> {t('locked')}
+      <Lock size={14} aria-hidden /> {t(locked ? 'locked' : 'lockPick')}
     </button>
   )
   if (locked) return <div className="mb-3 flex justify-end">{lockBtn}</div>

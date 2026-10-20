@@ -28,20 +28,20 @@ function makePrompt({ myChamp, myRole, allies, enemies, hints = {}, lang, base }
 Build base del motor: ${base.items.join(', ')} | botas ${base.boots}.
 Elige 5 ítems distintos (el sexto espacio son las botas) SOLO de esta lista, en orden de compra: ${GEAR.join(' | ')}.
 Botas SOLO de: ${BOOTS.join(' | ')}.
-Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida"}
-Los textos "w" y "tip" en ${out}. Los nombres de ítems se copian tal cual de la lista.`
+Responde SOLO JSON sin backticks: {"items":[{"n":"nombre exacto de la lista","w":"máx 14 palabras: por qué contra ESTOS rivales"}],"boots":"nombre exacto","tip":"máx 30 palabras, consejo para esta partida","coach":{"pick":"máx 22 palabras: ¿conviene ${myChamp} contra esta composición? si no, qué campeón del carril sería mejor","threat":"máx 22 palabras: la mayor amenaza del equipo rival y cómo responderle","lane":"máx 22 palabras: cómo jugar tu carril","watch":"máx 22 palabras: qué vigilar en la partida"}}
+Si aún faltan rivales, razona con lo que hay. Los textos "w", "tip" y "coach" en ${out}. Los nombres de ítems se copian tal cual de la lista.`
 }
 
-async function ask({ provider, key, model, prompt }) {
+async function ask({ provider, key, model, prompt, signal }) {
   const cfg = AI_PROVIDERS[provider]
   const m = model || cfg.models[0]
-  const post = (headers, body) => fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) })
+  const post = (headers, body) => fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), signal })
   let resp
   if (provider === 'anthropic') {
     resp = await post(
       // the browser-access header is required for calls made from a WebView
       { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      { model: m, max_tokens: 700, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+      { model: m, max_tokens: 1000, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
   } else {
     const or = provider === 'openrouter'
     resp = await post(
@@ -50,7 +50,7 @@ async function ask({ provider, key, model, prompt }) {
         model: m, temperature: 0.2, messages: [{ role: 'user', content: prompt }],
         // measured with a real key: with reasoning ON, Nemotron Ultra thought for 30-70 s and ran out of tokens before the JSON.
         // Nemotron Super with reasoning OFF answers in ~10 s with valid JSON, so reasoning is switched off.
-        max_tokens: 800,
+        max_tokens: 1100,
         ...(or ? { reasoning: { enabled: false } } : {}),
         // the free Nemotron endpoint is pinned to NVIDIA, as in OpenRouter's own example
         ...(or && m.startsWith('nvidia/') ? { provider: { only: ['nvidia'], allow_fallbacks: false } } : {}),
@@ -88,18 +88,18 @@ function writeCache(k, v) {
   } catch { /* storage blocked */ }
 }
 
-export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model }) {
+export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model, signal }) {
   const base = localBuild({ myChamp, myRole, allies, enemies, hints, lang })
   if (provider === 'local' || !key?.trim()) return base
 
   const cfg = AI_PROVIDERS[provider]
   const m = cfg.models.includes(model) ? model : cfg.models[0]   // a stale saved model falls back to the default
-  const ck = JSON.stringify([GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
+  const ck = JSON.stringify(['v2', GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
   let ans = readCache()[ck]
   if (!ans) {
     const es = localBuild({ myChamp, myRole, allies, enemies, hints, lang: 'es' }) // canonical names for the prompt
     ans = await ask({
-      provider, key, model: m,
+      provider, key, model: m, signal,
       prompt: makePrompt({ myChamp, myRole, allies, enemies, hints, lang, base: { items: es.build.map(b => b.nombre), boots: es.botas.nombre } }),
     })
     writeCache(ck, ans)
@@ -114,5 +114,11 @@ export async function generateBuild({ myChamp, myRole, allies, enemies, hints, l
   const out = { ...base, build: items }
   if (ITEMS[ans.boots]?.t === 'Botas') out.botas = { ...base.botas, nombre: tr(ans.boots), en: ITEMS[ans.boots].en, por_que: tr(ITEMS[ans.boots].desc) }
   if (ans.tip) out.consejo = ans.tip
+  // coach notes: plain short strings only, whatever else the model sent is dropped
+  if (ans.coach && typeof ans.coach === 'object') {
+    const c = {}
+    for (const k of ['pick', 'threat', 'lane', 'watch']) if (typeof ans.coach[k] === 'string' && ans.coach[k].trim()) c[k] = ans.coach[k].trim().slice(0, 220)
+    if (Object.keys(c).length) out.coach = c
+  }
   return out
 }

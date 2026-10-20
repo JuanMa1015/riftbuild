@@ -1,26 +1,24 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { track } from './analytics'
 import { useMatchStore, useAIStore, useDataStore } from '../store'
 import { LANES } from '../data/champions'
 import { generateBuild, localBuild } from './aiService'
 import { useLang } from '../i18n'
 
-const WAIT_MS = 4000          // how long the user waits for the AI before the local build is shown
+const DEBOUNCE_MS = 1500      // the AI is asked once you stop tapping, not on every tap
 const PAUSE_MS = 5 * 60_000   // after a key/credit/rate-limit failure, stop calling the AI for a while
 let pausedUntil = 0
 
-// The local build is always computed instantly. When an AI key is set, the AI refines it automatically:
-// the user waits at most WAIT_MS; a late answer is offered, never swapped in under their eyes.
-export function useBuild({ wide = false } = {}) {
+// The local build is always computed instantly. With an AI key, the AI watches the match live: from the first pick it
+// re-analyzes (build + coach notes) whenever you stop changing things. Stale answers are dropped, never applied.
+export function useBuild() {
   const m = useMatchStore()
   const { provider, key, model, auto } = useAIStore()
   const lang = useLang(s => s.lang)
   const rev = useDataStore(s => s.rev)
-  const { myChamp, myRole, allies, enemies, hints, step, setResult, setLoading, setError } = m
-  const [ai, setAi] = useState('idle')     // idle | waiting | slow | done | late | error
-  const [aiError, setAiError] = useState('')
-  const late = useRef(null)
+  const { myChamp, myRole, allies, enemies, hints, setResult, setLoading, setError, setCoach } = m
   const req = useRef(0)
+  const ctl = useRef(null)
 
   const lists = () => ({
     allies:  LANES.map(l => allies[l.id]  ? { lane: l.lbl, name: allies[l.id] }  : null).filter(Boolean),
@@ -32,50 +30,46 @@ export function useBuild({ wide = false } = {}) {
   // 1) local build on every change
   useEffect(() => {
     if (myChamp) setResult(localBuild({ myChamp: myChamp.n, myRole, hints, lang, ...lists() }))
-    setAi('idle'); late.current = null; req.current++   // inputs changed: any answer in flight is stale
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myChamp, myRole, allies, enemies, hints, lang, rev])
 
-  // 2) AI refinement: on the build page (phone) or once the board is mostly filled (window mode)
-  const nEnemies = LANES.filter(l => enemies[l.id]).length
-  const eligible = auto && canImprove && (wide ? nEnemies >= 3 : step === 2)
+  // 2) live AI analysis: debounced, the previous request is cancelled
+  const live = auto && canImprove
   useEffect(() => {
-    if (!eligible || Date.now() < pausedUntil) return
-    const id = ++req.current
-    if (!wide) setAi('waiting')   // eslint-disable-line react-hooks/set-state-in-effect -- show the skeleton from the first frame, no flash of the local build
+    ctl.current?.abort()
+    const id = ++req.current   // anything still in flight is now stale
+    if (!live) { setCoach({ state: 'idle' }); return }
+    if (Date.now() < pausedUntil) { setCoach({ state: 'paused' }); return }
+    setCoach({ state: 'thinking' })
     const timer = setTimeout(() => {
-      setAi('waiting')
-      let timedOut = false
-      const t = setTimeout(() => { timedOut = true; if (req.current === id) setAi('slow') }, WAIT_MS)
-      generateBuild(inputs()).then(res => {
-        clearTimeout(t)
+      ctl.current = new AbortController()
+      generateBuild({ ...inputs(), signal: ctl.current.signal }).then(res => {
         if (req.current !== id) return
-        if (timedOut) { late.current = res; setAi('late') } else { setResult(res); setAi('done'); track('build-ai') }
+        setResult(res)
+        setCoach({ state: 'ready', data: res.coach || null, at: Date.now() })
+        track('build-ai')
       }).catch(e => {
-        clearTimeout(t)
-        if (req.current !== id) return
+        if (e.name === 'AbortError' || req.current !== id) return
         if ([401, 402, 403, 429].includes(e.status)) pausedUntil = Date.now() + PAUSE_MS
-        setAiError(e.message); setAi('error')
+        setCoach({ state: [401, 402, 403, 429].includes(e.status) ? 'paused' : 'error', error: e.message })
       })
-    }, wide ? 2500 : 0)
-    return () => clearTimeout(timer)
+    }, DEBOUNCE_MS)
+    return () => { clearTimeout(timer); ctl.current?.abort() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eligible, myChamp, myRole, allies, enemies, hints, lang, rev, provider, model])
+  }, [live, myChamp, myRole, allies, enemies, hints, lang, rev, provider, model])
 
-  async function improve() {   // manual button
+  async function improve() {   // manual button, for when live analysis is switched off
     setLoading(true)
     try {
-      setResult(await generateBuild(inputs())); setAi('done')
+      const res = await generateBuild(inputs())
+      setResult(res); setCoach({ state: 'ready', data: res.coach || null, at: Date.now() })
     } catch (e) {
       setError(e.message)
     }
   }
-  function applyLate() { if (late.current) { setResult(late.current); late.current = null; setAi('done') } }
 
   return {
     result: m.result, loading: m.loading, error: m.error, canImprove,
-    onImprove: improve, onApplyLate: applyLate, aiStatus: ai, aiError,
-    aiOn: provider !== 'local' && !!key?.trim(), aiModel: model,
-    waiting: ai === 'waiting' && !wide,   // phone: hide the local build behind a skeleton while the AI answers
+    onImprove: improve, aiOn: provider !== 'local' && !!key?.trim(), aiModel: model, live,
   }
 }

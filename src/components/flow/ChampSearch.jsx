@@ -74,7 +74,8 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           )}
         </span>
         </label>
-        <div role="radiogroup" aria-label="Lane" className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto tiny:hidden">
+        <p className="mt-2 text-sm font-medium text-chalk-dim tiny:hidden">{t('showLane')}</p>
+        <div role="radiogroup" aria-label={t('showLane')} className="no-scrollbar mt-1 flex gap-1.5 overflow-x-auto tiny:hidden">
           {[...(auto ? ['auto'] : []), 'all', ...LANES.map(l => l.id)].map(id => {
             const on = id === 'auto' ? manual === null : (manual ?? (auto ? 'auto' : 'all')) === id
             return (

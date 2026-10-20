@@ -7,6 +7,7 @@ import { useMedia } from '../../lib/useMedia'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
 import PickStatus from './PickStatus'
+import CoachCard from '../CoachCard'
 import { chooseChampion } from '../../lib/pick'
 
 const CHIPS = [
@@ -72,6 +73,7 @@ export default function StepFoes() {
         className="h-10 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
     </div>
     <PickStatus />
+    <CoachCard />
     </>
   ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
 

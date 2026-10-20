@@ -8,6 +8,7 @@ import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
 import PickStatus from './PickStatus'
+import { NewMatchButton } from './FlowChrome'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
 export default function StepMe({ onPicked, compact = false }) {
@@ -31,7 +32,10 @@ export default function StepMe({ onPicked, compact = false }) {
 
   return (
     <section aria-labelledby="me-title">
-      <div className="tiny:hidden"><SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle></div>
+      <div className="flex items-start justify-between gap-2 tiny:hidden">
+        <SectionTitle>{<span id="me-title">{t('meTitle')}</span>}</SectionTitle>
+        {compact && myChamp && <NewMatchButton />}
+      </div>
 
       {myChamp && (
         <div className="mb-4 tiny:mb-2 flex items-center gap-3 rounded-2xl border border-line bg-felt-2 p-3 tiny:p-2">
@@ -43,15 +47,16 @@ export default function StepMe({ onPicked, compact = false }) {
           {compact && !changing && (
             <button type="button" onClick={() => setChanging(true)} className="h-11 rounded-xl border border-line px-4 text-sm font-semibold">{t('change')}</button>
           )}
-          <button type="button" onClick={() => togglePool(lane, myChamp.n)} aria-pressed={inPool} aria-label={inPool ? t('poolRemove') : t('poolAdd')}
+          <button type="button" onClick={() => togglePool(lane, myChamp.n)} aria-pressed={inPool} aria-label={inPool ? t('poolRemove') : t('poolAdd')} title={inPool ? t('poolRemove') : t('poolAdd')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim"><Star size={18} className={inPool ? 'fill-current text-marker' : ''} /></button>
-          <button type="button" onClick={clearPick} aria-label={t('clearSlot')}
+          <button type="button" onClick={clearPick} aria-label={t('clearPick')} title={t('clearPick')}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-chalk-dim hover:text-chalk"><X size={18} /></button>
         </div>
       )}
 
       {myChamp && <PickStatus />}
 
+      {myChamp && <p className="mb-1 text-sm font-medium text-chalk-dim tiny:hidden">{t('meLane')}</p>}
       {myChamp && (
         <div role="radiogroup" aria-label={t('meLane')} className="mb-4 grid grid-cols-5 gap-1.5">
           {ROLE_OPTIONS.map(o => {

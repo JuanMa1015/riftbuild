@@ -6,6 +6,7 @@ import { CHAMPIONS } from '../src/data/game'
 import { ROLE_OPTIONS } from '../src/data/champions'
 import { localBuild, generateBuild } from '../src/lib/aiService'
 import { recommend, evaluatePick, SWITCH_DELTA } from '../src/lib/recommend'
+import { useMatchStore } from '../src/store'
 import { record, vsClass, champTable, historyBonus, MIN_GAMES } from '../src/lib/stats'
 
 const clone = () => structuredClone(game)
@@ -99,6 +100,21 @@ describe('AI service', () => {
     expect(r.build).toHaveLength(4)
     expect(r.consejo).toBe('hola')
   })
+  it('keeps only short string coach notes', async () => {
+    const ans = { items: gear.slice(0, 5).map(n => ({ n })), boots, coach: { pick: ' Mantén a Garen ', threat: 5, lane: 'x'.repeat(500), watch: '' , extra: 'no' } }
+    vi.stubGlobal('fetch', vi.fn(async () => reply(JSON.stringify(ans))))
+    const r = await generateBuild(args)
+    expect(r.coach.pick).toBe('Mantén a Garen')
+    expect(r.coach.threat).toBeUndefined(); expect(r.coach.watch).toBeUndefined(); expect(r.coach.extra).toBeUndefined()
+    expect(r.coach.lane).toHaveLength(220)
+  })
+  it('passes the abort signal to the request', async () => {
+    const f = vi.fn(async (_u, init) => { expect(init.signal).toBe(ac.signal); return reply(JSON.stringify({ items: gear.slice(0, 5).map(n => ({ n })), boots })) })
+    const ac = new AbortController()
+    vi.stubGlobal('fetch', f)
+    await generateBuild({ ...args, signal: ac.signal })
+    expect(f).toHaveBeenCalledTimes(1)
+  })
   it('throws when the model returns too few valid items', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => reply(JSON.stringify({ items: [{ n: 'Inventado' }], boots }))))
     await expect(generateBuild(args)).rejects.toThrow()
@@ -145,5 +161,18 @@ describe('your own stats', () => {
     const hist = Array.from({ length: 6 }, () => game(target.c.n, true))
     const withHist = recommend({ enemies: foes, allies: [], limit: 50, history: hist }).find(x => x.c.n === target.c.n)
     expect(withHist.score).toBeGreaterThan(target.score)
+  })
+})
+
+describe('new match', () => {
+  it('clears champion, teams, hints and result, back to step 0', () => {
+    const s = useMatchStore.getState()
+    s.setMyChamp(CHAMPIONS[0]); s.setEnemy('top', 'Garen'); s.setAlly('mid', 'Ahri'); s.toggleHint('ap'); s.setStep(2); s.setLocked(true)
+    s.setResult({ build: [] })
+    useMatchStore.getState().newMatch()
+    const n = useMatchStore.getState()
+    expect(n.myChamp).toBeNull(); expect(n.result).toBeNull()
+    expect(n.enemies.top).toBe(''); expect(n.allies.mid).toBe('')
+    expect(n.hints.ap).toBe(false); expect(n.locked).toBe(false); expect(n.step).toBe(0)
   })
 })

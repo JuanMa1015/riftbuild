@@ -32,6 +32,20 @@ export function TopBar() {
   )
 }
 
+// Starts over: champion, rivals, allies and the build go away (recents make picking the same champion one tap)
+export function NewMatchButton({ primary = false }) {
+  const { t } = useT()
+  const newMatch = useMatchStore(s => s.newMatch)
+  return (
+    <button type="button" onClick={newMatch}
+      className={primary
+        ? 'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-marker font-bold text-marker-ink'
+        : 'flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-semibold text-chalk-dim hover:text-chalk'}>
+      <RotateCcw size={primary ? 18 : 15} aria-hidden /> {t('newMatch')}
+    </button>
+  )
+}
+
 // Three steps; later ones unlock as the previous is done.
 export function Stepper() {
   const { t } = useT()
@@ -67,7 +81,7 @@ export function Stepper() {
 // Bottom dock: live peek of the build from the first pick, plus the one primary action.
 export function Dock() {
   const { t } = useT()
-  const { step, setStep, myChamp, result, clearTeams } = useMatchStore()
+  const { step, setStep, myChamp, result, newMatch } = useMatchStore()
   const primary = 'flex h-12 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-marker px-4 font-bold text-marker-ink disabled:opacity-40'
   return (
     <div className="pb-safe border-t border-line bg-felt">
@@ -84,7 +98,7 @@ export function Dock() {
         )}
         {step === 0 && <button type="button" onClick={() => setStep(1)} className={primary}>{t('next')} <ArrowRight size={18} /></button>}
         {step === 1 && <button type="button" disabled={!myChamp} onClick={() => setStep(2)} className={primary}>{t('viewBuild')} <ArrowRight size={18} /></button>}
-        {step === 2 && <button type="button" onClick={() => { clearTeams(); setStep(1) }} className={primary}><RotateCcw size={18} /> {t('newMatch')}</button>}
+        {step === 2 && <button type="button" onClick={newMatch} className={primary}><RotateCcw size={18} /> {t('newMatch')}</button>}
       </div>
     </div>
   )

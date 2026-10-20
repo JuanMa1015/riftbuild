@@ -5,7 +5,12 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.8.8] - 2026-10-20
+
 ### Añadido
+- **Coach IA en vivo:** con una clave de IA, la app analiza la partida desde el primer pick y se actualiza cada vez que dejas de tocar durante 1,5 s (una sola consulta aunque cambies varias cosas seguidas; la anterior se cancela). Además de la build, una tarjeta con el veredicto de tu pick, la mayor amenaza rival, cómo jugar tu carril y qué vigilar. Siempre ves antes la build local; si la IA falla o llega a su límite, sigues con ella y la app lo explica.
+- Botón **Nueva partida** también en la versión ancha/web y al terminar de guardar el resultado; ahora empieza de cero (campeón, rivales, aliados y build).
+- Etiquetas y ayudas donde había controles poco claros: "Tu carril", "Mostrar campeones de", "Bloquear pick" (antes "Bloqueado") con su explicación, y nombres en los botones de favorito y quitar campeón.
 - Versión web en https://juanma1015.github.io/riftbuild/ (GitHub Pages), publicada automáticamente con cada cambio en `main`. En la web no hay burbuja ni temporizadores, y la clave de IA se guarda sin cifrar en el navegador (la app lo avisa en Ajustes).
 
 ## [0.8.7] - 2026-10-19

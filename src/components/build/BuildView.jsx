@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2, Loader2 } from 'lucide-react'
+import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2 } from 'lucide-react'
 import { GAME } from '../../data/game'
 import { useMatchStore, useMatchLog } from '../../store'
+import { NewMatchButton } from '../flow/FlowChrome'
+import CoachCard from '../CoachCard'
 import { LANES, CHAMPIONS, TYPE_LABEL } from '../../data/champions'
 import { MIN_GAMES, record, vsClass, pct as pctOf } from '../../lib/stats'
 import { useT } from '../../i18n'
@@ -129,7 +131,12 @@ function ResultLog({ r }) {
       enemies: LANES.map(l => enemies[l.id]).filter(Boolean), ts: Date.now() })
     setSaved(id)
   }
-  if (saved && noted) return <p className="mt-6 text-sm text-chalk-dim">{t('noteSaved')}</p>
+  if (saved && noted) return (
+    <div className="mt-6">
+      <p className="mb-3 text-sm text-chalk-dim">{t('noteSaved')}</p>
+      <NewMatchButton primary />
+    </div>
+  )
   if (saved) return (
     <div className="mt-6">
       <p className="mb-1 text-sm text-chalk-dim">{t('logSaved')}</p>
@@ -144,6 +151,7 @@ function ResultLog({ r }) {
         className="mb-2 h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
       <button type="button" onClick={() => { update(saved, { tags, note: note.trim() }); setNoted(true) }}
         className="h-12 w-full rounded-xl border border-line bg-felt-2 font-semibold">{t('noteSave')}</button>
+      <div className="mt-2"><NewMatchButton primary /></div>
     </div>
   )
   return (
@@ -174,25 +182,15 @@ function ChampStats() {
 }
 
 // Always say which engine produced the build: local rules, or the AI (and what happened when it did not answer)
-function AiStatus({ aiOn, aiStatus, aiError, aiModel, onApplyLate }) {
+// Without a key: one row that leads to the settings. With a key, CoachCard shows the live status instead.
+function AiOffRow() {
   const { t } = useT()
   const setView = useMatchStore(s => s.setView)
-  const line = 'mb-3 flex items-center gap-2 text-sm text-chalk-dim'
-  if (!aiOn) return (
-    <button type="button" onClick={() => setView('settings')} className={`${line} h-10 w-full rounded-xl border border-line px-3 text-left`}>
+  return (
+    <button type="button" onClick={() => setView('settings')} className="mb-3 flex h-10 w-full items-center gap-2 rounded-xl border border-line px-3 text-left text-sm text-chalk-dim">
       <Sparkles size={16} className="shrink-0" aria-hidden /> <span className="min-w-0 flex-1">{t('aiOffRow')}</span> <ChevronRight size={16} aria-hidden />
     </button>
   )
-  if (aiStatus === 'waiting') return <p className={line}><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiWorking')}</p>
-  if (aiStatus === 'slow') return <p className={line}><Loader2 size={16} className="animate-spin" aria-hidden /> {t('aiSlow')}</p>
-  if (aiStatus === 'done') return <p className={line}><Sparkles size={16} aria-hidden /> {t('aiDone')}{aiModel ? ` · ${aiModel.split('/').pop().replace(':free', '')}` : ''}</p>
-  if (aiStatus === 'error') return <p className={line}>{t('aiFallback')}{aiError ? ` (${aiError.slice(0, 80)})` : ''}</p>
-  if (aiStatus === 'late') return (
-    <button type="button" onClick={onApplyLate} className="mb-3 flex h-11 w-full items-center justify-between rounded-xl border border-marker px-4 text-sm font-semibold">
-      <span className="flex items-center gap-2"><Sparkles size={16} aria-hidden /> {t('aiLate')}</span><span>{t('aiApply')}</span>
-    </button>
-  )
-  return null
 }
 
 // What the engine looked at, in one line
@@ -220,14 +218,6 @@ function MyRecord() {
       {all.n >= MIN_GAMES && row('recChamp', { champ: tr(myChamp.n) }, all)}
       {lines.map(x => row('recVs', { champ: tr(myChamp.n), klass: tr(TYPE_LABEL[x.k]) }, x))}
     </ul>
-  )
-}
-
-function Skeleton() {
-  return (
-    <div aria-hidden className="animate-pulse">
-      {[0, 1, 2, 3].map(i => <div key={i} className="mb-3 h-20 rounded-xl border border-line bg-felt-2" />)}
-    </div>
   )
 }
 
@@ -276,7 +266,7 @@ function PlanTab({ r }) {
   )
 }
 
-export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiStatus, aiError, aiOn, aiModel, onApplyLate, waiting }) {
+export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiOn, live }) {
   const { t } = useT()
   const [tab, setTab] = useState('items')
   const myRole = useMatchStore(s => s.myRole)
@@ -307,13 +297,11 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
 
       <Basis r={r} />
       <MyRecord />
-      <AiStatus aiOn={aiOn} aiStatus={aiStatus} aiError={aiError} aiModel={aiModel} onApplyLate={onApplyLate} />
+      {aiOn ? <CoachCard /> : <AiOffRow />}
 
-      {waiting ? <Skeleton /> : <>
       {tab === 'items' && <ItemsTab r={r} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
-      </>}
 
       <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
 
@@ -324,7 +312,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
           <p className="text-chalk-dim">{t('errorHelp')}</p>
         </div>
       )}
-      {canImprove && aiStatus !== 'done' && aiStatus !== 'waiting' && (
+      {canImprove && !live && (
         <button type="button" onClick={onImprove} disabled={loading}
           className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-felt-2 font-semibold disabled:opacity-50">
           <Sparkles size={18} aria-hidden /> {loading ? t('consulting') : t('improveAI')}
