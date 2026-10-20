@@ -18,7 +18,7 @@
 - **Atajos de composición.** ¿No alcanzaste a ver todos los rivales? Marca "AP", "AD", "Curación", "CC" o "Tanques" y la build se ajusta.
 - **Burbuja flotante (Android).** Muestra los 5 ítems, las botas, la runa y los hechizos encima del juego. Se arrastra y se actualiza sola.
 - **Offline.** El motor de builds y todas las imágenes viajan dentro de la app.
-- **IA opcional.** Con tu propia API key (Anthropic, OpenRouter u OpenAI) puedes pedir un análisis más fino. La key se guarda solo en tu dispositivo.
+- **IA opcional.** Con tu propia API key (Anthropic, OpenRouter, Groq u OpenAI) puedes pedir un análisis en vivo, y elegir un segundo proveedor de respaldo. La key se guarda solo en tu dispositivo.
 - **Español LATAM por defecto, inglés disponible.** Cambia el idioma en *Configuración de IA*. Los nombres de ítems son los oficiales de cada idioma.
 - **Datos que se actualizan solos.** Plantel, parche e íconos se refrescan cada semana (ver [Actualización de datos](#actualización-de-datos)).
 
@@ -94,7 +94,7 @@ scripts/              update-data.mjs, check-i18n.mjs
 
 ### Seguridad y privacidad
 
-- **Sin servidor propio.** La app no tiene cuentas, base de datos ni endpoints; solo llama a GitHub (datos del juego) y, si tú lo configuras, a OpenRouter, Anthropic u OpenAI.
+- **Sin servidor propio.** La app no tiene cuentas, base de datos ni endpoints; solo llama a GitHub (datos del juego) y, si tú lo configuras, a OpenRouter, Groq, Anthropic u OpenAI.
 - **Tu clave de IA** se guarda cifrada (AES-256-GCM, llave dentro del Android Keystore) y viaja solo al proveedor que elegiste. No hay respaldo en la nube (`allowBackup=false`). Aun así, usa una clave con límite de gasto.
 - **Política de contenido (CSP)** en el APK: solo ejecuta scripts de la propia app y solo se conecta a los cuatro servicios anteriores.
 - **Datos remotos validados:** el `game.json` descargado se comprueba antes de usarse; uno corrupto se descarta.

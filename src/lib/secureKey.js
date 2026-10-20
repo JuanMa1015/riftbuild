@@ -4,19 +4,23 @@ import { Capacitor, registerPlugin } from '@capacitor/core'
 // In a plain browser (development) there is no Keystore: it falls back to localStorage under its own name.
 const Native = Capacitor.isNativePlatform() ? registerPlugin('SecureStore') : null
 const NAME = 'ai-key'
-const WEB = 'wr-ai-key'
 
 export const secureAvailable = !!Native
 
-export async function loadKey() {
-  if (Native) return (await Native.get({ name: NAME })).value || ''
-  try { return localStorage.getItem(WEB) || '' } catch { return '' }
+// name: which secret. The browser fallback stores it as wr-<name>.
+export async function loadKey(name = NAME) {
+  if (Native) return (await Native.get({ name })).value || ''
+  try { return localStorage.getItem('wr-' + name) || '' } catch { return '' }
 }
 
-export async function saveKey(value) {
-  if (Native) return value ? Native.set({ name: NAME, value }) : Native.remove({ name: NAME })
-  try { if (value) localStorage.setItem(WEB, value); else localStorage.removeItem(WEB) } catch { /* storage blocked */ }
+export async function saveKey(value, name = NAME) {
+  if (Native) return value ? Native.set({ name, value }) : Native.remove({ name })
+  try { if (value) localStorage.setItem('wr-' + name, value); else localStorage.removeItem('wr-' + name) } catch { /* storage blocked */ }
 }
+
+// every provider's key, as one JSON object in a single secret
+export const loadKeys = () => loadKey('ai-keys')
+export const saveKeys = (obj) => saveKey(Object.keys(obj).length ? JSON.stringify(obj) : '', 'ai-keys')
 
 // Older versions kept the key inside the persisted settings in localStorage. Move it to secure storage, and only
 // wipe the old copy once the new one is saved.

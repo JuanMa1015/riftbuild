@@ -5,6 +5,29 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.9.2] - 2026-10-20
+
+### Añadido
+- **Groq como proveedor de IA** (gratis, sin tarjeta: console.groq.com).
+- **Lista de modelos de tu cuenta:** al pulsar "Probar clave" la app lee los modelos que de verdad ofrece tu proveedor con esa clave (solo de chat, los mejores primero) y rellena el selector. Antes usaba una lista fija que podía no existir en tu cuenta (en Groq dio error 404).
+- **IA de respaldo:** en Ajustes eliges un segundo proveedor con su propia clave. Si el principal se queda sin saldo, llega a su límite, falla o no hay conexión, la app usa el respaldo sola, y el Coach IA indica "respaldo: Groq". El proveedor que falla por clave, saldo o límite descansa 5 minutos y se pasa directo al otro.
+- Una clave por proveedor: cambiar de proveedor ya no borra las demás. Las claves siguen cifradas en el Android Keystore y la clave única de versiones anteriores se migra sola.
+
+### Corregido
+- Un límite por minuto del proveedor ya no deja a la IA descansando cinco minutos: la app espera lo que el proveedor indica (encabezado `retry-after` o el mensaje "try again in 7s"), mientras tanto usa el respaldo o la build local. Un límite diario descansa media hora; una clave mala o sin saldo, cinco minutos.
+- Los primeros ítems fijos del campeón siempre encabezan la build aunque la IA los omita o los reordene.
+- Si la IA deja sin responder algo que traen los rivales (curación, escudos, tanques…), el motor lo cubre con su propio ítem en lugar del ítem de la IA que menos responde; el núcleo del campeón no se toca. En pruebas reales la IA respondía a un 67% de lo que traen los rivales, por debajo del motor solo (73%).
+- Los modelos de Groq que "piensan" (`gpt-oss`) se quedaban sin tokens antes de dar el JSON: ahora piensan poco y tienen margen.
+
+### Probado
+- Con una cuenta real de Groq: `openai/gpt-oss-120b` dio respuesta válida el 100% de las veces, en unos 2 s (una vez 22 s); `openai/gpt-oss-20b`, JSON inválido en 5 de 8 (no usar); `qwen/qwen3.8-27b`, válido pero llega antes al límite de tokens por minuto. `gpt-oss-120b` es el modelo por defecto de Groq.
+
+### Herramientas
+- `npm run compare:ai`: compara proveedores y modelos de IA con las mismas 8 partidas (éxito, si responde a lo que traen los rivales, si respeta tu núcleo, notas del coach y velocidad) usando tus claves por variables de entorno, y lo contrasta con el motor local.
+
+### Cambiado
+- La política de privacidad menciona a Groq entre los proveedores a los que se envía lo que elijas, si lo configuras.
+
 ## [0.9.1] - 2026-10-20
 
 ### Añadido

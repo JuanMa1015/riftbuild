@@ -1,6 +1,6 @@
 import { Sparkles, Loader2 } from 'lucide-react'
 import { useT } from '../i18n'
-import { useMatchStore, useAIStore } from '../store'
+import { useMatchStore, useAIStore, AI_PROVIDERS } from '../store'
 
 const ROWS = [['pick', 'coachPick'], ['threat', 'coachThreat'], ['lane', 'coachLane'], ['watch', 'coachWatch']]
 
@@ -8,12 +8,13 @@ const ROWS = [['pick', 'coachPick'], ['threat', 'coachThreat'], ['lane', 'coachL
 // dimmed, while new ones are on the way, so the card never jumps around. Nothing here blocks the local build.
 export default function CoachCard() {
   const { t } = useT()
-  const { state, data, error } = useMatchStore(s => s.coach)
+  const { state, data, error, via } = useMatchStore(s => s.coach)
+  const main = useAIStore(s => s.provider)
   const live = useAIStore(s => s.auto && s.provider !== 'local' && !!s.key.trim())
   if (!live || state === 'idle') return null
 
   const status = state === 'thinking' ? t('coachThinking')
-    : state === 'ready' ? t('coachReady')
+    : state === 'ready' ? t('coachReady') + (via && via !== main ? ` · ${t('coachVia', { p: AI_PROVIDERS[via]?.label.split(' ')[0] || via })}` : '')
     : t(state === 'paused' ? 'coachPaused' : 'coachError', { err: (error || '').slice(0, 70) })
   const rows = data ? ROWS.filter(([k]) => data[k]) : []
 

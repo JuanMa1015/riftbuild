@@ -76,6 +76,11 @@ const W = {
   ap:     n => (n >= 3 ? 5 : n === 2 ? 2.5 : 0),
   ad:     n => (n >= 3 ? 5 : n === 2 ? 2.5 : 0),
 }
+// Which of those problems the rival team really poses (the same bar the engine uses to swap an item in)
+export function neededTags(enemies, hints = {}) {
+  const { counts } = analyzeThreats(enemies, hints)
+  return Object.keys(W).filter(t => W[t](counts[t] || 0) >= 2.5)
+}
 const REASON = {
   heal:   '⚡ Contra {names}: las Heridas Graves recortan su curación.',
   shield: '⚡ Contra {names}: reduce los escudos que se ponen.',
@@ -149,7 +154,7 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
     let why = tr(d.desc || "Ítem esencial para este arquetipo.")
     if (i===0) why = tr("Tu primer ítem de power spike. ") + why
     if (reasonOf[name]) why = reasonOf[name]
-    return { nombre:tr(name), en:d.en||name.toLowerCase().replace(/ /g,"-"), tipo:d.t||"Híbrido", por_que:why, sit:!!reasonOf[name] }
+    return { k:name, nombre:tr(name), en:d.en||name.toLowerCase().replace(/ /g,"-"), tipo:d.t||"Híbrido", por_que:why, sit:!!reasonOf[name] }
   })
 
   let runas = [{slot:"Keystone", n:tpl.ks, p:tpl.ksn}, ...tpl.runas].map(r => ({...r, n:tr(r.n), p:tr(r.p)}))

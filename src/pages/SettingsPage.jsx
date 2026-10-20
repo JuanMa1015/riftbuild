@@ -5,7 +5,7 @@ import { useT, useLang, LANGS } from '../i18n'
 import { GAME } from '../data/game'
 import { checkForUpdates } from '../lib/updater'
 import { secureAvailable } from '../lib/secureKey'
-import { testKey } from '../lib/aiService'
+import { testKey, listModels } from '../lib/aiService'
 import { analyticsAvailable, useConsent } from '../lib/analytics'
 import LegalDoc from '../components/LegalDoc'
 import { useTheme } from '../lib/theme'
@@ -22,11 +22,12 @@ export default function SettingsPage() {
   const { t, tr } = useT()
   const setView = useMatchStore(s => s.setView)
   const { lang, setLang } = useLang()
-  const { provider, key, model, auto, keyError, setAuto, setProvider, setKey, setModel } = useAIStore()
+  const { provider, key, model, auto, keyError, fallback, keys, modelLists, setAuto, setProvider, setKey, setModel, setFallback, setKeyFor, setModels } = useAIStore()
   const { on, toggle, notif } = useBubble()
   const [done, setDone] = useState(false)
   const { mode, setMode } = useTheme()
   const [doc, setDoc] = useState(null)         // 'privacy' | 'terms'
+  const [testFb, setTestFb] = useState(null)   // same as test, for the backup provider
   const [test, setTest] = useState(null)       // null | 'testing' | 'ok' | 'bad' | 'quota' | 'error' | 'net'
   const { analytics, set: setAnalytics } = useConsent()
   const { entries, remove } = useMatchLog()
@@ -34,7 +35,19 @@ export default function SettingsPage() {
   const won = entries.filter(e => e.win).length
   const cfg = AI_PROVIDERS[provider]
 
-  async function runTest() { setTest('testing'); setTest(await testKey({ provider, key, model })) }
+  // the test first reads the models this key can really use, then tries the first one
+  async function runTestFb() {
+    setTestFb('testing')
+    const ids = await listModels({ provider: fallback, key: keys[fallback] || '' }).catch(() => null)
+    if (ids?.length) setModels(fallback, ids)
+    setTestFb(await testKey({ provider: fallback, key: keys[fallback] || '', model: ids?.[0] || '' }))
+  }
+  async function runTest() {
+    setTest('testing')
+    const ids = await listModels({ provider, key }).catch(() => null)
+    if (ids?.length) setModels(provider, ids)
+    setTest(await testKey({ provider, key, model: useAIStore.getState().model }))
+  }
 
   if (doc) return <LegalDoc doc={doc} onBack={() => setDoc(null)} />
 
@@ -104,10 +117,11 @@ export default function SettingsPage() {
             </label>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-chalk-dim">{t('aiModel')}</span>
-              <select value={model || cfg?.models?.[0]} onChange={e => setModel(e.target.value)}
+              <select value={model || (modelLists[provider] || cfg?.models)?.[0]} onChange={e => setModel(e.target.value)}
                 className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker">
-                {cfg?.models?.map(m => <option key={m} value={m}>{m}</option>)}
+                {(modelLists[provider] || cfg?.models)?.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
+              {modelLists[provider] && <span className="mt-1 block text-sm text-chalk-dim">{t('modelsOfAccount', { n: modelLists[provider].length })}</span>}
             </label>
             {key.trim() && (
               <div>
@@ -120,6 +134,36 @@ export default function SettingsPage() {
               </div>
             )}
             {key.trim() && <p className="text-sm text-chalk-dim">{t('aiKeyOn')}</p>}
+            <div className="rounded-xl border border-line p-3">
+              <label className="block">
+                <span className="mb-1 block text-sm font-medium text-chalk-dim">{t('fallbackTitle')}</span>
+                <select value={fallback} onChange={e => { setFallback(e.target.value); setTestFb(null) }}
+                  className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker">
+                  <option value="">{t('fallbackNone')}</option>
+                  {Object.entries(AI_PROVIDERS).filter(([k]) => k !== 'local' && k !== provider).map(([k, p]) => <option key={k} value={k}>{p.label}</option>)}
+                </select>
+              </label>
+              <p className="mt-1 text-sm text-chalk-dim">{t('fallbackHint')}</p>
+              {fallback && (
+                <div className="mt-3 flex flex-col gap-2">
+                  <input type="password" value={keys[fallback] || ''} onChange={e => { setKeyFor(fallback, e.target.value); setTestFb(null) }}
+                    aria-label={`API key ${AI_PROVIDERS[fallback]?.label}`} placeholder={`${t('aiKeyPlaceholder')} ${AI_PROVIDERS[fallback]?.label}`}
+                    autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+                    className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
+                  {AI_PROVIDERS[fallback]?.docsUrl && (
+                    <a href={AI_PROVIDERS[fallback].docsUrl} target="_blank" rel="noreferrer" className="text-sm text-marker underline underline-offset-2">{AI_PROVIDERS[fallback].docsUrl.replace('https://', '').split('/')[0]}</a>
+                  )}
+                  {(keys[fallback] || '').trim() && (
+                    <>
+                      <button type="button" onClick={runTestFb} disabled={testFb === 'testing'} className="h-11 w-full rounded-xl border border-line bg-felt-2 font-semibold">
+                        {testFb === 'testing' ? t('keyTesting') : t('keyTest')}
+                      </button>
+                      {testFb && testFb !== 'testing' && <p role="status" className={`text-sm ${testFb === 'ok' ? 'text-ally' : 'text-foe'}`}>{t('keyRes_' + testFb)}</p>}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <label className="flex items-start gap-3">
               <input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} className="mt-1 h-5 w-5 accent-[var(--color-marker)]" />
               <span><span className="block font-medium">{t('aiAuto')}</span><span className="block text-sm text-chalk-dim">{t('aiAutoHint')}</span></span>

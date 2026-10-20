@@ -4,7 +4,7 @@ import { isValidGame } from '../src/data/validate'
 import { ITEMS, groupsOf } from '../src/data/builds'
 import { CHAMPIONS } from '../src/data/game'
 import { ROLE_OPTIONS } from '../src/data/champions'
-import { localBuild, generateBuild } from '../src/lib/aiService'
+import { localBuild, generateBuild, resetPauses, isPaused, listModels } from '../src/lib/aiService'
 import { recommend, evaluatePick, SWITCH_DELTA } from '../src/lib/recommend'
 import { useMatchStore } from '../src/store'
 import { record, vsClass, champTable, historyBonus, MIN_GAMES } from '../src/lib/stats'
@@ -97,7 +97,7 @@ describe('AI service', () => {
   const gear = Object.keys(ITEMS).filter(k => ITEMS[k].t !== 'Botas').slice(0, 6)
   const boots = Object.keys(ITEMS).find(k => ITEMS[k].t === 'Botas')
   const reply = content => ({ ok: true, status: 200, json: async () => ({ choices: [{ message: { content } }] }) })
-  beforeEach(() => { localStorage.clear(); vi.restoreAllMocks() })
+  beforeEach(() => { localStorage.clear(); vi.restoreAllMocks(); resetPauses() })
 
   it('maps a valid answer through our item list, dropping unknown and duplicate names', async () => {
     const ans = { items: [...gear.slice(0, 4).map(n => ({ n, w: 'x' })), { n: gear[0], w: 'dup' }, { n: 'Inventado', w: 'y' }], boots, tip: 'hola' }
@@ -120,6 +120,119 @@ describe('AI service', () => {
     vi.stubGlobal('fetch', f)
     await generateBuild({ ...args, signal: ac.signal })
     expect(f).toHaveBeenCalledTimes(1)
+  })
+  describe('guard: the engine covers what the AI leaves unanswered', () => {
+    const garen = { ...args, myChamp: 'Garen', myRole: 'Solo / Baron', enemies: E(['Dr. Mundo', 'Darius', 'Warwick']), hints: {} }
+    const ask = items => { vi.stubGlobal('fetch', vi.fn(async () => reply(JSON.stringify({ items: items.map(n => ({ n, w: 'x' })), boots })))); return generateBuild(garen) }
+    const base = () => localBuild({ ...garen, lang: 'es' }).build.map(b => b.k)
+    it('swaps an item in when the AI forgot the anti-heal, keeping the core', async () => {
+      const core = base().slice(0, 2)
+      const noHeal = ['Danza de la Muerte', 'Guantelete de Sterak', 'Lanza de Shojin'].filter(n => !core.includes(n))
+      const r = await ask([...core, ...noHeal].slice(0, 5))
+      expect(r.build.slice(0, 2).map(b => b.k)).toEqual(core)
+      expect(r.build.some(b => ITEMS[b.k].ans.includes('heal'))).toBe(true)
+      expect(r.build).toHaveLength(5)
+    })
+    it('puts the champion core back when the model dropped or reordered it', async () => {
+      const own = base()
+      const r = await ask([own[4], own[3], own[2], own[1], 'Lanza de Shojin'].filter((n, i, a) => a.indexOf(n) === i))
+      expect(r.build.slice(0, 2).map(b => b.k)).toEqual(own.slice(0, 2))
+      expect(new Set(r.build.map(b => b.k)).size).toBe(r.build.length)
+    })
+    it('leaves the AI build alone when it already answers everything', async () => {
+      const own = base()
+      const r = await ask(own)
+      expect(r.build.map(b => b.k)).toEqual(own)
+    })
+  })
+
+  describe('models of the account', () => {
+    const list = ids => ({ ok: true, status: 200, json: async () => ({ data: ids.map(id => ({ id })) }) })
+    it('lists only chat models, the preferred first', async () => {
+      vi.stubGlobal('fetch', vi.fn(async () => list(['whisper-large-v3', 'meta-llama/llama-guard-4-12b', 'openai/gpt-oss-120b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'groq/compound'])))
+      expect(await listModels({ provider: 'groq', key: 'k' })).toEqual(['openai/gpt-oss-120b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'groq/compound'])
+    })
+    it('keeps only the free models of OpenRouter', async () => {
+      vi.stubGlobal('fetch', vi.fn(async () => list(['nvidia/nemotron-3-super-120b-a12b:free', 'openai/gpt-5', 'google/gemma-4-26b-a4b-it:free'])))
+      expect(await listModels({ provider: 'openrouter', key: 'k' })).toEqual(['nvidia/nemotron-3-super-120b-a12b:free', 'google/gemma-4-26b-a4b-it:free'])
+    })
+    it('asks the provider for the models endpoint of the same API', async () => {
+      const f = vi.fn(async () => list(['x'])); vi.stubGlobal('fetch', f)
+      await listModels({ provider: 'groq', key: 'k' })
+      expect(String(f.mock.calls[0][0])).toBe('https://api.groq.com/openai/v1/models')
+    })
+    it('uses whatever model id it is given, and keeps a Groq reasoning model short and with room for its thinking', async () => {
+      const f = vi.fn(async () => reply(JSON.stringify({ items: gear.slice(0, 5).map(n => ({ n })), boots }))); vi.stubGlobal('fetch', f)
+      await generateBuild({ ...args, provider: 'groq', model: 'openai/gpt-oss-120b' })
+      const body = JSON.parse(f.mock.calls[0][1].body)
+      expect(body.model).toBe('openai/gpt-oss-120b'); expect(body.reasoning_effort).toBe('low'); expect(body.max_tokens).toBeGreaterThanOrEqual(2000)
+    })
+  })
+
+  describe('how long a failing provider rests', () => {
+    const fail = (status, message, headers = {}) => ({ ok: false, status, headers: { get: k => headers[k.toLowerCase()] ?? null }, json: async () => ({ error: { message } }) })
+    const runWith = async (resp) => { vi.stubGlobal('fetch', vi.fn(async () => resp)); await expect(generateBuild(args)).rejects.toMatchObject({ status: resp.status }) }
+    const after = ms => { const t = Date.now() + ms; vi.spyOn(Date, 'now').mockReturnValue(t) }
+    it('a per-minute limit rests for what the provider says (header), not minutes', async () => {
+      await runWith(fail(429, 'Rate limit reached', { 'retry-after': '12' }))
+      expect(isPaused('openrouter')).toBe(true)
+      after(13_000); expect(isPaused('openrouter')).toBe(false)
+    })
+    it('reads the wait from the message when there is no header', async () => {
+      await runWith(fail(429, 'Rate limit reached. Please try again in 7.2s.'))
+      after(8_000); expect(isPaused('openrouter')).toBe(false)
+    })
+    it('a daily limit rests for half an hour; a wrong key for five minutes', async () => {
+      await runWith(fail(429, 'Rate limit exceeded: free-models-per-day'))
+      after(10 * 60_000); expect(isPaused('openrouter')).toBe(true)
+      after(31 * 60_000); expect(isPaused('openrouter')).toBe(false)
+      vi.restoreAllMocks(); resetPauses()
+      await runWith(fail(401, 'Invalid API Key'))
+      after(4 * 60_000); expect(isPaused('openrouter')).toBe(true)
+      after(6 * 60_000); expect(isPaused('openrouter')).toBe(false)
+    })
+  })
+
+  describe('backup provider', () => {
+    const good = JSON.stringify({ items: gear.slice(0, 5).map(n => ({ n })), boots, coach: { pick: 'ok' } })
+    const fb = { provider: 'groq', key: 'gsk-test', model: '' }
+    const route = ({ primary, backup }) => vi.fn(async (url) => (String(url).includes('groq') ? backup() : primary()))
+    const fail = status => ({ ok: false, status, json: async () => ({ error: { message: 'nope ' + status } }) })
+
+    it('uses the backup when the main provider is out of credit, and says who answered', async () => {
+      const f = route({ primary: () => fail(402), backup: () => reply(good) })
+      vi.stubGlobal('fetch', f)
+      const r = await generateBuild({ ...args, fallback: fb })
+      expect(r.via).toBe('groq')
+      expect(f).toHaveBeenCalledTimes(2)
+      expect(String(f.mock.calls[1][0])).toContain('api.groq.com')
+    })
+    it('skips a provider that just failed for a while, going straight to the backup', async () => {
+      const f = route({ primary: () => fail(429), backup: () => reply(good) })
+      vi.stubGlobal('fetch', f)
+      await generateBuild({ ...args, fallback: fb })
+      expect(isPaused('openrouter')).toBe(true)
+      f.mockClear(); localStorage.clear()
+      await generateBuild({ ...args, enemies: E([CHAMPIONS[9].n]), fallback: fb })
+      expect(f).toHaveBeenCalledTimes(1)
+      expect(String(f.mock.calls[0][0])).toContain('api.groq.com')
+    })
+    it('falls back on a network failure too', async () => {
+      const f = route({ primary: () => { throw new TypeError('Failed to fetch') }, backup: () => reply(good) })
+      vi.stubGlobal('fetch', f)
+      expect((await generateBuild({ ...args, fallback: fb })).via).toBe('groq')
+    })
+    it('throws the last error when every provider fails, and the plain local build when none is usable', async () => {
+      vi.stubGlobal('fetch', route({ primary: () => fail(402), backup: () => fail(401) }))
+      await expect(generateBuild({ ...args, fallback: fb })).rejects.toMatchObject({ status: 401 })
+      const r = await generateBuild({ ...args, fallback: fb })   // both paused now
+      expect(r.via).toBeUndefined()
+      expect(r.build).toHaveLength(5)
+    })
+    it('a backup without a key is ignored', async () => {
+      vi.stubGlobal('fetch', route({ primary: () => fail(402), backup: () => reply(good) }))
+      await expect(generateBuild({ ...args, fallback: { ...fb, key: '' } })).rejects.toMatchObject({ status: 402 })
+    })
   })
   it('throws when the model returns too few valid items', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => reply(JSON.stringify({ items: [{ n: 'Inventado' }], boots }))))

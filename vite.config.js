@@ -11,7 +11,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",   // React sets inline style attributes
   "img-src 'self' data: https://raw.githubusercontent.com",
   "font-src 'self'",
-  `connect-src 'self' https://openrouter.ai https://api.anthropic.com https://api.openai.com https://raw.githubusercontent.com${GC_CODE ? ` https://${GC_CODE}.goatcounter.com` : ''}`,
+  `connect-src 'self' https://openrouter.ai https://api.anthropic.com https://api.openai.com https://api.groq.com https://raw.githubusercontent.com${GC_CODE ? ` https://${GC_CODE}.goatcounter.com` : ''}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'none'",

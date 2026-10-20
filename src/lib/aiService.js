@@ -1,5 +1,5 @@
 import { AI_PROVIDERS } from '../store'
-import { buildLocalBuild, ITEMS, groupsOf, rivalTags, fixedCount } from '../data/builds'
+import { buildLocalBuild, ITEMS, groupsOf, rivalTags, fixedCount, neededTags } from '../data/builds'
 import { GAME } from '../data/game'
 import { CHAMPIONS } from '../data/champions'
 import { makeTr } from '../i18n'
@@ -52,31 +52,56 @@ async function ask({ provider, key, model, prompt, signal }) {
       { model: m, max_tokens: 1000, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
   } else {
     const or = provider === 'openrouter'
+    const thinker = provider === 'groq' && /gpt-oss/.test(m)   // measured: with the default effort it ran out of tokens before the JSON
     resp = await post(
       { Authorization: `Bearer ${key}`, ...(or ? { 'HTTP-Referer': 'https://riftbuild.app', 'X-Title': 'RiftBuild' } : {}) },
       {
         model: m, temperature: 0.2, messages: [{ role: 'user', content: prompt }],
         // measured with a real key: with reasoning ON, Nemotron Ultra thought for 30-70 s and ran out of tokens before the JSON.
         // Nemotron Super with reasoning OFF answers in ~10 s with valid JSON, so reasoning is switched off.
-        max_tokens: 1100,
+        max_tokens: thinker ? 3000 : 1100,
+        ...(thinker ? { reasoning_effort: 'low' } : {}),
         ...(or ? { reasoning: { enabled: false } } : {}),
         // the free Nemotron endpoint is pinned to NVIDIA, as in OpenRouter's own example
         ...(or && m.startsWith('nvidia/') ? { provider: { only: ['nvidia'], allow_fallbacks: false } } : {}),
       })
   }
   const data = await resp.json().catch(() => ({}))
-  if (!resp.ok || data.error) throw Object.assign(new Error(data.error?.message || `HTTP ${resp.status}`), { status: resp.status })
+  if (!resp.ok || data.error) {
+    const message = data.error?.message || `HTTP ${resp.status}`
+    // per-minute limits say when to come back, in a header or in the message ("try again in 7.2s")
+    const retryAfter = Number(resp.headers?.get?.('retry-after')) || Number(message.match(/try again in ([\d.]+)\s?s/i)?.[1]) || 0
+    throw Object.assign(new Error(message), { status: resp.status, retryAfter })
+  }
   const text = (provider === 'anthropic' ? data.content.map(b => b.text || '').join('') : data.choices?.[0]?.message?.content) || ''
   const json = text.match(/\{[\s\S]*\}/)?.[0]
   if (!json) throw new Error('El modelo no devolvió JSON (¿se quedó sin tokens pensando?)')
   return JSON.parse(json)
 }
 
+// What each provider really offers this key (the hard-coded lists go stale and some models are not enabled per account).
+// Chat models only, the ones we prefer first.
+const PREFER = { groq: ['gpt-oss-120b', 'llama-3.3-70b', 'qwen', 'llama-3.1-8b'], openrouter: ['nemotron-3-super', 'gemma-4-31b', 'gemma'], openai: ['gpt-4o-mini', 'gpt-4o'], anthropic: ['haiku', 'sonnet'] }
+const NOT_CHAT = /whisper|guard|tts|embed|orpheus|playai|moderation|transcribe|dall|image|audio|realtime|search/i
+export async function listModels({ provider, key, signal }) {
+  const cfg = AI_PROVIDERS[provider]
+  const url = cfg.url.replace(/\/(chat\/completions|messages)$/, '/models')
+  const headers = provider === 'anthropic'
+    ? { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }
+    : { Authorization: `Bearer ${key}` }
+  const r = await fetch(url, { headers, signal })
+  if (!r.ok) throw Object.assign(new Error(`HTTP ${r.status}`), { status: r.status })
+  const ids = ((await r.json()).data || []).map(m => m.id).filter(id => typeof id === 'string' && !NOT_CHAT.test(id))
+    .filter(id => (provider === 'openrouter' ? id.endsWith(':free') : provider === 'openai' ? /^(gpt|o\d)/.test(id) : true))
+  const rank = id => { const i = (PREFER[provider] || []).findIndex(p => id.includes(p)); return i < 0 ? 99 : i }
+  return [...new Set(ids)].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+}
+
 // Settings > "Test key": one tiny call, so a wrong key or an empty balance is explained instead of failing later in a match
 export async function testKey({ provider, key, model }) {
   const cfg = AI_PROVIDERS[provider]
   try {
-    await ask({ provider, key, model: cfg.models.includes(model) ? model : cfg.models[0], prompt: 'Responde SOLO este JSON: {"ok":true}' })
+    await ask({ provider, key, model: model || cfg.models[0], prompt: 'Responde SOLO este JSON: {"ok":true}' })
     return 'ok'
   } catch (e) {
     if (e.status === 401 || e.status === 403) return 'bad'
@@ -96,13 +121,23 @@ function writeCache(k, v) {
   } catch { /* storage blocked */ }
 }
 
-export async function generateBuild({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model, signal }) {
-  const base = localBuild({ myChamp, myRole, allies, enemies, hints, lang })
-  if (provider === 'local' || !key?.trim()) return base
+// A key that is wrong, out of credit or rate-limited is not retried for a while; the other provider (if any) takes over.
+const PAUSE_MS = 5 * 60_000
+const PAUSING = [401, 402, 403, 429]
+// A wrong key or no credit: five minutes. A per-minute limit: what the provider says (30 s if it does not). A daily limit: half an hour.
+export function pauseMs(e) {
+  if (e.status !== 429) return PAUSE_MS
+  if (/per day|daily|free-models-per-day/i.test(e.message || '')) return 30 * 60_000
+  return Math.min(Math.max(e.retryAfter || 30, 5), 300) * 1000
+}
+const pausedUntil = {}
+export const isPaused = p => (pausedUntil[p] || 0) > Date.now()
+export const resetPauses = () => { for (const k of Object.keys(pausedUntil)) delete pausedUntil[k] }
 
+async function viaProvider({ myChamp, myRole, allies, enemies, hints, lang, provider, key, model, signal, base }) {
   const cfg = AI_PROVIDERS[provider]
-  const m = cfg.models.includes(model) ? model : cfg.models[0]   // a stale saved model falls back to the default
-  const ck = JSON.stringify(['v3', GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
+  const m = model || cfg.models[0]
+  const ck = JSON.stringify(['v4', provider, GAME.patch, lang, m, myChamp, myRole, allies.map(a => a.name).sort(), enemies.map(e => e.name).sort(), hints])
   let ans = readCache()[ck]
   if (!ans) {
     const es = localBuild({ myChamp, myRole, allies, enemies, hints, lang: 'es' }) // canonical names for the prompt
@@ -116,10 +151,10 @@ export async function generateBuild({ myChamp, myRole, allies, enemies, hints, l
   const tr = makeTr(lang)
   const seen = new Set()
   const items = (ans.items || []).filter(i => ITEMS[i.n] && ITEMS[i.n].t !== 'Botas' && !seen.has(i.n) && seen.add(i.n)).slice(0, 5)
-    .map(i => ({ nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: i.w || tr(ITEMS[i.n].desc) }))
+    .map(i => ({ k: i.n, nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: i.w || tr(ITEMS[i.n].desc) }))
   if (items.length < 4) throw new Error('La IA no devolvió ítems válidos')
 
-  const out = { ...base, build: items }
+  const out = { ...base, build: guard(items, base, { myChamp, myRole, enemies, hints }), via: provider }
   if (ITEMS[ans.boots]?.t === 'Botas') out.botas = { ...base.botas, nombre: tr(ans.boots), en: ITEMS[ans.boots].en, por_que: tr(ITEMS[ans.boots].desc) }
   if (ans.tip) out.consejo = ans.tip
   // coach notes: plain short strings only, whatever else the model sent is dropped
@@ -129,4 +164,48 @@ export async function generateBuild({ myChamp, myRole, allies, enemies, hints, l
     if (Object.keys(c).length) out.coach = c
   }
   return out
+}
+
+// Main provider first; if it fails (no credit, limit, network, bad answer) the backup answers. Local build if none can.
+// Measured against real models: the AI answers what the rivals bring (heal, shields, tanks…) in about 67% of the cases, a bit
+// less than the engine alone (73%). So the engine keeps the last word on that: whatever the rival team demands and the AI's build
+// leaves unanswered is covered with the engine's own item, taking the place of the AI item that answers the fewest demands.
+// The champion's fixed core is never touched.
+export function guard(items, base, { myChamp, myRole, enemies, hints }) {
+  const champ = CHAMPIONS.find(c => c.n === myChamp), groups = groupsOf(champ, myRole)
+  const need = neededTags(enemies.map(e => ({ name: e.name, data: CHAMPIONS.find(c => c.n === e.name) })), hints || {})
+  const answers = k => need.filter(t => ITEMS[k]?.ans?.includes(t) && ITEMS[k].fit?.some(g => groups.has(g)))
+  let list = [...items]
+  const nFix = fixedCount(myChamp)
+  const lead = base.build.slice(0, nFix)
+  list = [...lead.map(b => ({ ...(list.find(i => i.k === b.k) || b) })), ...list.filter(i => !lead.some(b => b.k === i.k))].slice(0, items.length)
+  for (const tag of need) {
+    if (list.some(i => answers(i.k).includes(tag))) continue
+    const fix = base.build.find(b => b.sit && !list.some(i => i.k === b.k) && answers(b.k).includes(tag))
+    if (!fix) continue
+    // the AI item (outside the core) that answers the fewest demands is the one to give way
+    let victim = -1, least = Infinity
+    for (let i = list.length - 1; i >= nFix; i--) { const n = answers(list[i].k).length; if (n < least) { least = n; victim = i } }
+    if (victim < 0 || least > 0) continue   // nothing to spare: every other item already answers something
+    list[victim] = { ...fix }
+  }
+  return list
+}
+
+export async function generateBuild(args) {
+  const base = localBuild(args)
+  const chain = [{ provider: args.provider, key: args.key, model: args.model }, args.fallback]
+    .filter(c => c && c.provider !== 'local' && c.key?.trim() && AI_PROVIDERS[c.provider] && !isPaused(c.provider))
+  if (!chain.length) return base
+  let last
+  for (const c of chain) {
+    try {
+      return await viaProvider({ ...args, ...c, base })
+    } catch (e) {
+      if (e.name === 'AbortError') throw e
+      if (PAUSING.includes(e.status)) pausedUntil[c.provider] = Date.now() + pauseMs(e)
+      last = e
+    }
+  }
+  throw last
 }
