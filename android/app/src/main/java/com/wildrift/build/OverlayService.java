@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -42,7 +43,7 @@ import java.util.Map;
 
 /**
  * Floating build over the game, built to stay out of the way:
- * a 40dp translucent bubble (shows the next item to buy) that snaps to a screen edge, and on tap a one-row panel
+ * a translucent bubble (shows the next item to buy) that snaps to a screen edge, and on tap a one-row panel
  * with the six items + boots, the rune and the spells. The panel folds itself after a few seconds; X closes everything.
  */
 public class OverlayService extends Service {
@@ -72,7 +73,7 @@ public class OverlayService extends Service {
 
     private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted || userHidden ? View.GONE : View.VISIBLE); }
 
-    private static final int BUBBLE_DP = 40, ICON_DP = 34, FOLD_MS = 7000;
+    private static final int BUBBLE_DP = 48, ICON_DP = 34, FOLD_MS = 7000;
     private WindowManager wm;
     private LinearLayout root, panel;
     private ImageView bubbleIcon;
@@ -314,13 +315,13 @@ public class OverlayService extends Service {
                     b.setTextSize(12);
                     b.setTypeface(null, android.graphics.Typeface.BOLD);
                     b.setOnClickListener(v -> {
-                        ends.put(id, System.currentTimeMillis() + secs * 1000);
+                        ends.put(id, SystemClock.elapsedRealtime() + secs * 1000L);
                         handler.removeCallbacks(tick); handler.post(tick);
                         if (panel.getVisibility() == View.VISIBLE) { handler.removeCallbacks(fold); handler.postDelayed(fold, FOLD_MS); }
                     });
                     b.setOnLongClickListener(v -> { ends.remove(id); refreshTimers(); return true; });
                     timerViews.put(id, b);
-                    LinearLayout.LayoutParams lp3 = new LinearLayout.LayoutParams(0, dp(36), 1f);
+                    LinearLayout.LayoutParams lp3 = new LinearLayout.LayoutParams(0, dp(48), 1f);
                     lp3.rightMargin = dp(3);
                     row3.addView(b, lp3);
                 }
@@ -345,7 +346,7 @@ public class OverlayService extends Service {
 
     /** Repaints every timer button and the bubble (the soonest remaining time replaces the item icon). */
     private void refreshTimers() {
-        long now = System.currentTimeMillis(), soonest = Long.MAX_VALUE;
+        long now = SystemClock.elapsedRealtime(), soonest = Long.MAX_VALUE;
         for (String id : new java.util.ArrayList<>(ends.keySet())) {
             long left = (ends.get(id) - now + 999) / 1000;
             if (left <= 0) {

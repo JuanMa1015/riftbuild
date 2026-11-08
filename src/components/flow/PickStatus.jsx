@@ -27,7 +27,7 @@ export default function PickStatus() {
 
   const lockBtn = (
     <button type="button" onClick={() => setLocked(!locked)} aria-pressed={locked} title={t('lockHelp')}
-      className={`flex h-10 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold ${locked ? 'border-marker bg-marker text-marker-ink' : 'border-line'}`}>
+      className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold ${locked ? 'border-marker bg-marker text-marker-ink' : 'border-line'}`}>
       <Lock size={14} aria-hidden /> {t(locked ? 'locked' : 'lockPick')}
     </button>
   )
@@ -53,7 +53,7 @@ export default function PickStatus() {
       {say(best.why) && <p className="text-sm leading-snug text-chalk-dim">{say(best.why)}</p>}
       <div className="mt-2 flex items-center gap-2">
         <button type="button" onClick={() => chooseChampion(best.c, { keepRole: true })}
-          className="h-10 flex-1 rounded-lg bg-marker px-3 text-sm font-bold text-marker-ink">{t('changeTo', { name: tr(best.c.n) })}</button>
+          className="min-h-11 flex-1 rounded-lg bg-marker px-3 text-sm font-bold text-marker-ink">{t('changeTo', { name: tr(best.c.n) })}</button>
         {lockBtn}
       </div>
     </div>

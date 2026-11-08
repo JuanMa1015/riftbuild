@@ -50,10 +50,10 @@ export function NewMatchButton({ primary = false }) {
   const { t } = useT()
   const newMatch = useMatchStore(s => s.newMatch)
   return (
-    <button type="button" onClick={newMatch}
+    <button type="button" onClick={() => { if (window.confirm(t('confirmNewMatch'))) newMatch() }}
       className={primary
         ? 'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-marker font-bold text-marker-ink'
-        : 'flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-semibold text-chalk-dim hover:text-chalk'}>
+        : 'flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-semibold text-chalk-dim hover:text-chalk'}>
       <RotateCcw size={primary ? 18 : 15} aria-hidden /> {t('newMatch')}
     </button>
   )
@@ -72,7 +72,7 @@ export function Stepper() {
           return (
             <li key={l}>
               <button type="button" disabled={!enabled} onClick={() => setStep(i)} aria-current={cur ? 'step' : undefined}
-                className={`flex h-11 short:h-9 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold disabled:opacity-40
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl border text-sm font-semibold disabled:opacity-40
                   ${cur ? 'border-marker text-chalk' : 'border-line text-chalk-dim'}`}>
                 <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${cur ? 'bg-marker text-marker-ink' : done ? 'bg-chalk text-felt' : 'border border-line'}`}>
                   {done ? <Check size={12} strokeWidth={3} /> : i + 1}
@@ -84,7 +84,7 @@ export function Stepper() {
         })}
         <li className="hidden tiny:block">
           <button type="button" onClick={() => setView('settings')} aria-label={t('settings')}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-line text-chalk-dim"><Settings size={18} /></button>
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-chalk-dim"><Settings size={18} /></button>
         </li>
       </ol>
     </nav>
@@ -94,7 +94,7 @@ export function Stepper() {
 // Bottom dock: live peek of the build from the first pick, plus the one primary action.
 export function Dock() {
   const { t } = useT()
-  const { step, setStep, myChamp, result, newMatch } = useMatchStore()
+  const { step, setStep, myChamp, result } = useMatchStore()
   const primary = 'flex h-12 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-marker px-4 font-bold text-marker-ink disabled:opacity-40'
   return (
     <div className="pb-safe border-t border-line bg-felt">
@@ -109,9 +109,9 @@ export function Dock() {
             {!result && <span className="truncate text-sm text-chalk-dim">{t('dockPick')}</span>}
           </div>
         )}
-        {step === 0 && <button type="button" onClick={() => setStep(1)} className={primary}>{t('next')} <ArrowRight size={18} /></button>}
+        {step === 0 && <button type="button" onClick={() => setStep(myChamp ? 2 : 1)} className={primary}>{t(myChamp ? 'viewBuild' : 'next')} <ArrowRight size={18} /></button>}
         {step === 1 && <button type="button" disabled={!myChamp} onClick={() => setStep(2)} className={primary}>{t('viewBuild')} <ArrowRight size={18} /></button>}
-        {step === 2 && <button type="button" onClick={newMatch} className={primary}><RotateCcw size={18} /> {t('newMatch')}</button>}
+        {step === 2 && <NewMatchButton />}
       </div>
     </div>
   )

@@ -19,9 +19,10 @@ const CHIPS = [
 // The board and the search box stay pinned together, so slot, query and result are always on screen.
 export default function StepFoes() {
   const { t, tr } = useT()
-  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeams, myChamp, setMyChamp, setResult } = useMatchStore()
+  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeam, myChamp, setStep } = useMatchStore()
   const wide = useMedia('(min-width: 768px)')
   const [active, setActive] = useState(null)
+  const [notice, setNotice] = useState('')
   const narrow = useMedia('(max-width: 359px)')
   const tiny = useMedia('(max-height: 420px)')   // landscape pop-up window: every pixel counts   // Samsung pop-up window and other small windows
 
@@ -34,14 +35,12 @@ export default function StepFoes() {
 
   function pick(c) {
     const taken = LANES.find(l => team[l.id] === c.n)
-    if (taken) { setSlot(taken.id, ''); setActive(null); return }   // tapping a placed champion takes it back
-    if (target) setSlot(target, c.n)
+    if (taken) { setActive(taken.id); setNotice(t('alreadyOnTeam')); return }
+    if (!target) { setNotice(t('chooseSlot')); return }
+    setSlot(target, c.n)
+    setNotice('')
     setActive(null)
   }
-  function tapSlot(id) {
-    if (team[id]) { setSlot(id, ''); setActive(id) } else setActive(id)
-  }
-
   const board = (
     <div className="relative mb-2 rounded-2xl border border-line bg-felt-2 px-1.5 pb-2 pt-3 tiny:pb-1 tiny:pt-2">
       <svg className="pointer-events-none absolute inset-0 h-full w-full text-chalk/30" aria-hidden preserveAspectRatio="none" viewBox="0 0 100 40">
@@ -51,14 +50,20 @@ export default function StepFoes() {
       <ul className="relative grid grid-cols-5 gap-0.5">
         {LANES.map(l => (
           <li key={l.id}>
-            <button type="button" onClick={() => tapSlot(l.id)} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
-              className="flex w-full flex-col items-center gap-1 rounded-xl py-0.5 active:scale-95">
-              <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} removable />
+            <button type="button" onClick={() => { setActive(l.id); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
+              aria-pressed={l.id === target} className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl py-0.5 active:scale-95">
+              <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} />
               <span className={`text-xs font-semibold tiny:hidden ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
             </button>
           </li>
         ))}
       </ul>
+      {active && team[active] && (
+        <button type="button" className="relative mt-1 min-h-11 w-full text-sm text-chalk" onClick={() => setSlot(active, '')}>
+          {t('removeSlot', { name: tr(team[active]) })}
+        </button>
+      )}
+      <p role="status" className={notice ? 'relative mt-1 text-center text-sm' : 'sr-only'}>{notice}</p>
     </div>
   )
 
@@ -69,8 +74,8 @@ export default function StepFoes() {
     <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-2.5">
       <Token name={myChamp.n} side="me" size={40} />
       <p className="min-w-0 flex-1 truncate font-semibold">{tr(myChamp.n)}</p>
-      <button type="button" onClick={() => { setMyChamp(null); setResult(null) }}
-        className="h-10 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
+      <button type="button" onClick={() => setStep(0)}
+        className="h-11 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
     </div>
     <PickStatus />
     <CoachCard />
@@ -80,24 +85,25 @@ export default function StepFoes() {
   return (
     <section aria-label={t('stepFoes')}>
       <div className="mb-3 flex items-center gap-2">
-        <div role="tablist" aria-label="Team" className="grid flex-1 grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
+        <div role="group" aria-label={t('stepFoes')} className="grid flex-1 grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
           {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => (
-            <button key={k} type="button" role="tab" aria-selected={side === k} onClick={() => { setSide(k); setActive(null) }}
-              className={`h-10 tiny:h-9 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
+            <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setNotice('') }}
+              className={`h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
               {t(l)}
             </button>
           ))}
         </div>
-        <button type="button" onClick={() => { clearTeams(); setActive(null) }}
+        <button type="button" onClick={() => { clearTeam(side); setActive(null); setNotice('') }}
           className="h-11 rounded-xl px-3 text-sm font-medium text-chalk-dim hover:text-chalk">{t('clear')}</button>
       </div>
+      <p className="mb-2 text-sm text-chalk-dim tiny:hidden">{t('compositionOptional')}</p>
 
       {side === 'enemy' && (
         <div className="mb-3">
           <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('quickTitle')}>
             {CHIPS.map(c => (
               <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
-                className={`h-10 shrink-0 rounded-full border px-4 text-sm font-semibold
+                className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
                   ${hints[c.k] ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
                 {t(c.l)}
               </button>

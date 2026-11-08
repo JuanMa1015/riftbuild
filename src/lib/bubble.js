@@ -11,10 +11,9 @@ export const Overlay = registerPlugin('Overlay')
 export const bubbleSupported = Capacitor.isNativePlatform()
 
 // The bubble is on by default; the user's explicit "off" (toggle or the bubble's own X) is remembered.
-const store = (k, v) => { try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, v) } catch { /* storage blocked */ } }
+const store = (k, v) => { try { localStorage.setItem(k, v) } catch { /* storage blocked */ } }
 const stored = k => { try { return localStorage.getItem(k) } catch { return null } }
 const wantsBubble = () => stored('wr-bubble') !== 'off'
-export const setBubblePref = v => store('wr-bubble', v)
 
 export const useBubble = create((set, get) => ({
   on: false,
@@ -24,7 +23,10 @@ export const useBubble = create((set, get) => ({
     if (get().on) { await Overlay.hide(); store('wr-bubble', 'off'); return set({ on: false }) }
     store('wr-bubble', 'on')
     const { granted } = await Overlay.canDraw()
-    if (granted) set({ on: true })
+    if (granted) {
+      set({ on: true })
+      await askNotifications()
+    }
     else await Overlay.requestPermission()   // on return, the resume handler below switches it on
   },
 }))
@@ -39,17 +41,16 @@ async function askNotifications() {
   }
 }
 
-// Turn it on when the preference says so and the permission is there. Asks for the permission once, at first launch.
+// Resume an opted-in bubble after returning from Android's permission screen.
 async function autoEnable() {
   if (!bubbleSupported || !wantsBubble() || useBubble.getState().on) return
-  if (stored('wr-onboarded') !== '1' && !stored('wr-bubble')) return   // first launch: the onboarding explains the permission first
+  if (stored('wr-onboarded') !== '1' && !stored('wr-bubble')) return
   const { granted } = await Overlay.canDraw()
   if (granted) {
     useBubble.setState({ on: true })
     askNotifications()
     return
   }
-  if (!stored('wr-bubble-asked')) { store('wr-bubble-asked', '1'); Overlay.requestPermission() }
 }
 
 // What the native bubble draws: icons come from the bundled assets by slug, text from here.
@@ -85,13 +86,16 @@ if (bubbleSupported) {
 export function BubbleSync() {
   const { t, lang } = useT()
   const result = useMatchStore(s => s.result)
+  const myChamp = useMatchStore(s => s.myChamp)
   const on = useBubble(s => s.on)
   const secs = useTimerStore(s => s.secs)
   useEffect(() => { autoEnable() }, [])
   useEffect(() => {
-    if (on && result) Overlay.show({ data: payload(result, t, lang, secs) }).catch(() => {})
+    if (!bubbleSupported) return
+    if (!myChamp) Overlay.clearBuild().catch(() => {})
+    else if (on && result?.campeon === myChamp.n) Overlay.show({ data: payload(result, t, lang, secs) }).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [on, result, lang, secs])
+  }, [on, result, myChamp, lang, secs])
   return null
 }
 

@@ -56,11 +56,12 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           <Search size={18} className="shrink-0 text-chalk-dim" aria-hidden />
           <input
             value={q}
-            onFocus={() => top.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })}
+            onFocus={() => top.current?.scrollIntoView({ block: 'start' })}
             onChange={e => setQ(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && list[0]) pick(list[0]) }}
             placeholder={placeholder}
-            enterKeyHint="done"
+            aria-label={label || placeholder}
+            enterKeyHint="search"
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
@@ -74,19 +75,18 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           )}
         </span>
         </label>
-        <p className="mt-2 text-sm font-medium text-chalk-dim tiny:hidden">{t('showLane')}</p>
-        <div role="radiogroup" aria-label={t('showLane')} className="no-scrollbar mt-1 flex gap-1.5 overflow-x-auto tiny:hidden">
+        {!q.trim() && <div role="group" aria-label={t('showLane')} className="no-scrollbar mt-1 flex gap-1.5 overflow-x-auto tiny:hidden">
           {[...(auto ? ['auto'] : []), 'all', ...LANES.map(l => l.id)].map(id => {
             const on = id === 'auto' ? manual === null : (manual ?? (auto ? 'auto' : 'all')) === id
             return (
-              <button key={id} type="button" role="radio" aria-checked={on} onClick={() => setManual(id === 'auto' ? null : id)}
-                className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
+              <button key={id} type="button" aria-pressed={on} onClick={() => setManual(id === 'auto' ? null : id)}
+                className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
                 {id !== 'all' && id !== 'auto' && <LaneGlyph lane={id} size={14} />}
                 {id === 'auto' ? `${t('autoLane')}${autoLane ? ' · ' + t('lane.' + autoLane) : ''}` : id === 'all' ? t('all') : t('lane.' + id)}
               </button>
             )
           })}
-        </div>
+        </div>}
       </div>
 
       {!q && between}

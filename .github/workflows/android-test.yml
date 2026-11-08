@@ -1,0 +1,38 @@
+name: RiftBuild Test APK
+
+on:
+  workflow_dispatch:
+  # Allows the first APK to be built before this workflow reaches the default branch.
+  push:
+    branches: [codex/a55-test]
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:i18n
+      - run: npm run check:game
+      - run: npm test
+      - run: npm run android
+      - name: Build test APK
+        working-directory: android
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+          bash ./gradlew --no-daemon :app:assembleQa
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: RiftBuild-Test
+          path: android/app/build/outputs/apk/qa/app-qa.apk
+          if-no-files-found: error
+          retention-days: 14

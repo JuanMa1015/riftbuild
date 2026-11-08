@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { loadKey, saveKey, loadKeys, saveKeys, migrateLegacyKey } from '../lib/secureKey'
 
 export const AI_PROVIDERS = {
@@ -111,7 +111,7 @@ export const useRecentStore = create(
   )
 )
 
-export const useMatchStore = create((set) => ({
+export const useMatchStore = create(persist((set) => ({
   myChamp:  null,
   myRole:   'Solo / Baron',
   allies:   { ...EMPTY },
@@ -137,10 +137,17 @@ export const useMatchStore = create((set) => ({
   toggleHint:  (k)        => set(s => ({ hints: { ...s.hints, [k]: !s.hints[k] } })),
   // everything a finished match leaves behind, back to the first step (lane and your pool/recents stay)
   newMatch:    ()         => set({ myChamp: null, allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false, step: 0, side: 'enemy', result: null, loading: false, error: null, coach: { state: 'idle', data: null, error: '' } }),
-  clearTeams:  ()         => set({ allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false }),
+  clearTeam:   (side)     => set(side === 'enemy'
+    ? { enemies: { ...EMPTY }, hints: { ...NO_HINTS } }
+    : { allies: { ...EMPTY } }),
   setResult:   (r)        => set({ result: r, loading: false, error: null }),
   setLoading:  (v)        => set({ loading: v, error: null }),
   setError:    (e)        => set({ error: e,   loading: false }),
   // idle/paused/error drop the old notes (they would describe another match state); thinking keeps them dimmed
   setCoach:    (c)        => set(s => ({ coach: { ...s.coach, ...(c.state === 'thinking' || c.state === 'ready' ? {} : { data: null }), error: '', ...c } })),
+}), {
+  name: 'wr-match-draft',
+  storage: createJSONStorage(() => localStorage),
+  partialize: ({ myChamp, myRole, allies, enemies, hints, locked, step, side }) =>
+    ({ myChamp, myRole, allies, enemies, hints, locked, step, side }),
 }))

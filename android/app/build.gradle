@@ -39,6 +39,11 @@ android {
         }
     }
     buildTypes {
+        qa {
+            initWith debug
+            applicationIdSuffix ".test"
+            matchingFallbacks = ['debug']
+        }
         release {
             if (ksVal('storeFile', 'RIFTBUILD_KEYSTORE')) signingConfig signingConfigs.release
             minifyEnabled false

@@ -11,7 +11,7 @@ import PickStatus from './PickStatus'
 import { NewMatchButton } from './FlowChrome'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
-export default function StepMe({ onPicked, compact = false, hideTitle = false, roomy = false }) {
+export default function StepMe({ compact = false, hideTitle = false, roomy = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
   const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
@@ -22,10 +22,8 @@ export default function StepMe({ onPicked, compact = false, hideTitle = false, r
   const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
 
   function pick(c, opts) {
-    const first = !myChamp
     chooseChampion(c, opts)
     setChanging(false)
-    if (first) onPicked?.()   // going back to change the pick must not bounce you forward again
   }
 
   function clearPick() { setMyChamp(null); setResult(null); setChanging(true) }

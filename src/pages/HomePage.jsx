@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { App as CapApp } from '@capacitor/app'
 import { Capacitor } from '@capacitor/core'
 import { useMatchStore } from '../store'
@@ -13,17 +13,21 @@ import StepMe from '../components/flow/StepMe'
 import StepFoes from '../components/flow/StepFoes'
 import BuildView from '../components/build/BuildView'
 import SettingsPage from './SettingsPage'
-import Onboarding, { isOnboarded } from '../components/Onboarding'
-import ConsentPrompt from '../components/ConsentPrompt'
 import { track } from '../lib/analytics'
 
 export default function HomePage() {
-  const { step, setStep, view, myChamp, enemies } = useMatchStore()
+  const { step, view, myChamp, enemies } = useMatchStore()
   const { t } = useT()
   const wide = useMedia('(min-width: 768px)')   // window / tablet mode: inputs left, build right
   const xl = useMedia('(min-width: 1280px)')   // desktop / big tablet: one column per step
   const build = useBuild()
-  const [onb, setOnb] = useState(() => !isOnboarded())
+  const main = useRef(null)
+  const previousStep = useRef(step)
+
+  useEffect(() => {
+    if (previousStep.current !== step) main.current?.focus({ preventScroll: true })
+    previousStep.current = step
+  }, [step])
 
   useEffect(() => { checkForUpdates(); track('open') }, [])
 
@@ -70,9 +74,10 @@ export default function HomePage() {
     body = (
       <>
         <Stepper />
-        <main key={step} className="slide-in min-h-0 flex-1 overflow-y-auto px-4 pb-6">
+        <main ref={main} tabIndex={-1} key={step} aria-label={t(['stepMe', 'stepFoes', 'stepBuild'][step])}
+          className="slide-in min-h-0 flex-1 overflow-y-auto px-4 pb-6">
           <div className="mx-auto max-w-xl">
-            {step === 0 && <StepMe onPicked={() => setStep(1)} />}
+            {step === 0 && <StepMe />}
             {step === 1 && <StepFoes />}
             {step === 2 && buildView}
           </div>
@@ -85,8 +90,6 @@ export default function HomePage() {
   return (
     <div className="fixed inset-0 flex flex-col bg-felt text-chalk">
       <BubbleSync />
-      {onb && <Onboarding onDone={() => setOnb(false)} />}
-      {!onb && <ConsentPrompt />}
       {view === 'flow' ? <TopBar /> : <div className="pt-safe" />}
       {body}
     </div>
