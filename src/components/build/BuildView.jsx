@@ -60,7 +60,6 @@ function ItemsTab({ r }) {
             <ItemImg en={r.botas.en} alt="" size={44} className="rounded-lg" />
             <div className="min-w-0">
               <p className="font-semibold leading-tight">{r.botas.nombre}</p>
-              <p className="text-sm text-chalk-dim">{t('enchant')}: {r.botas.encantamiento}</p>
             </div>
           </div>
           <p className="mt-2 text-sm leading-snug text-chalk-dim short:hidden">{r.botas.por_que}</p>

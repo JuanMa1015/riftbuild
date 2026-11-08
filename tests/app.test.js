@@ -20,6 +20,7 @@ describe('validator', () => {
     ['bad champion class', g => { g.champions[0].t = 'wizard' }],
     ['item slug with a path', g => { g.items[Object.keys(g.items)[0]].en = '../evil' }],
     ['core with 3 items', g => { Object.values(g.builds)[0].core.pop() }],
+    ['obsolete boot enchantment', g => { Object.values(g.builds)[0].enc = 'Arcane Comet' }],
     ['build naming an unknown item', g => { Object.values(g.builds)[0].core[0] = 'No existe' }],
     ['timer out of range', g => { g.timers = [{ id: 'x', es: 'a', en: 'b', secs: 5 }] }],
     ['missing version', g => { delete g.version }],
@@ -105,6 +106,24 @@ describe('AI service', () => {
     const r = await generateBuild(args)
     expect(r.build).toHaveLength(4)
     expect(r.consejo).toBe('hola')
+  })
+  it('uses catalog effects for Gwen with and without the captured rival team', async () => {
+    const gwen = { ...args, myChamp: 'Gwen', enemies: [] }
+    const base = localBuild(gwen)
+    expect(base.botas).not.toHaveProperty('encantamiento')
+    expect(ITEMS['Orbe del Infinito'].en).toBe('infinity-orb')
+
+    const rivals = E(['Garen', 'Dr. Mundo', 'Ahri', 'Caitlyn', 'Braum'])
+    const draft = { ...gwen, enemies: rivals }
+    const core = localBuild(draft).build.slice(0, 3).map(item => item.k)
+    const items = [...core, 'Báculo del Vacío', 'Morellonomicón'].map(n => ({ n, w: 'Penetra armadura, curación y escudos.' }))
+    vi.stubGlobal('fetch', vi.fn(async () => reply(JSON.stringify({ items }))))
+    const r = await generateBuild(draft)
+    expect(r.via).toBe('openrouter')
+    expect(r.build.find(item => item.k === 'Báculo del Vacío').por_que).toContain('penetración mágica')
+    const antiHeal = r.build.find(item => item.k === 'Morellonomicón').por_que
+    expect(antiHeal).toContain('Heridas Graves')
+    expect(antiHeal).not.toContain('escudos')
   })
   it('keeps only short string coach notes', async () => {
     const ans = { items: gear.slice(0, 5).map(n => ({ n })), boots, coach: { pick: ' Mantén a Garen ', threat: 5, lane: 'x'.repeat(500), watch: '' , extra: 'no' } }

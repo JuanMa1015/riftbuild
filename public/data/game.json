@@ -2058,7 +2058,7 @@
     "ad"
    ]
   },
-  "Infinity Orb": {
+  "Orbe del Infinito": {
    "t": "Ofensivo",
    "desc": "Ítem de poder de habilidad para magos.",
    "en": "infinity-orb",
@@ -2398,7 +2398,6 @@
     "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Stoneplate",
    "ks": "Conquistador",
    "ksn": "Acumulas AD y Omnivamp al pelear seguido. Perfecto para fighters que buscan peleas largas.",
    "runas": [
@@ -2454,7 +2453,6 @@
     "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
-   "enc": "Arcane Comet",
    "ks": "Conquistador",
    "ksn": "Apila con habilidades en combate prolongado y te da Omnivamp.",
    "runas": [
@@ -2510,7 +2508,6 @@
     "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Stoneplate",
    "ks": "Conquistador",
    "ksn": "Maximiza el daño en combates prolongados con daño mixto.",
    "runas": [
@@ -2566,7 +2563,6 @@
     "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Quicksilver",
    "ks": "Electrocutar",
    "ksn": "Burst instantáneo al golpear 3 veces rápido. Maximiza el one-shot de asesinos AD.",
    "runas": [
@@ -2618,7 +2614,6 @@
     "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
-   "enc": "Sorcerer's",
    "ks": "Electrocutar",
    "ksn": "Burst instantáneo con 3 habilidades. El keystone más fuerte para asesinos AP.",
    "runas": [
@@ -2670,7 +2665,6 @@
     "def": "Grebas del Berserker",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Gluttonous",
    "ks": "Presa de la Flota",
    "ksn": "Velocidad de movimiento al atacar. Te ayuda a kitar y mantenerte lejos de los que te persiguen.",
    "runas": [
@@ -2722,7 +2716,6 @@
     "def": "Grebas del Berserker",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Gluttonous",
    "ks": "Presa de la Flota",
    "ksn": "Velocidad al atacar para kitar. Los ADCs mixtos necesitan más movilidad.",
    "runas": [
@@ -2775,7 +2768,6 @@
     "def": "Boots of Mana",
     "ad": "Punteras de Acero Revestidas"
    },
-   "enc": "Sorcerer's",
    "ks": "Electrocutar",
    "ksn": "Burst al hacer 3 habilidades seguidas. El keystone más fuerte para magos de poke y combo.",
    "runas": [
@@ -2831,7 +2823,6 @@
     "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Stoneplate",
    "ks": "Agarre de los No Muertos",
    "ksn": "Daño y HP permanente al golpear campeones cada 4s. Perfecto para tanks que buscan peleas frecuentes.",
    "runas": [
@@ -2891,7 +2882,6 @@
     "def": "Punteras de Acero Revestidas",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Stoneplate",
    "ks": "Agarre de los No Muertos",
    "ksn": "HP y daño permanente al golpear. Los tanks AP aprovechan el daño extra para hacer follow-up.",
    "runas": [
@@ -2947,7 +2937,6 @@
     "def": "Botas Jonias de la Lucidez",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Locket",
    "ks": "Guardián",
    "ksn": "Escudo a aliados al recibir daño. El keystone más fuerte para supports protectores.",
    "runas": [
@@ -3001,7 +2990,6 @@
     "def": "Botas Jonias de la Lucidez",
     "ap": "Botas de Mercurio"
    },
-   "enc": "Locket",
    "ks": "Guardián",
    "ksn": "Escudo a aliados al recibir daño. El keystone más fuerte para supports protectores.",
    "runas": [
@@ -3268,7 +3256,7 @@
   "Armadura y vida que daña y cura a quien tienes cerca. Para tanques en peleas largas.": "Armor and health that damages enemies near you and heals you. For tanks in long fights.",
   "⚡ Contra {names}: las Heridas Graves recortan su curación.": "⚡ Against {names}: Grievous Wounds cut their healing.",
   "⚡ Contra {names}: reduce los escudos que se ponen.": "⚡ Against {names}: reduces the shields they cast.",
-  "⚡ Contra {names}: atraviesa la armadura de los tanques.": "⚡ Against {names}: pierces the armor of the tanks.",
+  "⚡ Contra {names}: {effect}": "⚡ Against {names}: {effect}",
   "⚡ Contra {names}: resistencia mágica frente a tanto daño mágico.": "⚡ Against {names}: magic resistance against so much magic damage.",
   "⚡ Contra {names}: armadura frente a tanto daño físico.": "⚡ Against {names}: armor against so much physical damage.",
   "⚡ Contra {names}: te protege del control que traen.": "⚡ Against {names}: protects you from the crowd control they bring.",
@@ -3337,7 +3325,7 @@
   "Armadura y ralentiza a los rivales cercanos. Contra daño físico.": "Armor, and it slows nearby enemies. Against physical damage.",
   "Arcoescudo Inmortal": "Immortal Shieldbow",
   "Te da un escudo cuando estás a punto de morir. Para tiradores contra daño explosivo.": "Gives you a shield when you are about to die. For marksmen against burst damage.",
-  "Infinity Orb": "Infinity Orb",
+  "Orbe del Infinito": "Infinity Orb",
   "Ítem de poder de habilidad para magos.": "Ability power item for mages.",
   "Promesa del Caballero": "Knight's Vow",
   "Te unes a un aliado y absorbes parte de su daño. Para tanques y soportes.": "You pair with an ally and absorb part of their damage. For tanks and supports.",
@@ -3689,7 +3677,7 @@
   "Akali": {
    "core": [
     "Descarga Tormentosa",
-    "Infinity Orb",
+    "Orbe del Infinito",
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
@@ -3700,7 +3688,7 @@
   },
   "Katarina": {
    "core": [
-    "Infinity Orb",
+    "Orbe del Infinito",
     "Descarga Tormentosa",
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
@@ -3715,7 +3703,7 @@
     "Maldición del Liche",
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío",
-    "Infinity Orb"
+    "Orbe del Infinito"
    ],
    "win": "Reloj de Arena de Zhonya",
    "boots": "Boots of Mana",
@@ -3739,7 +3727,7 @@
     "Eco de Luden",
     "Maldición del Liche",
     "Sombrero Mortífero de Rabadon",
-    "Infinity Orb"
+    "Orbe del Infinito"
    ],
    "win": "Reloj de Arena de Zhonya",
    "boots": "Boots of Mana",
@@ -3763,7 +3751,7 @@
     "Abrazo del Serafín",
     "Vara de las Edades",
     "Sombrero Mortífero de Rabadon",
-    "Infinity Orb"
+    "Orbe del Infinito"
    ],
    "win": "Báculo del Vacío",
    "boots": "Boots of Mana",
@@ -3787,7 +3775,7 @@
     "Ocaso y Alba",
     "Diente de Nashor",
     "Sombrero Mortífero de Rabadon",
-    "Infinity Orb"
+    "Orbe del Infinito"
    ],
    "win": "Reloj de Arena de Zhonya",
    "boots": "Punteras de Acero Revestidas",
@@ -4042,14 +4030,14 @@
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
-   "win": "Infinity Orb",
+   "win": "Orbe del Infinito",
    "boots": "Boots of Mana",
    "fixed": 3
   },
   "Nidalee": {
    "core": [
     "Maldición del Liche",
-    "Infinity Orb",
+    "Orbe del Infinito",
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
@@ -4095,7 +4083,7 @@
     "Maldad",
     "Criptorretoño",
     "Sombrero Mortífero de Rabadon",
-    "Infinity Orb"
+    "Orbe del Infinito"
    ],
    "win": "Reloj de Arena de Zhonya",
    "boots": "Boots of Mana",
@@ -4104,7 +4092,7 @@
   "Hwei": {
    "core": [
     "Antorcha de Fuegoscuro",
-    "Infinity Orb",
+    "Orbe del Infinito",
     "El Tormento de Liandry",
     "Criptorretoño"
    ],
@@ -4115,7 +4103,7 @@
   "Syndra": {
    "core": [
     "Descarga Tormentosa",
-    "Infinity Orb",
+    "Orbe del Infinito",
     "Sombrero Mortífero de Rabadon",
     "Criptorretoño"
    ],
@@ -4130,7 +4118,7 @@
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
-   "win": "Infinity Orb",
+   "win": "Orbe del Infinito",
    "boots": "Boots of Mana",
    "fixed": 3
   },
@@ -4148,7 +4136,7 @@
   "Taliyah": {
    "core": [
     "Eco de Luden",
-    "Infinity Orb",
+    "Orbe del Infinito",
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
@@ -4174,7 +4162,7 @@
     "Sombrero Mortífero de Rabadon",
     "Báculo del Vacío"
    ],
-   "win": "Infinity Orb",
+   "win": "Orbe del Infinito",
    "boots": "Boots of Mana",
    "fixed": 3
   },
