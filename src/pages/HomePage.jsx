@@ -18,7 +18,7 @@ import { track } from '../lib/analytics'
 export default function HomePage() {
   const { step, view, myChamp, enemies } = useMatchStore()
   const { t } = useT()
-  const wide = useMedia('(min-width: 768px)')   // window / tablet mode: inputs left, build right
+  const wide = useMedia('(min-width: 1024px)')  // leave enough room for both inputs and the build
   const xl = useMedia('(min-width: 1280px)')   // desktop / big tablet: one column per step
   const build = useBuild()
   const main = useRef(null)
@@ -58,14 +58,14 @@ export default function HomePage() {
     body = xl ? (
       <div className="mx-auto grid min-h-0 w-full max-w-[1500px] flex-1 grid-cols-[330px_370px_minmax(0,1fr)] gap-6 px-6">
         <div className={col}>{h1}<div className={scroll}><StepMe compact hideTitle roomy /></div></div>
-        <div className={col}>{h2}<div className={scroll}><StepFoes /></div></div>
+        <div className={col}>{h2}<div className={scroll}><StepFoes wide /></div></div>
         <div className={col}>{h3}<div className={scroll}>{buildView}</div></div>
       </div>
     ) : (
       <div className="mx-auto grid min-h-0 w-full max-w-[1500px] flex-1 grid-cols-[minmax(340px,420px)_minmax(0,1fr)] gap-8 px-6">
         <div className={`${scroll} pt-0`}>
           {h1}<StepMe compact hideTitle />
-          <div className="mt-8">{h2}<StepFoes /></div>
+          <div className="mt-8">{h2}<StepFoes wide /></div>
         </div>
         <div className={col}>{h3}<div className={scroll}>{buildView}</div></div>
       </div>

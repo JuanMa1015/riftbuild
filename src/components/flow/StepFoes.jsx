@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMatchStore } from '../../store'
 import { LANES } from '../../data/champions'
 import { useT } from '../../i18n'
@@ -17,10 +17,10 @@ const CHIPS = [
 
 // Step 2: the board. Five positions per side; a pick lands on the active slot, else on the first free one.
 // The board and the search box stay pinned together, so slot, query and result are always on screen.
-export default function StepFoes() {
+export default function StepFoes({ wide = false }) {
   const { t, tr } = useT()
   const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeam, myChamp, setStep } = useMatchStore()
-  const wide = useMedia('(min-width: 768px)')
+  const slots = useRef(null)
   const [active, setActive] = useState(null)
   const [notice, setNotice] = useState('')
   const narrow = useMedia('(max-width: 359px)')
@@ -32,11 +32,15 @@ export default function StepFoes() {
   const ringCls = side === 'enemy' ? 'ring-[3px] ring-foe' : 'ring-[3px] ring-ally'
   const target = active ?? LANES.find(l => !team[l.id])?.id
   const names = LANES.map(l => team[l.id]).filter(Boolean)
+  const full = names.length === LANES.length
 
   function pick(c) {
     const taken = LANES.find(l => team[l.id] === c.n)
     if (taken) { setActive(taken.id); setNotice(t('alreadyOnTeam')); return }
     if (!target) { setNotice(t('chooseSlot')); return }
+    if (wide && (full || names.length === LANES.length - 1)) {
+      slots.current?.querySelector(`[data-lane="${target}"]`)?.focus()
+    }
     setSlot(target, c.n)
     setNotice('')
     setActive(null)
@@ -47,10 +51,10 @@ export default function StepFoes() {
         <line x1="0" y1="20" x2="100" y2="20" stroke="currentColor" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
         <circle cx="50" cy="20" r="14" fill="none" stroke="currentColor" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
       </svg>
-      <ul className="relative grid grid-cols-5 gap-0.5">
+      <ul ref={slots} className="relative grid grid-cols-5 gap-0.5">
         {LANES.map(l => (
           <li key={l.id}>
-            <button type="button" onClick={() => { setActive(l.id); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
+            <button type="button" data-lane={l.id} onClick={() => { setActive(l.id); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
               aria-pressed={l.id === target} className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl py-0.5 active:scale-95">
               <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} />
               <span className={`text-xs font-semibold tiny:hidden ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
@@ -89,7 +93,7 @@ export default function StepFoes() {
           {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => (
             <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setNotice('') }}
               className={`h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
-              {t(l)}
+              {t(l)} <span className="text-xs tabular-nums">{LANES.filter(lane => (k === 'enemy' ? enemies : allies)[lane.id]).length}/{LANES.length}</span>
             </button>
           ))}
         </div>
@@ -97,10 +101,11 @@ export default function StepFoes() {
           className="h-11 rounded-xl px-3 text-sm font-medium text-chalk-dim hover:text-chalk">{t('clear')}</button>
       </div>
       <p className="mb-2 text-sm text-chalk-dim tiny:hidden">{t('compositionOptional')}</p>
+      {wide && myChamp && <p className="mb-2 text-sm text-chalk-dim">{t('stepMe')} · {tr(myChamp.n)}</p>}
 
       {side === 'enemy' && (
         <div className="mb-3">
-          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('quickTitle')}>
+          <div className="flex flex-wrap gap-2 pb-1" role="group" aria-label={t('quickTitle')}>
             {CHIPS.map(c => (
               <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
                 className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
@@ -113,14 +118,16 @@ export default function StepFoes() {
       )}
 
       <ChampSearch
-        key={side}
-        header={board}
-        autoLane={target ?? null}
-        between={wide ? null : mineOrSuggestions}
-        label={target ? `${t(side === 'enemy' ? 'searchFor' : 'searchAlly')} ${t('lane.' + target)}` : undefined}
-        placeholder={t('typeToSearch')}
-        onPick={pick}
-        ring={n => (names.includes(n) ? ringCls : '')}
+          key={side}
+          header={board}
+          closedMessage={wide && full && !active ? t('chooseSlot') : undefined}
+          deferCatalog={wide && !active}
+          autoLane={target ?? null}
+          between={wide ? null : mineOrSuggestions}
+          label={target ? `${t(side === 'enemy' ? 'searchFor' : 'searchAlly')} ${t('lane.' + target)}` : undefined}
+          placeholder={t('typeToSearch')}
+          onPick={pick}
+          ring={n => (names.includes(n) ? ringCls : '')}
       />
     </section>
   )

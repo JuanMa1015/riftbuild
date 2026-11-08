@@ -20,6 +20,8 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
   const togglePool = usePoolStore(s => s.toggle)
   const lane = ROLE_LANE[myRole]
   const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
+  const showSearch = !compact || !myChamp || changing
+  const suggestions = <Suggestions onPick={c => pick(c, { keepRole: true })} />
 
   function pick(c, opts) {
     chooseChampion(c, opts)
@@ -75,11 +77,12 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
         </div>
       )}
 
-      {(!compact || !myChamp || changing || roomy) && <Suggestions onPick={c => pick(c, { keepRole: true })} />}
+      {!showSearch && roomy && suggestions}
 
-      {(!compact || !myChamp || changing) && <ChampSearch
+      {showSearch && <ChampSearch
         placeholder={t('meSearch')}
         onPick={pick}
+        between={suggestions}
         recents={mine.filter(n => CHAMPIONS.some(c => c.n === n))}
         pools={pool}
         ring={n => (n === myChamp?.n ? 'ring-[3px] ring-marker' : '')}

@@ -303,6 +303,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         ))}
       </div>
 
+      {r.via && <p className="mb-2 text-sm text-chalk-dim">{t(r.aiChangedPurchases ? 'aiPurchaseChanges' : 'aiSamePurchases')}</p>}
       {tab === 'items' && <ItemsTab r={r} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}

@@ -155,7 +155,12 @@ async function viaProvider({ myChamp, myRole, allies, enemies, hints, lang, prov
   if (items.length < 4) throw new Error('La IA no devolvió ítems válidos')
 
   const out = { ...base, build: guard(items, base, { myChamp, myRole, enemies, hints }), via: provider }
+  const localItems = new Map(base.build.map(item => [item.en, item]))
+  out.build = out.build.map(item => ({ ...item, sit: item.sit ?? (localItems.get(item.en)?.sit || !localItems.has(item.en)) }))
   if (ITEMS[ans.boots]?.t === 'Botas') out.botas = { ...base.botas, nombre: tr(ans.boots), en: ITEMS[ans.boots].en, por_que: tr(ITEMS[ans.boots].desc) }
+  out.aiChangedPurchases = out.botas?.en !== base.botas?.en
+    || out.build.length !== base.build.length
+    || out.build.some((item, i) => item.en !== base.build[i]?.en)
   if (ans.tip) out.consejo = ans.tip
   // coach notes: plain short strings only, whatever else the model sent is dropped
   if (ans.coach && typeof ans.coach === 'object') {
