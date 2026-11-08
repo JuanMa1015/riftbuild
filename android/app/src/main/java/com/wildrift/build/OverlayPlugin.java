@@ -71,4 +71,9 @@ public class OverlayPlugin extends Plugin {
         getContext().startService(new Intent(getContext(), OverlayService.class).setAction("hide"));
         call.resolve();
     }
+
+    @PluginMethod public void clearBuild(PluginCall call) {
+        getContext().stopService(new Intent(getContext(), OverlayService.class));
+        call.resolve();
+    }
 }

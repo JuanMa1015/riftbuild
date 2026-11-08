@@ -24,7 +24,7 @@ export default function SettingsPage() {
   const { lang, setLang } = useLang()
   const { provider, key, model, auto, keyError, fallback, keys, modelLists, setAuto, setProvider, setKey, setModel, setFallback, setKeyFor, setModels } = useAIStore()
   const { on, toggle, notif } = useBubble()
-  const [done, setDone] = useState(false)
+  const [refreshStatus, setRefreshStatus] = useState('')
   const { mode, setMode } = useTheme()
   const [doc, setDoc] = useState(null)         // 'privacy' | 'terms'
   const [testFb, setTestFb] = useState(null)   // same as test, for the backup provider
@@ -51,7 +51,10 @@ export default function SettingsPage() {
 
   if (doc) return <LegalDoc doc={doc} onBack={() => setDoc(null)} />
 
-  async function refresh() { await checkForUpdates(); setDone(true); setTimeout(() => setDone(false), 2500) }
+  async function refresh() {
+    setRefreshStatus('updateChecking')
+    setRefreshStatus(await checkForUpdates())
+  }
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 pb-10">
@@ -232,10 +235,11 @@ export default function SettingsPage() {
       <section className="mb-8">
         <SectionTitle>{t('data')}</SectionTitle>
         <p className="mb-3 text-sm text-chalk-dim">{t('dataInfo', { patch: GAME.patch, version: GAME.version })}</p>
-        <button type="button" onClick={refresh}
+        <button type="button" onClick={refresh} disabled={refreshStatus === 'updateChecking'}
           className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-felt-2 font-semibold">
-          <RefreshCw size={18} aria-hidden /> {done ? t('refreshed') : t('refresh')}
+          <RefreshCw size={18} aria-hidden /> {t('refresh')}
         </button>
+        <p role="status" className="mt-2 text-sm text-chalk-dim">{refreshStatus && t(refreshStatus)}</p>
       </section>
 
       <section className="mb-8">

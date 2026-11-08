@@ -59,12 +59,24 @@ export function useBuild() {
   }, [live, myChamp, myRole, allies, enemies, hints, lang, rev, provider, model, fallback, keys])
 
   async function improve() {   // manual button, for when live analysis is switched off
+    const request = ++req.current
+    const match = useMatchStore.getState()
+    const ai = useAIStore.getState()
+    const isCurrent = () => {
+      const now = useMatchStore.getState()
+      return request === req.current && ai === useAIStore.getState()
+        && lang === useLang.getState().lang && rev === useDataStore.getState().rev
+        && ['myChamp', 'myRole', 'allies', 'enemies', 'hints'].every(k => match[k] === now[k])
+    }
     setLoading(true)
     try {
       const res = await generateBuild(inputs())
+      if (!isCurrent()) return
       setResult(res); setCoach({ state: 'ready', data: res.coach || null, at: Date.now(), via: res.via })
     } catch (e) {
-      setError(e.message)
+      if (isCurrent()) setError(e.message)
+    } finally {
+      if (request === req.current && useMatchStore.getState().loading) setLoading(false)
     }
   }
 

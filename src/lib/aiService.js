@@ -151,11 +151,19 @@ async function viaProvider({ myChamp, myRole, allies, enemies, hints, lang, prov
   const tr = makeTr(lang)
   const seen = new Set()
   const items = (ans.items || []).filter(i => ITEMS[i.n] && ITEMS[i.n].t !== 'Botas' && !seen.has(i.n) && seen.add(i.n)).slice(0, 5)
-    .map(i => ({ k: i.n, nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: i.w || tr(ITEMS[i.n].desc) }))
+    .map(i => ({ k: i.n, nombre: tr(i.n), en: ITEMS[i.n].en, tipo: ITEMS[i.n].t, por_que: tr(ITEMS[i.n].desc) }))
   if (items.length < 4) throw new Error('La IA no devolvió ítems válidos')
 
   const out = { ...base, build: guard(items, base, { myChamp, myRole, enemies, hints }), via: provider }
+  const localItems = new Map(base.build.map(item => [item.en, item]))
+  out.build = out.build.map(item => {
+    const local = localItems.get(item.en)
+    return { ...item, por_que: local?.por_que ?? item.por_que, sit: local?.sit ?? true }
+  })
   if (ITEMS[ans.boots]?.t === 'Botas') out.botas = { ...base.botas, nombre: tr(ans.boots), en: ITEMS[ans.boots].en, por_que: tr(ITEMS[ans.boots].desc) }
+  out.aiChangedPurchases = out.botas?.en !== base.botas?.en
+    || out.build.length !== base.build.length
+    || out.build.some((item, i) => item.en !== base.build[i]?.en)
   if (ans.tip) out.consejo = ans.tip
   // coach notes: plain short strings only, whatever else the model sent is dropped
   if (ans.coach && typeof ans.coach === 'object') {

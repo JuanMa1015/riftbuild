@@ -9,6 +9,7 @@ const ROWS = [['pick', 'coachPick'], ['threat', 'coachThreat'], ['lane', 'coachL
 export default function CoachCard() {
   const { t } = useT()
   const { state, data, error, via } = useMatchStore(s => s.coach)
+  const locked = useMatchStore(s => s.locked)
   const main = useAIStore(s => s.provider)
   const live = useAIStore(s => s.auto && s.provider !== 'local' && !!s.key.trim())
   if (!live || state === 'idle') return null
@@ -16,7 +17,7 @@ export default function CoachCard() {
   const status = state === 'thinking' ? t('coachThinking')
     : state === 'ready' ? t('coachReady') + (via && via !== main ? ` · ${t('coachVia', { p: AI_PROVIDERS[via]?.label.split(' ')[0] || via })}` : '')
     : t(state === 'paused' ? 'coachPaused' : 'coachError', { err: (error || '').slice(0, 70) })
-  const rows = data ? ROWS.filter(([k]) => data[k]) : []
+  const rows = data ? ROWS.filter(([k]) => data[k] && (!locked || k !== 'pick')) : []
 
   return (
     <section aria-label={t('coachTitle')} aria-busy={state === 'thinking'} className="mb-4 rounded-2xl border border-line bg-felt-2 p-3">

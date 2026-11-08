@@ -15,7 +15,7 @@ export function isValidGame(g) {
     // every item a build names must exist, and a template always has four core items
     const known = new Set(Object.keys(g.items))
     for (const b of Object.values(g.builds)) {
-      if (!isObj(b) || !Array.isArray(b.core) || b.core.length !== 4 || !isObj(b.sit) || !isObj(b.boots) || !Array.isArray(b.runas)) return false
+      if (!isObj(b) || 'enc' in b || !Array.isArray(b.core) || b.core.length !== 4 || !isObj(b.sit) || !isObj(b.boots) || !Array.isArray(b.runas)) return false
       if (![...b.core, ...Object.values(b.sit), ...Object.values(b.boots)].every(n => known.has(n))) return false
     }
     // optional per-champion overrides: only known champions, known items (four core), a keystone some template already uses

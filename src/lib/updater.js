@@ -6,11 +6,15 @@ import { useDataStore } from '../store'
 export async function checkForUpdates() {
   try {
     const r = await fetch(`${REPO_RAW}data/game.json`)   // default cache mode: GitHub answers conditional requests, so repeat launches are cheap
-    if (!r.ok) return
+    if (!r.ok) return 'updateError'
     const g = await r.json()
-    if (!isValidGame(g) || !(g.version > GAME.version)) return
+    if (!isValidGame(g)) return 'updateError'
+    if (!(g.version > GAME.version)) return 'updateUnchanged'
     applyGame(g)
     try { localStorage.setItem('wr-game', JSON.stringify(g)) } catch { /* storage blocked */ }
     useDataStore.getState().bump()
-  } catch { /* offline: keep current data */ }
+    return 'updateApplied'
+  } catch {
+    return navigator.onLine === false ? 'updateOffline' : 'updateError'
+  }
 }

@@ -84,7 +84,7 @@ export function neededTags(enemies, hints = {}) {
 const REASON = {
   heal:   '⚡ Contra {names}: las Heridas Graves recortan su curación.',
   shield: '⚡ Contra {names}: reduce los escudos que se ponen.',
-  hp:     '⚡ Contra {names}: atraviesa la armadura de los tanques.',
+  hp:     '⚡ Contra {names}: {effect}',
   ap:     '⚡ Contra {names}: resistencia mágica frente a tanto daño mágico.',
   ad:     '⚡ Contra {names}: armadura frente a tanto daño físico.',
   cc:     '⚡ Contra {names}: te protege del control que traen.',
@@ -142,6 +142,7 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
   for (const p of picks) {
     const names = who[p.tag].slice(0, 3).join(", ") + (who[p.tag].length > 3 ? ` ${tr("y otros")}` : "")
     reasonOf[p.name] = tr(REASON[p.tag]).replace("{names}", names || tr("tus rivales"))
+      .replace("{effect}", tr(ITEMS[p.name].desc))
   }
   const urgent = picks.filter(p => p.score >= 4).map(p => p.name), later = picks.filter(p => p.score < 4).map(p => p.name)
   const items = [...new Set([...fixed, ...urgent, rest[0], ...later, ...rest.slice(1), tpl.sit.win, ...Object.values(tpl.sit)].filter(Boolean))].slice(0, 5)
@@ -174,7 +175,6 @@ export function buildLocalBuild(cData, role, enemies, allies, hints = {}, tr = s
     botas: {
       nombre:       tr(bootsName),
       en:           ITEMS[bootsName]?.en || "plated-steelcaps",
-      encantamiento: tpl.enc,
       por_que:      tr(apCount>=3 && bootsName===tpl.boots.ap ? "RM y tenacidad críticas contra tanto AP." : ITEMS[bootsName]?.desc||"")
     },
     runas,

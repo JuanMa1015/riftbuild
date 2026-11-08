@@ -11,7 +11,7 @@ import PickStatus from './PickStatus'
 import { NewMatchButton } from './FlowChrome'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
-export default function StepMe({ onPicked, compact = false, hideTitle = false, roomy = false }) {
+export default function StepMe({ compact = false, hideTitle = false, roomy = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
   const { myChamp, myRole, setMyChamp, setMyRole, setResult } = useMatchStore()
@@ -20,12 +20,12 @@ export default function StepMe({ onPicked, compact = false, hideTitle = false, r
   const togglePool = usePoolStore(s => s.toggle)
   const lane = ROLE_LANE[myRole]
   const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
+  const showSearch = !compact || !myChamp || changing
+  const suggestions = <Suggestions onPick={c => pick(c, { keepRole: true })} />
 
   function pick(c, opts) {
-    const first = !myChamp
     chooseChampion(c, opts)
     setChanging(false)
-    if (first) onPicked?.()   // going back to change the pick must not bounce you forward again
   }
 
   function clearPick() { setMyChamp(null); setResult(null); setChanging(true) }
@@ -77,11 +77,12 @@ export default function StepMe({ onPicked, compact = false, hideTitle = false, r
         </div>
       )}
 
-      {(!compact || !myChamp || changing || roomy) && <Suggestions onPick={c => pick(c, { keepRole: true })} />}
+      {!showSearch && roomy && suggestions}
 
-      {(!compact || !myChamp || changing) && <ChampSearch
+      {showSearch && <ChampSearch
         placeholder={t('meSearch')}
         onPick={pick}
+        between={suggestions}
         recents={mine.filter(n => CHAMPIONS.some(c => c.n === n))}
         pools={pool}
         ring={n => (n === myChamp?.n ? 'ring-[3px] ring-marker' : '')}

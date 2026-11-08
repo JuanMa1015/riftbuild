@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronRight, Sparkles, Lightbulb, PictureInPicture2 } from 'lucide-react'
-import { GAME } from '../../data/game'
+import { GAME, OVERRIDES } from '../../data/game'
 import { useMatchStore, useMatchLog } from '../../store'
 import { NewMatchButton } from '../flow/FlowChrome'
 import CoachCard from '../CoachCard'
@@ -26,7 +26,7 @@ function ItemRow({ item, index, last }) {
       {!last && <span className="absolute left-[15px] top-9 bottom-0 w-px bg-line" aria-hidden />}
       <span className="z-[1] flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-chalk text-sm font-bold text-felt">{index + 1}</span>
       <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open}
-        className="min-w-0 flex-1 rounded-xl border border-line bg-felt-2 p-3 text-left short:p-1.5">
+        className="min-h-11 min-w-0 flex-1 rounded-xl border border-line bg-felt-2 p-3 text-left short:p-1.5">
         <span className="flex items-center gap-3">
           <ItemImg en={item.en} alt="" size={short ? 32 : 44} className="rounded-lg" />
           <span className="min-w-0 flex-1">
@@ -38,7 +38,7 @@ function ItemRow({ item, index, last }) {
           </span>
           <ChevronDown size={18} className={`shrink-0 text-chalk-dim transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
         </span>
-        <span className={`mt-2 block text-sm leading-snug text-chalk-dim ${open ? '' : 'line-clamp-2 short:hidden'}`}>{clean(item.por_que)}</span>
+        <span className={`mt-2 block text-sm leading-snug text-chalk-dim ${open ? '' : item.sit ? 'line-clamp-1' : 'line-clamp-2 short:hidden'}`}>{clean(item.por_que)}</span>
       </button>
     </li>
   )
@@ -49,7 +49,10 @@ function ItemsTab({ r }) {
   return (
     <>
       <div className="short:hidden"><SectionTitle>{t('playOrder')}</SectionTitle></div>
-      <ol className="mb-2 short:[&_li]:pb-1.5">{r.build.map((b, i) => <ItemRow key={b.nombre + i} item={b} index={i} last={i === r.build.length - 1} />)}</ol>
+      <div className="mb-3 grid grid-cols-6 gap-1.5 rounded-xl border border-line bg-felt-2 p-2">
+        {r.build.map(b => <ItemImg key={b.en} en={b.en} alt={b.nombre} size={40} className="mx-auto max-w-full rounded-md" />)}
+        {r.botas && <ItemImg en={r.botas.en} alt={r.botas.nombre} size={40} className="mx-auto max-w-full rounded-md" />}
+      </div>
       {r.botas && (
         <div className="rounded-xl border border-line bg-felt-2 p-3">
           <p className="mb-2 text-sm font-medium text-chalk-dim">{t('boots')}</p>
@@ -57,12 +60,12 @@ function ItemsTab({ r }) {
             <ItemImg en={r.botas.en} alt="" size={44} className="rounded-lg" />
             <div className="min-w-0">
               <p className="font-semibold leading-tight">{r.botas.nombre}</p>
-              <p className="text-sm text-chalk-dim">{t('enchant')}: {r.botas.encantamiento}</p>
             </div>
           </div>
           <p className="mt-2 text-sm leading-snug text-chalk-dim short:hidden">{r.botas.por_que}</p>
         </div>
       )}
+      <ol className="mt-3 mb-2 short:[&_li]:pb-1.5">{r.build.map((b, i) => <ItemRow key={b.nombre + i} item={b} index={i} last={i === r.build.length - 1} />)}</ol>
     </>
   )
 }
@@ -137,7 +140,7 @@ function ResultLog({ r }) {
   if (saved && noted) return (
     <div className="mt-6">
       <p className="mb-3 text-sm text-chalk-dim">{t('noteSaved')}</p>
-      <NewMatchButton primary />
+      <NewMatchButton />
     </div>
   )
   if (saved) return (
@@ -154,7 +157,7 @@ function ResultLog({ r }) {
         className="mb-2 h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker" />
       <button type="button" onClick={() => { update(saved, { tags, note: note.trim() }); setNoted(true) }}
         className="h-12 w-full rounded-xl border border-line bg-felt-2 font-semibold">{t('noteSave')}</button>
-      <div className="mt-2"><NewMatchButton primary /></div>
+      <div className="mt-2"><NewMatchButton /></div>
     </div>
   )
   return (
@@ -280,6 +283,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
     <section aria-label="Build">
       <div className="mb-2 hidden items-center gap-2 short:flex">
         <p className="min-w-0 flex-1 truncate font-semibold">{r.campeon}</p>
+        <p className="text-sm text-chalk-dim">{t('patch')} {GAME.patch}</p>
         <BubbleButton />
       </div>
       <header className="mb-4 flex items-center gap-3 short:hidden">
@@ -291,22 +295,25 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         <BubbleButton />
       </header>
 
-      <div role="tablist" className="sticky top-0 z-10 mb-4 short:mb-2 grid grid-cols-3 gap-1 rounded-xl border border-line bg-felt-2 p-1">
+      <div role="group" aria-label={t('stepBuild')} className="sticky top-0 z-10 mb-4 short:mb-2 grid grid-cols-3 gap-1 rounded-xl border border-line bg-felt-2 p-1">
         {TABS.map(([k, l]) => (
-          <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-            className={`h-10 rounded-lg text-sm font-semibold ${tab === k ? 'bg-marker text-marker-ink' : 'text-chalk-dim'}`}>{t(l)}</button>
+          <button key={k} type="button" aria-pressed={tab === k} onClick={() => setTab(k)}
+            className={`h-11 rounded-lg text-sm font-semibold ${tab === k ? 'bg-marker text-marker-ink' : 'text-chalk-dim'}`}>{t(l)}</button>
         ))}
       </div>
 
-      <Basis r={r} />
-      <MyRecord />
-      {aiOn ? <CoachCard /> : <AiOffRow />}
-
+      {r.via && <p className="mb-2 text-sm text-chalk-dim">{t(r.aiChangedPurchases ? 'aiPurchaseChanges' : 'aiSamePurchases')}</p>}
       {tab === 'items' && <ItemsTab r={r} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
 
-      <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
+      <div className="mt-4">
+        <p className="text-sm text-chalk-dim">{t(OVERRIDES[r.campeon] ? 'buildGuide' : 'buildTemplate')}</p>
+        <Basis r={r} />
+        <MyRecord />
+        {aiOn ? <CoachCard /> : <AiOffRow />}
+        <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
+      </div>
 
       {error && (
         <div role="alert" className="mt-6 rounded-xl border border-foe/50 p-3 text-sm">
