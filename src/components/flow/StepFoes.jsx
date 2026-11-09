@@ -101,7 +101,7 @@ export default function StepFoes({ wide = false }) {
             <button type="button" data-lane={l.id} onClick={() => { setActive(l.id); setPicking(true); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
               aria-pressed={l.id === target} className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl py-0.5 active:scale-95">
               <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} />
-              <span className={`text-xs font-semibold tiny:hidden ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
+              <span className={`text-xs font-semibold ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
             </button>
             )}
           </li>
@@ -159,27 +159,41 @@ export default function StepFoes({ wide = false }) {
     />
   )
 
+  const teamTabs = (
+    <div role="group" aria-label={t('stepFoes')} className="grid flex-1 grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
+      {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => {
+        const positions = k === 'enemy' ? LANES : allyLanes
+        const picks = k === 'enemy' ? enemies : allies
+        return (
+          <button key={k} type="button" aria-pressed={side === k} onClick={() => {
+            if (side === k) return
+            setSide(k); setActive(null); setPicking(true); setNotice('')
+          }} className={`min-h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
+            {t(l)} <span className="text-xs tabular-nums">{positions.filter(lane => picks[lane.id]).length}/{positions.length}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+
   return (
     <section ref={compact ? compactRoot : null} aria-label={t('stepFoes')}>
       {selecting ? (
         <>
-          <div className="mb-1 flex items-center gap-2">
-            <button type="button" className="min-h-11 rounded-lg border border-line px-2 text-xs" onClick={() => { setActive(null); setPicking(false) }}>{t('draftOverview')}</button>
-            <p role="status" className="flex-1 text-sm font-semibold">{destination}</p>
+          <div className="mb-1 flex items-center gap-1">
+            {teamTabs}
+            <button type="button" className="min-h-11 rounded-lg border border-line px-1.5 text-xs" onClick={() => { setActive(null); setPicking(false) }}>{t('draftOverview')}</button>
+          </div>
+          {board}
+          <div className="mb-1 flex items-center gap-1">
+            <p role="status" className="flex-1 text-xs font-semibold">{destination}</p>
             {targetName && <button type="button" className="min-h-11 px-1 text-xs" aria-label={t('removeSlot', { name: tr(targetName) })} onClick={() => setSlot(target, '')}>{t('draftRemove')}</button>}
           </div>
           {catalog}
         </>
       ) : <>
       <div className="mb-3 flex items-center gap-2">
-        <div role="group" aria-label={t('stepFoes')} className="grid flex-1 grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
-          {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => (
-            <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setPicking(true); setNotice('') }}
-              className={`h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
-              {t(l)} <span className="text-xs tabular-nums">{(k === 'enemy' ? LANES.filter(lane => enemies[lane.id]).length : allyLanes.filter(lane => allies[lane.id]).length)}/{k === 'enemy' ? LANES.length : allyLanes.length}</span>
-            </button>
-          ))}
-        </div>
+        {teamTabs}
         <button type="button" onClick={clearOrUndo} disabled={!canUndo && !names.length && !hasHints}
           className="min-h-11 max-w-32 rounded-xl px-2 text-sm font-medium text-chalk-dim enabled:hover:text-chalk disabled:opacity-50">
           {t(canUndo ? 'undoClearTeam' : side === 'enemy' ? 'clearEnemies' : 'clearAllies')}
