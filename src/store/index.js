@@ -1,8 +1,10 @@
 import { create } from 'zustand'
+import { ROLE_LANE } from '../data/champions'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { loadKey, saveKey, loadKeys, saveKeys, migrateLegacyKey } from '../lib/secureKey'
 
 export const AI_PROVIDERS = {
+  ...(import.meta.env.VITE_COACH_URL ? { shared: { label: 'RiftBuild' } } : {}),
   local:      { label:"Sin IA (local)",      icon:"📦" },
   anthropic:  { label:"Anthropic",           icon:"🟠", url:"https://api.anthropic.com/v1/messages",              models:["claude-haiku-5-5","claude-sonnet-5-5"],                                            docsUrl:"https://console.anthropic.com" },
   openrouter: { label:"OpenRouter (gratis)", icon:"🆓", url:"https://openrouter.ai/api/v1/chat/completions",       models:["nvidia/nemotron-3-super-120b-a12b:free","google/gemma-4-26b-a4b-it:free"], docsUrl:"https://openrouter.ai", note:"Crea cuenta en openrouter.ai → API Keys. Sin tarjeta para modelos :free" },
@@ -13,7 +15,7 @@ export const AI_PROVIDERS = {
 export const useAIStore = create(
   persist(
     (set, get) => ({
-      provider: 'local',
+      provider: AI_PROVIDERS.shared ? 'shared' : 'local',
       fallback: '',     // second provider: used when the main one fails, hits its limit or runs out of credit
       modelLists: {},   // models each provider really offers this key (filled by "Test key"), best first
       keys:     {},     // API keys by provider. They live in secure storage and are never part of the persisted state
@@ -36,7 +38,15 @@ export const useAIStore = create(
       setModel:    (m) => set({ model: m }),
     }),
     // keys are deliberately NOT persisted here: they go to secure storage instead
-    { name: 'wr-ai-config', partialize: ({ key, keys, keyError, ...rest }) => rest }
+    {
+      name: 'wr-ai-config',
+      partialize: ({ key, keys, keyError, ...rest }) => rest,
+      merge: (saved, current) => {
+        const config = { ...current, ...saved }
+        if (!AI_PROVIDERS[config.provider]) config.provider = current.provider
+        return config
+      },
+    }
   )
 )
 
@@ -50,7 +60,7 @@ let saveTimer
     if (!Object.keys(keys).length) {
       const single = await loadKey()   // one key for the main provider (0.8.5 to 0.9.1)
       const p = useAIStore.getState().provider
-      if (single && p !== 'local') { keys = { [p]: single }; await saveKeys(keys); await saveKey('') }
+      if (single && AI_PROVIDERS[p]?.url) { keys = { [p]: single }; await saveKeys(keys); await saveKey('') }
     }
     useAIStore.setState({ keys, key: keys[useAIStore.getState().provider] || '' })
   } catch { useAIStore.setState({ keyError: true }) }
@@ -100,6 +110,11 @@ export const useDataStore = create((set) => ({
 const EMPTY ={ top:"", jg:"", mid:"", adc:"", sup:"" }
 const NO_HINTS = { ap:false, ad:false, heal:false, cc:false, tank:false }
 
+function reserveMyLane({ allies, myChamp, myRole }) {
+  const lane = myChamp && ROLE_LANE[myRole]
+  return lane && allies[lane] ? { ...allies, [lane]: '' } : allies
+}
+
 // Last champions the user played (most recent first) — shown as one-tap shortcuts
 export const useRecentStore = create(
   persist(
@@ -113,6 +128,7 @@ export const useRecentStore = create(
 
 export const useMatchStore = create(persist((set) => ({
   myChamp:  null,
+  draftId:  0,
   myRole:   'Solo / Baron',
   allies:   { ...EMPTY },
   enemies:  { ...EMPTY },
@@ -126,17 +142,20 @@ export const useMatchStore = create(persist((set) => ({
   error:    null,
   coach:    { state: 'idle', data: null, error: '' },   // live AI notes: idle | thinking | ready | paused | error
 
-  setMyChamp:  (c)        => set({ myChamp: c, locked: false }),
+  setMyChamp:  (c, role)  => set(s => {
+    const pick = { myChamp: c, myRole: role ?? s.myRole }
+    return { ...pick, allies: reserveMyLane({ ...s, ...pick }), locked: false }
+  }),
   setLocked:   (v)        => set({ locked: v }),
-  setMyRole:   (r)        => set({ myRole: r }),
-  setAlly:     (id, name) => set(s => ({ allies:  { ...s.allies,  [id]: name } })),
+  setMyRole:   (r)        => set(s => ({ myRole: r, allies: reserveMyLane({ ...s, myRole: r }) })),
+  setAlly:     (id, name) => set(s => s.myChamp && ROLE_LANE[s.myRole] === id ? s : { allies: { ...s.allies, [id]: name } }),
   setEnemy:    (id, name) => set(s => ({ enemies: { ...s.enemies, [id]: name } })),
   setStep:     (n)        => set({ step: n }),
   setView:     (v)        => set({ view: v }),
   setSide:     (v)        => set({ side: v }),
   toggleHint:  (k)        => set(s => ({ hints: { ...s.hints, [k]: !s.hints[k] } })),
   // everything a finished match leaves behind, back to the first step (lane and your pool/recents stay)
-  newMatch:    ()         => set({ myChamp: null, allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false, step: 0, side: 'enemy', result: null, loading: false, error: null, coach: { state: 'idle', data: null, error: '' } }),
+  newMatch:    ()         => set(s => ({ draftId: s.draftId + 1, myChamp: null, allies: { ...EMPTY }, enemies: { ...EMPTY }, hints: { ...NO_HINTS }, locked: false, step: 0, side: 'enemy', result: null, loading: false, error: null, coach: { state: 'idle', data: null, error: '' } })),
   clearTeam:   (side)     => set(side === 'enemy'
     ? { enemies: { ...EMPTY }, hints: { ...NO_HINTS } }
     : { allies: { ...EMPTY } }),
@@ -148,6 +167,10 @@ export const useMatchStore = create(persist((set) => ({
 }), {
   name: 'wr-match-draft',
   storage: createJSONStorage(() => localStorage),
+  merge: (saved, current) => {
+    const draft = { ...current, ...saved }
+    return { ...draft, allies: reserveMyLane(draft) }
+  },
   partialize: ({ myChamp, myRole, allies, enemies, hints, locked, step, side }) =>
     ({ myChamp, myRole, allies, enemies, hints, locked, step, side }),
 }))

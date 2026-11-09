@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { track } from './analytics'
 import { useMatchStore, useAIStore, useDataStore } from '../store'
-import { LANES } from '../data/champions'
+import { LANES, ROLE_LANE } from '../data/champions'
 import { generateBuild, localBuild, isPaused } from './aiService'
 import { useLang } from '../i18n'
+import { useSharedCoach } from './useSharedCoach'
 
 const DEBOUNCE_MS = 1500      // the AI is asked once you stop tapping, not on every tap
 const PAUSING = [401, 402, 403, 429]
@@ -23,7 +24,18 @@ export function useBuild() {
     allies:  LANES.map(l => allies[l.id]  ? { lane: l.lbl, name: allies[l.id] }  : null).filter(Boolean),
     enemies: LANES.map(l => enemies[l.id] ? { lane: l.lbl, name: enemies[l.id] } : null).filter(Boolean),
   })
-  const canImprove = provider !== 'local' && !!key?.trim() && !!myChamp
+  const shared = provider === 'shared' && !!import.meta.env.VITE_COACH_URL
+  const teams = lists()
+  const directRival = enemies[ROLE_LANE[myRole]] || ''
+  const sharedCoach = useSharedCoach({
+    body: shared && myChamp ? JSON.stringify({ myChamp: myChamp.n, myRole, hints, lang, ...teams }) : null,
+    draftId: m.draftId,
+    auto,
+    rivalCount: teams.enemies.length,
+    matchup: JSON.stringify([myChamp?.n, myRole, directRival]),
+  })
+  const aiOn = shared || (provider !== 'local' && provider !== 'shared' && !!key?.trim())
+  const canImprove = aiOn && !!myChamp
   // the backup provider answers when the main one fails or has no credit left
   const backup = fallback && keys[fallback]?.trim() ? { provider: fallback, key: keys[fallback], model: modelLists[fallback]?.[0] || '' } : null
   const inputs = () => ({ myChamp: myChamp.n, myRole, hints, lang, provider, key, model, fallback: backup, ...lists() })
@@ -35,7 +47,7 @@ export function useBuild() {
   }, [myChamp, myRole, allies, enemies, hints, lang, rev])
 
   // 2) live AI analysis: debounced, the previous request is cancelled
-  const live = auto && canImprove
+  const live = auto && canImprove && !shared
   useEffect(() => {
     ctl.current?.abort()
     const id = ++req.current   // anything still in flight is now stale
@@ -82,6 +94,6 @@ export function useBuild() {
 
   return {
     result: m.result, loading: m.loading, error: m.error, canImprove,
-    onImprove: improve, aiOn: provider !== 'local' && !!key?.trim(), aiModel: model, live,
+    onImprove: improve, aiOn, aiModel: model, live, shared, sharedCoach: { ...sharedCoach, directRival, myRole },
   }
 }

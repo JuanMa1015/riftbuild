@@ -44,7 +44,7 @@ function ItemRow({ item, index, last }) {
   )
 }
 
-function ItemsTab({ r }) {
+function ItemsTab({ r, sharedCoach }) {
   const { t } = useT()
   return (
     <>
@@ -53,6 +53,7 @@ function ItemsTab({ r }) {
         {r.build.map(b => <ItemImg key={b.en} en={b.en} alt={b.nombre} size={40} className="mx-auto max-w-full rounded-md" />)}
         {r.botas && <ItemImg en={r.botas.en} alt={r.botas.nombre} size={40} className="mx-auto max-w-full rounded-md" />}
       </div>
+      {sharedCoach && <CoachCard sharedCoach={sharedCoach} />}
       {r.botas && (
         <div className="rounded-xl border border-line bg-felt-2 p-3">
           <p className="mb-2 text-sm font-medium text-chalk-dim">{t('boots')}</p>
@@ -272,7 +273,7 @@ function PlanTab({ r }) {
   )
 }
 
-export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiOn, live }) {
+export default function BuildView({ result: r, loading, error, onImprove, canImprove, aiOn, live, shared, sharedCoach }) {
   const { t } = useT()
   const [tab, setTab] = useState('items')
   const myRole = useMatchStore(s => s.myRole)
@@ -303,7 +304,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
       </div>
 
       {r.via && <p className="mb-2 text-sm text-chalk-dim">{t(r.aiChangedPurchases ? 'aiPurchaseChanges' : 'aiSamePurchases')}</p>}
-      {tab === 'items' && <ItemsTab r={r} />}
+      {tab === 'items' && <ItemsTab r={r} sharedCoach={shared ? sharedCoach : null} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
 
@@ -311,7 +312,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         <p className="text-sm text-chalk-dim">{t(OVERRIDES[r.campeon] ? 'buildGuide' : 'buildTemplate')}</p>
         <Basis r={r} />
         <MyRecord />
-        {aiOn ? <CoachCard /> : <AiOffRow />}
+        {aiOn ? !shared && <CoachCard /> : <AiOffRow />}
         <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
       </div>
 
@@ -322,7 +323,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
           <p className="text-chalk-dim">{t('errorHelp')}</p>
         </div>
       )}
-      {canImprove && !live && (
+      {canImprove && !live && !shared && (
         <button type="button" onClick={onImprove} disabled={loading}
           className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-felt-2 font-semibold disabled:opacity-50">
           <Sparkles size={18} aria-hidden /> {loading ? t('consulting') : t('improveAI')}

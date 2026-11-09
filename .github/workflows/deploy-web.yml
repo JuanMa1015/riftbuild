@@ -34,6 +34,7 @@ jobs:
       - run: npm run build
         env:
           WEB_BASE: /riftbuild/
+          VITE_COACH_URL: ${{ vars.VITE_COACH_URL }}
       # legal pages and the social image next to the app (docs/index.html would overwrite the app: skip it)
       - run: rsync -a --exclude index.html docs/ dist/
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

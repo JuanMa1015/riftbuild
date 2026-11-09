@@ -1,4 +1,4 @@
-import bundled from '../../public/data/game.json'
+import bundled from 'virtual:riftbuild-game'
 import { isValidGame } from './validate'
 
 // Single source of truth: public/data/game.json (champions, items, builds, translations).

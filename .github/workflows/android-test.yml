@@ -24,6 +24,8 @@ jobs:
       - run: npm run check:game
       - run: npm test
       - run: npm run android
+        env:
+          VITE_COACH_URL: ${{ vars.VITE_COACH_URL }}
       - name: Build test APK
         working-directory: android
         run: |

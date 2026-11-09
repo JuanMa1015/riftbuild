@@ -107,7 +107,15 @@ export default function SettingsPage() {
               className={`${seg(provider === k)} px-1 text-xs`}>{p.label.split(' ')[0]}</button>
           ))}
         </div>
-        {provider === 'local' ? (
+        {provider === 'shared' ? (
+          <div className="space-y-3">
+            <p className="text-sm text-chalk-dim">{t('sharedCoachHelp')}</p>
+            <label className="flex items-center gap-3 text-sm">
+              <input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} className="h-5 w-5 accent-[var(--color-marker)]" />
+              {t('aiAuto')}
+            </label>
+          </div>
+        ) : provider === 'local' ? (
           <p className="text-sm text-chalk-dim">{t('aiLocalNote')}</p>
         ) : (
           <div className="flex flex-col gap-3">
@@ -143,7 +151,7 @@ export default function SettingsPage() {
                 <select value={fallback} onChange={e => { setFallback(e.target.value); setTestFb(null) }}
                   className="h-12 w-full rounded-xl border border-line bg-felt-2 px-3 outline-none focus:border-marker">
                   <option value="">{t('fallbackNone')}</option>
-                  {Object.entries(AI_PROVIDERS).filter(([k]) => k !== 'local' && k !== provider).map(([k, p]) => <option key={k} value={k}>{p.label}</option>)}
+                  {Object.entries(AI_PROVIDERS).filter(([k, p]) => p.url && k !== provider).map(([k, p]) => <option key={k} value={k}>{p.label}</option>)}
                 </select>
               </label>
               <p className="mt-1 text-sm text-chalk-dim">{t('fallbackHint')}</p>

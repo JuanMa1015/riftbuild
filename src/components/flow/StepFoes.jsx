@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useMatchStore } from '../../store'
-import { LANES } from '../../data/champions'
+import { LANES, ROLE_LANE } from '../../data/champions'
 import { useT } from '../../i18n'
 import { Token } from '../ui'
 import { useMedia } from '../../lib/useMedia'
@@ -18,7 +18,7 @@ const CHIPS = [
 // The board and the search box stay pinned together, so slot, query and result are always on screen.
 export default function StepFoes({ wide = false }) {
   const { t, tr } = useT()
-  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeam, myChamp, setStep } = useMatchStore()
+  const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeam, myChamp, myRole, setStep } = useMatchStore()
   const slots = useRef(null)
   const [active, setActive] = useState(null)
   const [notice, setNotice] = useState('')
@@ -30,13 +30,20 @@ export default function StepFoes({ wide = false }) {
   const setSlot = side === 'enemy' ? setEnemy : setAlly
   const tokenSide = side === 'enemy' ? 'foe' : 'ally'
   const ringCls = side === 'enemy' ? 'ring-[3px] ring-foe' : 'ring-[3px] ring-ally'
-  const target = active ?? LANES.find(l => !team[l.id])?.id
-  const names = LANES.map(l => team[l.id]).filter(Boolean)
-  const full = names.length === LANES.length
+  const myLane = myChamp ? ROLE_LANE[myRole] : null
+  const reservedLane = side === 'ally' ? myLane : null
+  const allyLanes = LANES.filter(lane => lane.id !== myLane)
+  const editableLanes = side === 'ally' ? allyLanes : LANES
+  const first = side === 'enemy' ? LANES.findIndex(lane => lane.id === myLane) : -1
+  const orderedLanes = first > 0 ? [...LANES.slice(first), ...LANES.slice(0, first)] : editableLanes
+  const selectedSlot = active === reservedLane ? null : active
+  const target = selectedSlot ?? orderedLanes.find(lane => !team[lane.id])?.id
+  const names = editableLanes.map(lane => team[lane.id]).filter(Boolean)
+  const full = names.length === editableLanes.length
   const teamKey = side === 'enemy' ? 'enemies' : 'allies'
   const hasHints = side === 'enemy' && Object.values(hints).some(Boolean)
   const snapshot = cleared[side]
-  const canUndo = snapshot?.emptyTeam === team && (side !== 'enemy' || snapshot.emptyHints === hints)
+  const canUndo = snapshot?.emptyTeam === team && (side === 'enemy' ? snapshot.emptyHints === hints : snapshot.reservedLane === reservedLane)
   const targetName = target && team[target]
   const destination = target && t(targetName ? 'replaceChampionAt' : side === 'enemy' ? 'addEnemyAt' : 'addAllyAt', {
     lane: t('lane.' + target),
@@ -52,7 +59,7 @@ export default function StepFoes({ wide = false }) {
       const empty = useMatchStore.getState()
       setCleared(previous => ({
         ...previous,
-        [side]: { team, hints, emptyTeam: empty[teamKey], emptyHints: empty.hints },
+        [side]: { team, hints, reservedLane, emptyTeam: empty[teamKey], emptyHints: empty.hints },
       }))
     }
     setActive(null)
@@ -62,7 +69,7 @@ export default function StepFoes({ wide = false }) {
   function pick(c) {
     if (names.includes(c.n)) return
     if (!target) { setNotice(t('chooseSlot')); return }
-    if (wide && (full || names.length === LANES.length - 1)) {
+    if (wide && (full || (!targetName && names.length === editableLanes.length - 1))) {
       slots.current?.querySelector(`[data-lane="${target}"]`)?.focus()
     }
     setSlot(target, c.n)
@@ -78,17 +85,24 @@ export default function StepFoes({ wide = false }) {
       <ul ref={slots} className="relative grid grid-cols-5 gap-0.5">
         {LANES.map(l => (
           <li key={l.id}>
+            {l.id === reservedLane ? (
+              <div className="flex min-h-11 flex-col items-center justify-center gap-1 py-0.5" aria-label={`${t('stepMe')}: ${tr(myChamp.n)} · ${t('lane.' + l.id)}`}>
+                <Token name={myChamp.n} side="me" lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} />
+                <span className="text-xs font-semibold">{t('stepMe')}</span>
+              </div>
+            ) : (
             <button type="button" data-lane={l.id} onClick={() => { setActive(l.id); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
               aria-pressed={l.id === target} className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl py-0.5 active:scale-95">
               <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} />
               <span className={`text-xs font-semibold tiny:hidden ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
             </button>
+            )}
           </li>
         ))}
       </ul>
-      {active && team[active] && (
-        <button type="button" className="relative mt-1 min-h-11 w-full text-sm text-chalk" onClick={() => setSlot(active, '')}>
-          {t('removeSlot', { name: tr(team[active]) })}
+      {selectedSlot && targetName && (
+        <button type="button" className="relative mt-1 min-h-11 w-full text-sm text-chalk" onClick={() => setSlot(selectedSlot, '')}>
+          {t('removeSlot', { name: tr(targetName) })}
         </button>
       )}
       <p role="status" className={notice ? 'relative mt-1 text-center text-sm' : 'sr-only'}>{notice}</p>
@@ -115,7 +129,7 @@ export default function StepFoes({ wide = false }) {
           {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => (
             <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setNotice('') }}
               className={`h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
-              {t(l)} <span className="text-xs tabular-nums">{LANES.filter(lane => (k === 'enemy' ? enemies : allies)[lane.id]).length}/{LANES.length}</span>
+              {t(l)} <span className="text-xs tabular-nums">{(k === 'enemy' ? LANES.filter(lane => enemies[lane.id]).length : allyLanes.filter(lane => allies[lane.id]).length)}/{k === 'enemy' ? LANES.length : allyLanes.length}</span>
             </button>
           ))}
         </div>
@@ -144,7 +158,8 @@ export default function StepFoes({ wide = false }) {
       <ChampSearch
           key={side}
           header={board}
-          closedMessage={wide && full && !active ? t('chooseSlot') : undefined}
+          autoLane={target ?? null}
+          closedMessage={full && !selectedSlot ? t('chooseSlot') : undefined}
           label={destination || t('chooseSlot')}
           placeholder={t('typeToSearch')}
           onPick={pick}
