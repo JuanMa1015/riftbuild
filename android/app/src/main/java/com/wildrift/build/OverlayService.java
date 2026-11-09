@@ -72,12 +72,17 @@ public class OverlayService extends Service {
         if (s != null) s.handler.post(() -> { if (fg) s.userHidden = false; s.applyHidden(); });
     }
 
-    private void applyHidden() { if (root != null) root.setVisibility(hiddenWanted || userHidden ? View.GONE : View.VISIBLE); }
+    private void applyHidden() {
+        boolean hidden = hiddenWanted || userHidden;
+        if (hidden) hideDismissTarget();
+        if (root != null) root.setVisibility(hidden ? View.GONE : View.VISIBLE);
+    }
 
     private static final int BUBBLE_DP = 48, ICON_DP = 34, FOLD_MS = 7000;
     private WindowManager wm;
     private LinearLayout root, panel;
     private ImageView bubbleIcon;
+    private View dismissTarget;
     private TextView bubbleText;
     private WindowManager.LayoutParams lp;
     private String closeLabel = "Close";
@@ -206,13 +211,28 @@ public class OverlayService extends Service {
                         sx = lp.x; sy = lp.y; tx = e.getRawX(); ty = e.getRawY(); moved = false; return true;
                     case MotionEvent.ACTION_MOVE:
                         float dx = e.getRawX() - tx, dy = e.getRawY() - ty;
-                        if (Math.abs(dx) > dp(6) || Math.abs(dy) > dp(6)) moved = true;
+                        if (!moved && (Math.abs(dx) > dp(6) || Math.abs(dy) > dp(6))) {
+                            moved = true;
+                            handler.removeCallbacks(fold);
+                            panel.setVisibility(View.GONE);
+                            showDismissTarget();
+                        }
                         if (moved) { lp.x = sx + (int) dx; lp.y = sy + (int) dy; wm.updateViewLayout(root, lp); }
+                        if (dismissTarget != null) dismissTarget.setAlpha(overDismissTarget(e) ? 1f : 0.72f);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        if (moved) snapToEdge();
+                        if (moved) {
+                            boolean dismiss = overDismissTarget(e);
+                            hideDismissTarget();
+                            snapToEdge();
+                            if (dismiss) dismissBubble();
+                        }
                         else if (idle) openAppWindow();
                         else togglePanel();
+                        return true;
+                    case MotionEvent.ACTION_CANCEL:
+                        hideDismissTarget();
+                        if (moved) snapToEdge();
                         return true;
                 }
                 return false;
@@ -221,6 +241,40 @@ public class OverlayService extends Service {
         wm.addView(root, lp);
         snapToEdge();
         applyHidden();
+    }
+
+    private void showDismissTarget() {
+        if (dismissTarget != null) return;
+        View target = new CloseView(this);
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.OVAL);
+        background.setColor(Color.parseColor("#FF8F3333"));
+        target.setBackground(background);
+        target.setAlpha(0.72f);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(dp(58), dp(58),
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        params.y = dp(20);
+        wm.addView(target, params);
+        dismissTarget = target;
+    }
+
+    private boolean overDismissTarget(MotionEvent event) {
+        if (dismissTarget == null || !dismissTarget.isLaidOut()) return false;
+        int[] location = new int[2];
+        dismissTarget.getLocationOnScreen(location);
+        float dx = event.getRawX() - location[0] - dismissTarget.getWidth() / 2f;
+        float dy = event.getRawY() - location[1] - dismissTarget.getHeight() / 2f;
+        float radius = dismissTarget.getWidth() / 2f + dp(10);
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
+    private void hideDismissTarget() {
+        if (dismissTarget == null) return;
+        wm.removeView(dismissTarget);
+        dismissTarget = null;
     }
 
     private int screenW() {
@@ -482,6 +536,7 @@ public class OverlayService extends Service {
         if (instance == this) instance = null;
         handler.removeCallbacks(fold);
         handler.removeCallbacks(tick);
+        hideDismissTarget();
         if (root != null) { wm.removeView(root); root = null; }
         super.onDestroy();
     }

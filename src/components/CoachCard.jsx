@@ -12,7 +12,7 @@ export default function CoachCard({ sharedCoach }) {
   const { t, tr } = useT()
   const [phase, setPhase] = useState('lane')
   const personalCoach = useMatchStore(s => s.coach)
-  const { state, data, error, via } = sharedCoach?.coach ?? personalCoach
+  const { state, data, error, via, retryAt, scope } = sharedCoach?.coach ?? personalCoach
   const locked = useMatchStore(s => s.locked)
   const main = useAIStore(s => s.provider)
   const live = useAIStore(s => s.provider === 'shared' || (s.auto && s.provider !== 'local' && !!s.key.trim()))
@@ -22,6 +22,7 @@ export default function CoachCard({ sharedCoach }) {
     : state === 'thinking' ? t(sharedCoach ? 'coachUpdating' : 'coachThinking')
     : state === 'ready' ? t('coachReady') + (sharedCoach && via ? ` · ${({ groq: 'Groq', gemini: 'Gemini', openrouter: 'OpenRouter' })[via] || via}` : via && via !== main ? ` · ${t('coachVia', { p: AI_PROVIDERS[via]?.label.split(' ')[0] || via })}` : '')
     : state === 'unavailable' ? t('sharedCoachUnavailable')
+    : state === 'limited' ? t(scope?.endsWith('_daily') ? 'coachDailyLimit' : 'coachRateLimit')
     : t(state === 'paused' ? 'coachPaused' : 'coachError', { err: (error || '').slice(0, 70) })
   const rows = data ? ROWS.filter(([k]) => data[k] && (!locked || k !== 'pick')) : []
   const phases = [['lane', 'coachPhaseLane'], ['fights', 'coachPhaseFights'], ['objectives', 'coachPhaseObjectives']]
@@ -38,10 +39,13 @@ export default function CoachCard({ sharedCoach }) {
     <section aria-label={t('coachTitle')} aria-busy={state === 'thinking'} className="mb-4 rounded-2xl border border-line bg-felt-2 p-3">
       <p className="flex items-center gap-2 text-sm font-semibold">
         <Sparkles size={16} className="text-marker" aria-hidden /> {t('coachTitle')}
-        <span role="status" className="ml-auto flex min-w-0 items-center gap-1.5 truncate text-xs font-medium text-chalk-dim">
+        <span role="status" className="ml-auto flex min-w-0 items-center gap-1.5 text-right text-xs font-medium text-chalk-dim">
           {state === 'thinking' && <Loader2 size={14} className="shrink-0 animate-spin" aria-hidden />} {status}
         </span>
       </p>
+      {state === 'limited' && Number.isFinite(retryAt) && <p className="mt-1 text-sm text-chalk-dim">{t('coachRetryAt', {
+        time: new Date(retryAt).toLocaleString(t('coachLocale'), { weekday: 'short', hour: 'numeric', minute: '2-digit' }),
+      })}</p>}
       {sharedCoach ? (
         <div className="mt-2 grid gap-2 text-sm">
           <div>
@@ -64,7 +68,7 @@ export default function CoachCard({ sharedCoach }) {
       ) : (
         rows.length > 0 && renderRows(rows)
       )}
-      {sharedCoach && <button type="button" onClick={sharedCoach.refresh} disabled={state === 'thinking'} className="mt-2 min-h-11 rounded-lg border border-line px-3 text-sm font-semibold disabled:opacity-50">
+      {sharedCoach && <button type="button" onClick={sharedCoach.refresh} disabled={state === 'thinking' || state === 'limited'} className="mt-2 min-h-11 rounded-lg border border-line px-3 text-sm font-semibold disabled:opacity-50">
         {t(state === 'idle' ? 'analyzeDraft' : 'coachRefresh')}
       </button>}
       {!sharedCoach && rows.length === 0 && state === 'thinking' && (

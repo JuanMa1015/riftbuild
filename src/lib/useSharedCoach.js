@@ -6,6 +6,7 @@ const AUTO_LIMIT = 3
 export function useSharedCoach({ body, draftId, auto, rivalCount, matchup }) {
   const [manual, setManual] = useState(null)
   const [result, setResult] = useState(null)
+  const [limit, setLimit] = useState(null)
   const handled = useRef(null)
   const session = useRef(null)
 
@@ -22,6 +23,7 @@ export function useSharedCoach({ body, draftId, auto, rivalCount, matchup }) {
       show(cached)
       return
     }
+    if (limit) return
     const reserveFullDraft = rivalCount < 5 && !budget.complete
     const skipPartial = reserveFullDraft && (budget.matchup === matchup || budget.count >= AUTO_LIMIT - 1)
     if (!requested && (!auto || !rivalCount || budget.count >= AUTO_LIMIT || skipPartial)) {
@@ -45,6 +47,17 @@ export function useSharedCoach({ body, draftId, auto, rivalCount, matchup }) {
           body,
           signal: AbortSignal.any([controller.signal, AbortSignal.timeout(18000)]),
         })
+        if (response.status === 429) {
+          const quota = await response.json().catch(() => null)
+          if (!controller.signal.aborted) {
+            show(cached ?? { state: 'idle' })
+            setLimit({
+              scope: quota?.scope,
+              retryAt: Number.isFinite(quota?.retryAt) ? quota.retryAt : null,
+            })
+          }
+          return
+        }
         if (!response.ok) throw new Error()
         const { coach, via } = await response.json()
         if (controller.signal.aborted) return
@@ -59,10 +72,17 @@ export function useSharedCoach({ body, draftId, auto, rivalCount, matchup }) {
       clearTimeout(timer)
       controller.abort()
     }
-  }, [auto, body, draftId, manual, rivalCount, matchup])
+  }, [auto, body, draftId, manual, rivalCount, matchup, limit])
 
+  useEffect(() => {
+    if (!limit) return
+    const timer = setTimeout(() => setLimit(null), Math.max(0, (limit.retryAt ?? Date.now() + 60000) - Date.now()))
+    return () => clearTimeout(timer)
+  }, [limit])
+
+  const current = body && result?.body === body && result.draftId === draftId ? result : null
   return {
-    coach: body && result?.body === body && result.draftId === draftId ? result : { state: 'idle' },
+    coach: limit ? { state: 'limited', ...limit, data: current?.data } : current ?? { state: 'idle' },
     refresh: () => setManual({ body, draftId }),
   }
 }
