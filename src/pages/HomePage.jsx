@@ -53,10 +53,10 @@ export default function HomePage() {
     const h1 = <StepHeading n={1} title={t('meTitle')} done={!!myChamp} action={myChamp && <NewMatchButton />} />
     const h2 = <StepHeading n={2} title={t('stepFoesFull')} done={hasFoes} />
     const h3 = <StepHeading n={3} title={t('stepBuildFull')} locked={!myChamp} />
-    const col = 'flex min-h-0 flex-col'
+    const col = 'flex min-h-0 min-w-0 flex-col'
     const scroll = 'min-h-0 flex-1 overflow-y-auto pb-8 pr-1'
     body = xl ? (
-      <div className="mx-auto grid min-h-0 w-full max-w-[1500px] flex-1 grid-cols-[330px_370px_minmax(0,1fr)] gap-6 px-6">
+      <div className="grid min-h-0 w-full flex-1 grid-cols-[minmax(300px,1fr)_minmax(340px,1.2fr)_minmax(0,1.85fr)] gap-6 px-6 2xl:gap-8 2xl:px-8">
         <div className={col}>{h1}<div className={scroll}><StepMe compact hideTitle roomy /></div></div>
         <div className={col}>{h2}<div className={scroll}><StepFoes wide /></div></div>
         <div className={col}>{h3}<div className={scroll}>{buildView}</div></div>

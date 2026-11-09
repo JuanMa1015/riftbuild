@@ -101,7 +101,7 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
       {!closedMessage && (list.length === 0 ? (
         <p className="py-8 text-center text-chalk-dim">{t('noMatch')} “{q}”</p>
       ) : (
-        <ul className={searching ? 'grid gap-1' : 'grid grid-cols-4 gap-x-1 gap-y-2 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5'}>
+        <ul className={searching ? 'grid gap-1' : 'grid grid-cols-4 gap-x-1 gap-y-2 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-[repeat(auto-fill,minmax(56px,1fr))]'}>
           {list.map(c => {
             const position = occupiedLane(c.n)
             return (

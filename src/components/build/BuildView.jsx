@@ -38,7 +38,7 @@ function ItemRow({ item, index, last }) {
           </span>
           <ChevronDown size={18} className={`shrink-0 text-chalk-dim transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
         </span>
-        <span className={`mt-2 block text-sm leading-snug text-chalk-dim ${open ? '' : item.sit ? 'line-clamp-1' : 'line-clamp-2 short:hidden'}`}>{clean(item.por_que)}</span>
+        <span className={`mt-2 block max-w-[68ch] text-sm leading-snug text-chalk-dim ${open ? '' : item.sit ? 'line-clamp-1' : 'line-clamp-2 short:hidden'}`}>{clean(item.por_que)}</span>
       </button>
     </li>
   )
@@ -62,7 +62,7 @@ function ItemsTab({ r }) {
               <p className="font-semibold leading-tight">{r.botas.nombre}</p>
             </div>
           </div>
-          <p className="mt-2 text-sm leading-snug text-chalk-dim short:hidden">{r.botas.por_que}</p>
+          <p className="mt-2 max-w-[68ch] text-sm leading-snug text-chalk-dim short:hidden">{r.botas.por_que}</p>
         </div>
       )}
       <ol className="mt-3 mb-2 short:[&_li]:pb-1.5">{r.build.map((b, i) => <ItemRow key={b.nombre + i} item={b} index={i} last={i === r.build.length - 1} />)}</ol>
