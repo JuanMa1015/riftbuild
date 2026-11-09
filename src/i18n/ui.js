@@ -1,6 +1,13 @@
 // Interface strings as [Spanish, English] pairs. Game content is translated through game.json.
 const messages = {
   appName: ['RiftBuild', 'RiftBuild'],
+  banTitle: ['Ban recomendado', 'Recommended ban'],
+  banFirst: ['Bloqueo principal', 'Top ban'],
+  banAlternative: ['Alternativa', 'Alternative'],
+  banUnavailable: ['Faltan datos para sugerir un bloqueo en este carril.', 'There is not enough data to suggest a ban in this lane.'],
+  banClassReason: ['Estimación por clase. {type} puede complicar este enfrentamiento.', 'Class estimate. {type} can make this matchup harder.'],
+  banGwenJax: ['Contraataque puede esquivar golpes con efectos al impacto y cortar parte del daño de Gwen.', 'Counter Strike can dodge on-hit attacks and deny some of Gwen’s damage.'],
+  banSource: ['Interacción de habilidades · revisada para {patch} · fuente', 'Ability interaction · reviewed for {patch} · source'],
   patch: ['Parche', 'Patch'],
   compositionOptional: ['Rivales y aliados son opcionales.', 'Enemies and allies are optional.'],
   addEnemyAt: ['Añadiendo rival en {lane}', 'Adding an enemy in {lane}'],
@@ -209,7 +216,7 @@ const messages = {
   sugEmpty: ['Aún no hay rivales ni aliados. En cuanto los agregues en el tablero, aquí verás a quién elegir.', 'No enemies or allies yet. As soon as you add them on the board, you will see who to pick here.'],
   sugNone: ['Con lo que hay hasta ahora no hay una opción clara; sigue agregando picks.', 'Nothing clear yet with what is known; keep adding picks.'],
   sugTitle: ['Qué elegir ahora', 'What to pick now'],
-  sugHint: ['reglas de clase y daño, tier list del parche y tus partidas, para {lane}', 'class and damage rules for {lane}, not statistics'],
+  sugHint: ['reglas de clase y daño y tus partidas, para {lane}', 'class and damage rules and your matches, for {lane}'],
   sugGo: ['Ver sugerencias', 'See suggestions'],
   noChamp: ['Aún no tienes campeón.', 'No champion yet.'],
   poolMine: ['En mi pool', 'In my pool'],

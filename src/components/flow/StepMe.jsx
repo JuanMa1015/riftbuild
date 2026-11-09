@@ -8,6 +8,7 @@ import { Token, LaneGlyph, ROLE_LANE, SectionTitle } from '../ui'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
 import PickStatus from './PickStatus'
+import BanCard from './BanCard'
 import { NewMatchButton } from './FlowChrome'
 
 // Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
@@ -76,6 +77,8 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
           })}
         </div>
       )}
+
+      {myChamp && <BanCard name={myChamp.n} lane={lane} />}
 
       {!showSearch && roomy && suggestions}
 

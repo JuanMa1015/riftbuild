@@ -7,5 +7,8 @@ if (!isValidGame(g)) { console.error('game.json no pasa la validación de la app
 const missing = Object.entries(g.items)
   .filter(([, item]) => !existsSync(new URL(`../public/items/${item.en}.png`, import.meta.url)))
   .map(([name]) => name)
-if (missing.length) console.warn(`Ítems sin icono local (${missing.length}): ${missing.join(', ')}`)
+if (missing.length) {
+  console.error(`Ítems sin icono local (${missing.length}): ${missing.join(', ')}`)
+  process.exit(1)
+}
 console.log(`game.json ok (${g.champions.length} campeones, ${Object.keys(g.overrides || {}).length} con build propia)`)
