@@ -19,16 +19,16 @@
     "compare:ai": "vitest run --config vitest.compare.config.js"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.3",
+    "@capacitor/android": "^8.6.0",
     "@capacitor/app": "^8.1.2",
-    "@capacitor/core": "^8.5.3",
+    "@capacitor/core": "^8.6.0",
     "@fontsource/barlow-semi-condensed": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "lucide-react": "^1.69.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwindcss": "^4.3.3",
-    "zustand": "^5.0.16"
+    "tailwindcss": "^4.3.5",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
@@ -38,7 +38,7 @@
     "oxlint": "^1.91.0",
     "sharp": "^0.35.5",
     "vite": "^8.3.6",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "overrides": {
     "uuid": "^11.1.1"
