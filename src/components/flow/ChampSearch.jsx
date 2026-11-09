@@ -11,19 +11,14 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', recents = [], pools = null, label, header, between = null, autoLane, deferCatalog = false, closedMessage }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', occupiedLane = () => null, recents = [], pools = null, label, header, between = null, closedMessage }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
-  const [catalogOpened, setCatalogOpened] = useState(false)
-  const showCatalog = !closedMessage && (!deferCatalog || catalogOpened)
   const searching = Boolean(q.trim())
   const top = useRef(null)
-  // Lane filter. With `autoLane` (the board lane being filled) it follows that slot by itself; a tap on any chip takes manual
-  // control, and "Auto" gives it back. Typing ignores the lane entirely: a name search must never miss a champion.
-  const [manual, setManual] = useState(null)
-  const auto = autoLane !== undefined
-  const lane = manual ?? (auto ? autoLane || 'all' : 'all')
+  // Typing searches the entire roster, even when a lane filter is selected.
+  const [lane, setLane] = useState('all')
 
   const list = useMemo(() => {
     const f = fold(q.trim())
@@ -56,17 +51,18 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
         {closedMessage && <p className="text-sm text-chalk-dim">{closedMessage}</p>}
         {!closedMessage && <>
         <label className="block">
-        {label && <span className="mb-1 block text-sm font-medium text-chalk-dim tiny:hidden">{label}</span>}
+        {label && <span role="status" className="mb-1 block text-sm font-medium text-chalk-dim">{label}</span>}
         <span className="flex h-12 tiny:h-10 items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 focus-within:border-marker">
           <Search size={18} className="shrink-0 text-chalk-dim" aria-hidden />
           <input
             value={q}
-            onFocus={() => {
-              setCatalogOpened(true)
-              top.current?.scrollIntoView({ block: 'start' })
-            }}
+            onFocus={() => top.current?.scrollIntoView({ block: 'start' })}
             onChange={e => setQ(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && list[0]) pick(list[0]) }}
+            onKeyDown={e => {
+              if (e.key !== 'Enter' || e.nativeEvent.isComposing) return
+              const available = list.find(c => !occupiedLane(c.n))
+              if (available) pick(available)
+            }}
             placeholder={placeholder}
             aria-label={label || placeholder}
             enterKeyHint="search"
@@ -83,14 +79,14 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
           )}
         </span>
         </label>
-        {showCatalog && !searching && <div role="group" aria-label={t('showLane')} className="mt-1 flex flex-wrap gap-1.5 tiny:hidden">
-          {[...(auto ? ['auto'] : []), 'all', ...LANES.map(l => l.id)].map(id => {
-            const on = id === 'auto' ? manual === null : (manual ?? (auto ? 'auto' : 'all')) === id
+        {!searching && <div role="group" aria-label={t('showLane')} className="mt-1 flex flex-wrap gap-1.5 tiny:hidden">
+          {['all', ...LANES.map(l => l.id)].map(id => {
+            const on = lane === id
             return (
-              <button key={id} type="button" aria-pressed={on} onClick={() => setManual(id === 'auto' ? null : id)}
+              <button key={id} type="button" aria-pressed={on} onClick={() => setLane(id)}
                 className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
-                {id !== 'all' && id !== 'auto' && <LaneGlyph lane={id} size={14} />}
-                {id === 'auto' ? `${t('autoLane')}${autoLane ? ' · ' + t('lane.' + autoLane) : ''}` : id === 'all' ? t('all') : t('lane.' + id)}
+                {id !== 'all' && <LaneGlyph lane={id} size={14} />}
+                {id === 'all' ? t('all') : t('lane.' + id)}
               </button>
             )
           })}
@@ -102,19 +98,25 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', rece
       {!q && poolNames.length > 0 && row(t('poolTitle'), poolNames)}
       {!q && recents.length > 0 && row(t('meRecents'), recents)}
 
-      {showCatalog && (list.length === 0 ? (
+      {!closedMessage && (list.length === 0 ? (
         <p className="py-8 text-center text-chalk-dim">{t('noMatch')} “{q}”</p>
       ) : (
         <ul className={searching ? 'grid gap-1' : 'grid grid-cols-4 gap-x-1 gap-y-2 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5'}>
-          {list.map(c => (
-            <li key={c.n}>
-              <button type="button" aria-label={tr(c.n)} onClick={() => pick(c)}
-                className={`flex w-full items-center rounded-lg py-1.5 active:scale-95 hover:bg-felt-2 ${searching ? 'gap-3 px-2 text-left' : 'flex-col gap-1'}`}>
-                <ChampImg name={c.n} size={searching ? 40 : 56} className={`shrink-0 rounded-full ${ring(c.n)}`} />
-                <span className={searching ? 'text-sm font-semibold' : 'w-full truncate px-0.5 text-center text-xs leading-tight'}>{tr(c.n)}</span>
-              </button>
-            </li>
-          ))}
+          {list.map(c => {
+            const position = occupiedLane(c.n)
+            return (
+              <li key={c.n}>
+                <button type="button" disabled={!!position} aria-label={position ? `${tr(c.n)}, ${position}` : tr(c.n)} onClick={() => pick(c)}
+                  className={`flex w-full items-center rounded-lg py-1.5 enabled:active:scale-95 enabled:hover:bg-felt-2 ${searching ? 'gap-3 px-2 text-left' : 'flex-col gap-1'}`}>
+                  <ChampImg name={c.n} size={searching ? 40 : 56} className={`shrink-0 rounded-full ${ring(c.n)}`} />
+                  <span className={searching ? 'min-w-0 text-sm font-semibold' : 'w-full px-0.5 text-center text-xs leading-tight'}>
+                    <span className={searching ? 'block' : 'block truncate'}>{tr(c.n)}</span>
+                    {position && <span className="block font-medium text-chalk-dim">{position}</span>}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
         </ul>
       ))}
     </div>

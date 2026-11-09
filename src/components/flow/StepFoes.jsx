@@ -7,7 +7,6 @@ import { useMedia } from '../../lib/useMedia'
 import ChampSearch from './ChampSearch'
 import Suggestions from './Suggestions'
 import PickStatus from './PickStatus'
-import CoachCard from '../CoachCard'
 import { chooseChampion } from '../../lib/pick'
 
 const CHIPS = [
@@ -23,6 +22,7 @@ export default function StepFoes({ wide = false }) {
   const slots = useRef(null)
   const [active, setActive] = useState(null)
   const [notice, setNotice] = useState('')
+  const [cleared, setCleared] = useState({})
   const narrow = useMedia('(max-width: 359px)')
   const tiny = useMedia('(max-height: 420px)')   // landscape pop-up window: every pixel counts   // Samsung pop-up window and other small windows
 
@@ -33,10 +33,34 @@ export default function StepFoes({ wide = false }) {
   const target = active ?? LANES.find(l => !team[l.id])?.id
   const names = LANES.map(l => team[l.id]).filter(Boolean)
   const full = names.length === LANES.length
+  const teamKey = side === 'enemy' ? 'enemies' : 'allies'
+  const hasHints = side === 'enemy' && Object.values(hints).some(Boolean)
+  const snapshot = cleared[side]
+  const canUndo = snapshot?.emptyTeam === team && (side !== 'enemy' || snapshot.emptyHints === hints)
+  const targetName = target && team[target]
+  const destination = target && t(targetName ? 'replaceChampionAt' : side === 'enemy' ? 'addEnemyAt' : 'addAllyAt', {
+    lane: t('lane.' + target),
+    name: targetName ? tr(targetName) : '',
+  })
+
+  function clearOrUndo() {
+    if (canUndo) {
+      useMatchStore.setState(side === 'enemy' ? { enemies: snapshot.team, hints: snapshot.hints } : { allies: snapshot.team })
+      setCleared(previous => ({ ...previous, [side]: null }))
+    } else {
+      clearTeam(side)
+      const empty = useMatchStore.getState()
+      setCleared(previous => ({
+        ...previous,
+        [side]: { team, hints, emptyTeam: empty[teamKey], emptyHints: empty.hints },
+      }))
+    }
+    setActive(null)
+    setNotice('')
+  }
 
   function pick(c) {
-    const taken = LANES.find(l => team[l.id] === c.n)
-    if (taken) { setActive(taken.id); setNotice(t('alreadyOnTeam')); return }
+    if (names.includes(c.n)) return
     if (!target) { setNotice(t('chooseSlot')); return }
     if (wide && (full || names.length === LANES.length - 1)) {
       slots.current?.querySelector(`[data-lane="${target}"]`)?.focus()
@@ -71,8 +95,7 @@ export default function StepFoes({ wide = false }) {
     </div>
   )
 
-  // Real drafts reveal the enemy one pick at a time, so the suggestions live in this step, right under the board,
-  // and update with every rival you add. Once you have a champion this slot just shows it.
+  // Keep pick advice below the catalog so it never interrupts consecutive selections.
   const mineOrSuggestions = myChamp ? (
     <>
     <div className="mb-3 flex items-center gap-3 rounded-xl border border-line bg-felt-2 p-2.5">
@@ -82,7 +105,6 @@ export default function StepFoes({ wide = false }) {
         className="h-11 rounded-lg border border-line px-3 text-sm font-semibold">{t('change')}</button>
     </div>
     <PickStatus />
-    <CoachCard />
     </>
   ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
 
@@ -97,8 +119,10 @@ export default function StepFoes({ wide = false }) {
             </button>
           ))}
         </div>
-        <button type="button" onClick={() => { clearTeam(side); setActive(null); setNotice('') }}
-          className="h-11 rounded-xl px-3 text-sm font-medium text-chalk-dim hover:text-chalk">{t('clear')}</button>
+        <button type="button" onClick={clearOrUndo} disabled={!canUndo && !names.length && !hasHints}
+          className="min-h-11 max-w-32 rounded-xl px-2 text-sm font-medium text-chalk-dim enabled:hover:text-chalk disabled:opacity-50">
+          {t(canUndo ? 'undoClearTeam' : side === 'enemy' ? 'clearEnemies' : 'clearAllies')}
+        </button>
       </div>
       <p className="mb-2 text-sm text-chalk-dim tiny:hidden">{t('compositionOptional')}</p>
       {wide && myChamp && <p className="mb-2 text-sm text-chalk-dim">{t('stepMe')} · {tr(myChamp.n)}</p>}
@@ -121,14 +145,16 @@ export default function StepFoes({ wide = false }) {
           key={side}
           header={board}
           closedMessage={wide && full && !active ? t('chooseSlot') : undefined}
-          deferCatalog={wide && !active}
-          autoLane={target ?? null}
-          between={wide ? null : mineOrSuggestions}
-          label={target ? `${t(side === 'enemy' ? 'searchFor' : 'searchAlly')} ${t('lane.' + target)}` : undefined}
+          label={destination || t('chooseSlot')}
           placeholder={t('typeToSearch')}
           onPick={pick}
           ring={n => (names.includes(n) ? ringCls : '')}
+          occupiedLane={name => {
+            const position = LANES.find(lane => team[lane.id] === name)
+            return position ? t('lane.' + position.id) : null
+          }}
       />
+      {!wide && <div className="mt-4">{mineOrSuggestions}</div>}
     </section>
   )
 }
