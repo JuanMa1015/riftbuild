@@ -11,7 +11,7 @@ import PickStatus from './PickStatus'
 import BanCard from './BanCard'
 import { NewMatchButton } from './FlowChrome'
 
-// Step 1: who am I playing, and in which lane. Picking a champion sets the lane it usually plays.
+// Step 1: choose a lane, then choose a champion for that lane.
 export default function StepMe({ compact = false, hideTitle = false, roomy = false }) {
   const { t, tr } = useT()
   const [changing, setChanging] = useState(false)
@@ -22,10 +22,10 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
   const lane = ROLE_LANE[myRole]
   const inPool = !!myChamp && (pool[lane] || []).includes(myChamp.n)
   const showSearch = !compact || !myChamp || changing
-  const suggestions = <Suggestions onPick={c => pick(c, { keepRole: true })} />
+  const suggestions = <Suggestions showLane={false} onPick={pick} />
 
-  function pick(c, opts) {
-    chooseChampion(c, opts)
+  function pick(c) {
+    chooseChampion(c, { keepRole: true })
     setChanging(false)
   }
 
@@ -61,8 +61,7 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
 
       {myChamp && <PickStatus />}
 
-      {myChamp && <p className="mb-1 text-sm font-medium text-chalk-dim tiny:hidden">{t('meLane')}</p>}
-      {myChamp && (
+      <p className="mb-1 text-sm font-medium text-chalk-dim tiny:hidden">{t('meLane')}</p>
         <div role="radiogroup" aria-label={t('meLane')} className="mb-4 grid grid-cols-5 gap-1.5">
           {ROLE_OPTIONS.map(o => {
             const on = myRole === o.value
@@ -76,20 +75,21 @@ export default function StepMe({ compact = false, hideTitle = false, roomy = fal
             )
           })}
         </div>
-      )}
 
       {myChamp && <BanCard name={myChamp.n} lane={lane} />}
 
       {!showSearch && roomy && suggestions}
 
       {showSearch && <ChampSearch
+        key={lane}
+        autoLane={lane}
         placeholder={t('meSearch')}
         onPick={pick}
-        between={suggestions}
         recents={mine.filter(n => CHAMPIONS.some(c => c.n === n))}
         pools={pool}
         ring={n => (n === myChamp?.n ? 'ring-[3px] ring-marker' : '')}
       />}
+      {showSearch && suggestions}
     </section>
   )
 }

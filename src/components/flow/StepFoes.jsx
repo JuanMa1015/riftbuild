@@ -122,6 +122,18 @@ export default function StepFoes({ wide = false }) {
     </>
   ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
 
+  const hintsRow = (
+    <div className="flex flex-wrap gap-2 pb-1" role="group" aria-label={t('quickTitle')}>
+      {CHIPS.map(c => (
+        <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
+          className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
+            ${hints[c.k] ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
+          {t(c.l)}
+        </button>
+      ))}
+    </div>
+  )
+
   return (
     <section aria-label={t('stepFoes')}>
       <div className="mb-3 flex items-center gap-2">
@@ -141,18 +153,14 @@ export default function StepFoes({ wide = false }) {
       <p className="mb-2 text-sm text-chalk-dim tiny:hidden">{t('compositionOptional')}</p>
       {wide && myChamp && <p className="mb-2 text-sm text-chalk-dim">{t('stepMe')} · {tr(myChamp.n)}</p>}
 
-      {side === 'enemy' && (
-        <div className="mb-3">
-          <div className="flex flex-wrap gap-2 pb-1" role="group" aria-label={t('quickTitle')}>
-            {CHIPS.map(c => (
-              <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
-                className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
-                  ${hints[c.k] ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
-                {t(c.l)}
-              </button>
-            ))}
-          </div>
-        </div>
+      {side === 'enemy' && !tiny && <div className="mb-3">{hintsRow}</div>}
+      {side === 'enemy' && tiny && (
+        <details className="mb-2 rounded-xl border border-line px-3">
+          <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">
+            {t('quickTitle')}{hasHints && ` · ${Object.values(hints).filter(Boolean).length}`}
+          </summary>
+          {hintsRow}
+        </details>
       )}
 
       <ChampSearch

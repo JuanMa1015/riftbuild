@@ -62,6 +62,7 @@ public class OverlayService extends Service {
     // userHidden: the user pressed the bubble's X. The bubble goes away but the service and its notification stay,
     // so tapping the notification brings it back (closing it by accident is not a dead end).
     private boolean userHidden = false;
+    private boolean idle = true;
     private String lastTitle = "", notifText = "";
 
     /** Called by MainActivity: on screen = hide the bubble and forget a manual dismissal; off screen = show it. */
@@ -209,7 +210,9 @@ public class OverlayService extends Service {
                         if (moved) { lp.x = sx + (int) dx; lp.y = sy + (int) dy; wm.updateViewLayout(root, lp); }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        if (moved) snapToEdge(); else togglePanel();
+                        if (moved) snapToEdge();
+                        else if (idle) openAppWindow();
+                        else togglePanel();
                         return true;
                 }
                 return false;
@@ -247,6 +250,19 @@ public class OverlayService extends Service {
         try {
             JSONObject d = new JSONObject(json);
             panel.removeAllViews();
+            idle = d.optBoolean("idle");
+            if (idle) {
+                handler.removeCallbacks(fold);
+                handler.removeCallbacks(tick);
+                ends.clear();
+                timerViews.clear();
+                timerNames.clear();
+                panel.setVisibility(View.GONE);
+                firstIcon = appIcon();
+                refreshTimers();
+                snapToEdge();
+                return;
+            }
 
             LinearLayout head = new LinearLayout(this);
             head.setGravity(Gravity.CENTER_VERTICAL);

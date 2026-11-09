@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { GC_CODE } from './src/lib/analyticsConfig.js'
 import { gameCatalog } from './scripts/game-catalog-plugin.js'
 
-const coachUrl = process.env.VITE_COACH_URL?.trim()
-const coachOrigin = coachUrl ? new URL(coachUrl).origin : ''
+const coachUrl = process.env.VITE_COACH_URL?.trim() || 'https://riftbuild-coach.gonzalez-labs.workers.dev/coach'
+const coachOrigin = new URL(coachUrl).origin
 
 // Content-Security-Policy for the shipped app only (the dev server needs inline scripts for hot reload).
 // Scripts only from the app itself; network only to the services the app really calls.
@@ -28,6 +28,7 @@ const cspPlugin = {
 }
 
 export default defineConfig({
+  define: { 'import.meta.env.VITE_COACH_URL': JSON.stringify(coachUrl) },
   // GitHub Pages serves the web app from /riftbuild/ (WEB_BASE); the Android build keeps the root
   base: process.env.WEB_BASE || '/',
   plugins: [react(), tailwindcss(), gameCatalog, cspPlugin],
