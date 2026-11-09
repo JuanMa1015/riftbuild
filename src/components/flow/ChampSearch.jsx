@@ -11,7 +11,7 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', occupiedLane = () => null, recents = [], pools = null, label, header, between = null, closedMessage, autoLane }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', occupiedLane = () => null, recents = [], pools = null, label, header, between = null, closedMessage, autoLane, compact = false }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
@@ -20,8 +20,9 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
   // Typing searches the entire roster, even when a lane filter is selected.
   const followsSlot = autoLane !== undefined
   const [filter, setFilter] = useState(followsSlot ? 'auto' : 'all')
-  const lane = filter === 'auto' ? autoLane || 'all' : filter
-  const filters = [...(followsSlot ? ['auto'] : []), 'all', ...LANES.map(l => l.id)]
+  const selectedFilter = compact && filter !== 'all' ? 'auto' : filter
+  const lane = selectedFilter === 'auto' ? autoLane || 'all' : selectedFilter
+  const filters = compact ? ['auto', 'all'] : [...(followsSlot ? ['auto'] : []), 'all', ...LANES.map(l => l.id)]
 
   const list = useMemo(() => {
     const f = fold(q.trim())
@@ -49,17 +50,18 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
 
   return (
     <div ref={top}>
-      <div className="sticky top-0 z-10 bg-felt pb-2 pt-1">
+      <div className={compact ? 'bg-felt pb-1' : 'sticky top-0 z-10 bg-felt pb-2 pt-1'}>
         {header}
         {closedMessage && <p className="text-sm text-chalk-dim">{closedMessage}</p>}
         {!closedMessage && <>
-        <label className="block">
+        <div>
         {label && <span role="status" className="mb-1 block text-sm font-medium text-chalk-dim">{label}</span>}
-        <span className="flex h-12 tiny:h-10 items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 focus-within:border-marker">
+        <div className={compact ? 'flex items-center gap-1' : ''}>
+        <span className="flex h-12 tiny:h-10 min-w-0 flex-1 items-center gap-2 rounded-xl border border-line bg-felt-2 px-3 focus-within:border-marker">
           <Search size={18} className="shrink-0 text-chalk-dim" aria-hidden />
           <input
             value={q}
-            onFocus={() => top.current?.scrollIntoView({ block: 'start' })}
+            onFocus={() => { if (!compact) top.current?.scrollIntoView({ block: 'start' }) }}
             onChange={e => setQ(e.target.value)}
             onKeyDown={e => {
               if (e.key !== 'Enter' || e.nativeEvent.isComposing) return
@@ -81,19 +83,20 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
             </button>
           )}
         </span>
-        </label>
-        {!searching && <div role="group" aria-label={t('showLane')} className={`mt-1 flex flex-wrap gap-1.5 ${followsSlot ? 'tiny:flex-nowrap tiny:overflow-x-auto' : 'tiny:hidden'}`}>
+        {!searching && <div role="group" aria-label={t('showLane')} className={compact ? 'flex shrink-0 gap-1' : `mt-1 flex flex-wrap gap-1.5 ${followsSlot ? 'tiny:flex-nowrap tiny:overflow-x-auto' : 'tiny:hidden'}`}>
           {filters.map(id => {
-            const on = filter === id
+            const on = selectedFilter === id
             return (
               <button key={id} type="button" aria-pressed={on} onClick={() => setFilter(id)}
-                className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
+                className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full border text-sm font-semibold ${compact ? 'px-2' : 'px-3'} ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
                 {id !== 'all' && id !== 'auto' && <LaneGlyph lane={id} size={14} />}
-                {id === 'auto' ? t('draftAutoLane', { lane: t('lane.' + autoLane) }) : id === 'all' ? t('all') : t('lane.' + id)}
+                {id === 'auto' ? compact ? t('draftAuto') : t('draftAutoLane', { lane: t('lane.' + autoLane) }) : id === 'all' ? t('all') : t('lane.' + id)}
               </button>
             )
           })}
         </div>}
+        </div>
+        </div>
         </>}
       </div>
 
@@ -111,7 +114,7 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
               <li key={c.n}>
                 <button type="button" disabled={!!position} aria-label={position ? `${tr(c.n)}, ${position}` : tr(c.n)} onClick={() => pick(c)}
                   className={`flex w-full items-center rounded-lg py-1.5 enabled:active:scale-95 enabled:hover:bg-felt-2 ${searching ? 'gap-3 px-2 text-left' : 'flex-col gap-1'}`}>
-                  <ChampImg name={c.n} size={searching ? 40 : 56} className={`shrink-0 rounded-full ${ring(c.n)}`} />
+                  <ChampImg name={c.n} size={searching || compact ? 40 : 56} className={`shrink-0 rounded-full ${ring(c.n)}`} />
                   <span className={searching ? 'min-w-0 text-sm font-semibold' : 'w-full px-0.5 text-center text-xs leading-tight'}>
                     <span className={searching ? 'block' : 'block truncate'}>{tr(c.n)}</span>
                     {position && <span className="block font-medium text-chalk-dim">{position}</span>}

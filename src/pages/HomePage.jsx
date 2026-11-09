@@ -82,7 +82,7 @@ export default function HomePage() {
             {step === 2 && buildView}
           </div>
         </main>
-        <Dock />
+        {step === 1 ? <div className="tiny:hidden"><Dock /></div> : <Dock />}
       </>
     )
   }

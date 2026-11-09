@@ -91,9 +91,11 @@ export function BubbleSync() {
   const secs = useTimerStore(s => s.secs)
   useEffect(() => { autoEnable() }, [])
   useEffect(() => {
-    if (!bubbleSupported) return
-    if (!myChamp) Overlay.clearBuild().catch(() => {})
-    else if (on && result?.campeon === myChamp.n) Overlay.show({ data: payload(result, t, lang, secs) }).catch(() => {})
+    if (!bubbleSupported || !on) return
+    const data = myChamp && result?.campeon === myChamp.n
+      ? payload(result, t, lang, secs)
+      : JSON.stringify({ idle: true, title: 'RiftBuild', notif: t('bubbleNotif') })
+    Overlay.show({ data }).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, result, myChamp, lang, secs])
   return null

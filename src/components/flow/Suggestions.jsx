@@ -8,7 +8,7 @@ import { Token, ROLE_LANE, SectionTitle } from '../ui'
 
 // "Who should I pick?" from the rivals and allies known so far. In a ranked draft the enemy picks show up one by one,
 // so this updates as you add them; in a blind pick there is nothing to go on and it falls back to your pool.
-export default function Suggestions({ onPick, compact = false }) {
+export default function Suggestions({ onPick, compact = false, showLane = true }) {
   const { t, tr } = useT()
   const { enemies, allies, myRole, myChamp, setMyRole } = useMatchStore()
   const pool = usePoolStore(s => s.pool)
@@ -26,7 +26,7 @@ export default function Suggestions({ onPick, compact = false }) {
       <SectionTitle>{t('sugTitle')}</SectionTitle>
 
       {/* the lane comes first: the matchmaker assigns it, and suggestions are per lane */}
-      {!myChamp && (
+      {showLane && !myChamp && (
         <label className="mb-3 flex items-center gap-3 text-sm">
           <span className="text-chalk-dim">{t('meLane')}</span>
           <select value={myRole} onChange={e => setMyRole(e.target.value)}

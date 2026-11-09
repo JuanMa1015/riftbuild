@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useMatchStore } from '../../store'
 import { LANES, ROLE_LANE } from '../../data/champions'
 import { useT } from '../../i18n'
@@ -21,10 +21,13 @@ export default function StepFoes({ wide = false }) {
   const { enemies, allies, hints, side, setSide, setEnemy, setAlly, toggleHint, clearTeam, myChamp, myRole, setStep } = useMatchStore()
   const slots = useRef(null)
   const [active, setActive] = useState(null)
+  const [picking, setPicking] = useState(true)
+  const compactRoot = useRef(null)
   const [notice, setNotice] = useState('')
   const [cleared, setCleared] = useState({})
   const narrow = useMedia('(max-width: 359px)')
   const tiny = useMedia('(max-height: 420px)')   // landscape pop-up window: every pixel counts   // Samsung pop-up window and other small windows
+  const compact = tiny && !wide
 
   const team = side === 'enemy' ? enemies : allies
   const setSlot = side === 'enemy' ? setEnemy : setAlly
@@ -40,6 +43,10 @@ export default function StepFoes({ wide = false }) {
   const target = selectedSlot ?? orderedLanes.find(lane => !team[lane.id])?.id
   const names = editableLanes.map(lane => team[lane.id]).filter(Boolean)
   const full = names.length === editableLanes.length
+  const selecting = compact && picking && !!target
+  useLayoutEffect(() => {
+    if (compactRoot.current) compactRoot.current.closest('main')?.scrollTo(0, 0)
+  }, [compact, selecting, target, side])
   const teamKey = side === 'enemy' ? 'enemies' : 'allies'
   const hasHints = side === 'enemy' && Object.values(hints).some(Boolean)
   const snapshot = cleared[side]
@@ -91,7 +98,7 @@ export default function StepFoes({ wide = false }) {
                 <span className="text-xs font-semibold">{t('stepMe')}</span>
               </div>
             ) : (
-            <button type="button" data-lane={l.id} onClick={() => { setActive(l.id); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
+            <button type="button" data-lane={l.id} onClick={() => { setActive(l.id); setPicking(true); setNotice('') }} aria-label={`${t('lane.' + l.id)}: ${team[l.id] || '—'}`}
               aria-pressed={l.id === target} className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-xl py-0.5 active:scale-95">
               <Token name={team[l.id]} side={tokenSide} lane={l.id} size={tiny ? 36 : narrow ? 42 : 52} active={l.id === target} />
               <span className={`text-xs font-semibold tiny:hidden ${l.id === target ? 'text-marker' : 'text-chalk-dim'}`}>{t('lane.' + l.id)}</span>
@@ -100,7 +107,7 @@ export default function StepFoes({ wide = false }) {
           </li>
         ))}
       </ul>
-      {selectedSlot && targetName && (
+      {!compact && selectedSlot && targetName && (
         <button type="button" className="relative mt-1 min-h-11 w-full text-sm text-chalk" onClick={() => setSlot(selectedSlot, '')}>
           {t('removeSlot', { name: tr(targetName) })}
         </button>
@@ -122,12 +129,52 @@ export default function StepFoes({ wide = false }) {
     </>
   ) : <Suggestions compact onPick={c => chooseChampion(c, { keepRole: true })} />
 
+  const hintsRow = (
+    <div className="flex flex-wrap gap-2 pb-1" role="group" aria-label={t('quickTitle')}>
+      {CHIPS.map(c => (
+        <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
+          className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
+            ${hints[c.k] ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
+          {t(c.l)}
+        </button>
+      ))}
+    </div>
+  )
+
+  const catalog = (
+    <ChampSearch
+      key={side}
+      compact={selecting}
+      header={compact ? null : board}
+      autoLane={target ?? null}
+      closedMessage={full && !selectedSlot ? t('chooseSlot') : undefined}
+      label={selecting ? undefined : destination || t('chooseSlot')}
+      placeholder={t('typeToSearch')}
+      onPick={pick}
+      ring={n => (names.includes(n) ? ringCls : '')}
+      occupiedLane={name => {
+        const position = LANES.find(lane => team[lane.id] === name)
+        return position ? t('lane.' + position.id) : null
+      }}
+    />
+  )
+
   return (
-    <section aria-label={t('stepFoes')}>
+    <section ref={compact ? compactRoot : null} aria-label={t('stepFoes')}>
+      {selecting ? (
+        <>
+          <div className="mb-1 flex items-center gap-2">
+            <button type="button" className="min-h-11 rounded-lg border border-line px-2 text-xs" onClick={() => { setActive(null); setPicking(false) }}>{t('draftOverview')}</button>
+            <p role="status" className="flex-1 text-sm font-semibold">{destination}</p>
+            {targetName && <button type="button" className="min-h-11 px-1 text-xs" aria-label={t('removeSlot', { name: tr(targetName) })} onClick={() => setSlot(target, '')}>{t('draftRemove')}</button>}
+          </div>
+          {catalog}
+        </>
+      ) : <>
       <div className="mb-3 flex items-center gap-2">
         <div role="group" aria-label={t('stepFoes')} className="grid flex-1 grid-cols-2 gap-1 rounded-xl border border-line bg-felt-2 p-1">
           {[['enemy', 'foesTitle'], ['ally', 'alliesTitle']].map(([k, l]) => (
-            <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setNotice('') }}
+            <button key={k} type="button" aria-pressed={side === k} onClick={() => { setSide(k); setActive(null); setPicking(true); setNotice('') }}
               className={`h-11 rounded-lg text-sm font-semibold ${side === k ? 'bg-felt-3 text-chalk' : 'text-chalk-dim'}`}>
               {t(l)} <span className="text-xs tabular-nums">{(k === 'enemy' ? LANES.filter(lane => enemies[lane.id]).length : allyLanes.filter(lane => allies[lane.id]).length)}/{k === 'enemy' ? LANES.length : allyLanes.length}</span>
             </button>
@@ -141,35 +188,19 @@ export default function StepFoes({ wide = false }) {
       <p className="mb-2 text-sm text-chalk-dim tiny:hidden">{t('compositionOptional')}</p>
       {wide && myChamp && <p className="mb-2 text-sm text-chalk-dim">{t('stepMe')} · {tr(myChamp.n)}</p>}
 
-      {side === 'enemy' && (
-        <div className="mb-3">
-          <div className="flex flex-wrap gap-2 pb-1" role="group" aria-label={t('quickTitle')}>
-            {CHIPS.map(c => (
-              <button key={c.k} type="button" aria-pressed={hints[c.k]} onClick={() => toggleHint(c.k)}
-                className={`h-11 shrink-0 rounded-full border px-4 text-sm font-semibold
-                  ${hints[c.k] ? 'border-marker bg-marker text-marker-ink' : 'border-line bg-felt-2 text-chalk'}`}>
-                {t(c.l)}
-              </button>
-            ))}
-          </div>
-        </div>
+      {side === 'enemy' && !tiny && <div className="mb-3">{hintsRow}</div>}
+      {side === 'enemy' && tiny && (
+        <details className="mb-2 rounded-xl border border-line px-3">
+          <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">
+            {t('quickTitle')}{hasHints && ` · ${Object.values(hints).filter(Boolean).length}`}
+          </summary>
+          {hintsRow}
+        </details>
       )}
 
-      <ChampSearch
-          key={side}
-          header={board}
-          autoLane={target ?? null}
-          closedMessage={full && !selectedSlot ? t('chooseSlot') : undefined}
-          label={destination || t('chooseSlot')}
-          placeholder={t('typeToSearch')}
-          onPick={pick}
-          ring={n => (names.includes(n) ? ringCls : '')}
-          occupiedLane={name => {
-            const position = LANES.find(lane => team[lane.id] === name)
-            return position ? t('lane.' + position.id) : null
-          }}
-      />
-      {!wide && <div className="mt-4">{mineOrSuggestions}</div>}
+      {compact ? board : catalog}
+      {!wide && !compact && <div className="mt-4">{mineOrSuggestions}</div>}
+      </>}
     </section>
   )
 }
