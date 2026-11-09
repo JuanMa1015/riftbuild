@@ -1,6 +1,6 @@
 {
- "version": "2026-10-20T05:52",
- "patch": "7.3b",
+ "version": "2026-11-08T20:00",
+ "patch": "7.3d",
  "champions": [
   {
    "n": "Aatrox",
@@ -1854,7 +1854,7 @@
   },
   "Diadema Musical": {
    "t": "Híbrido",
-   "desc": "Potencia tus curas y escudos y te da maná. Para soportes.",
+   "desc": "Otorga 6% de poder de curación y escudos y te da maná. Para soportes.",
    "en": "diadem-of-songs",
    "ans": [],
    "fit": [
@@ -1863,7 +1863,7 @@
   },
   "Cercenador Divino": {
    "t": "Ofensivo",
-   "desc": "Tu ataque tras una habilidad hace daño según la vida del rival. Contra tanques.",
+   "desc": "Cuesta 3300 de oro. Tu ataque tras una habilidad hace daño según la vida del rival.",
    "en": "divine-sunderer",
    "ans": [
     "hp"
@@ -1903,7 +1903,7 @@
   },
   "Saqueador de Esencias": {
    "t": "Ofensivo",
-   "desc": "Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná. Para luchadores y tiradores.",
+   "desc": "Otorga 55 de daño de ataque. Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná.",
    "en": "essence-reaver",
    "ans": [],
    "fit": [
@@ -1922,7 +1922,7 @@
   },
   "Proyectiles Cazademonios": {
    "t": "Ofensivo",
-   "desc": "Velocidad de ataque y crítico con más alcance. Para tiradores.",
+   "desc": "Para tiradores. Tras usar la definitiva, Ráfaga Inicial aplica daño verdadero adicional.",
    "en": "fiendhunter-bolts",
    "ans": [],
    "fit": [
@@ -2249,7 +2249,7 @@
   },
   "Filo de la Tormenta": {
    "t": "Ofensivo",
-   "desc": "Velocidad de ataque y crítico; el primer golpe tras moverte hace daño extra. Para tiradores.",
+   "desc": "El golpe cargado inflige 100 de daño adicional y otorga 35% de velocidad de movimiento.",
    "en": "stormrazor",
    "ans": [],
    "fit": [
@@ -3284,9 +3284,7 @@
   "Dawnshroud": "Dawnshroud",
   "Potencia tus curas y escudos. Para soportes.": "Strengthens your heals and shields. For supports.",
   "Diadema Musical": "Diadem of Songs",
-  "Potencia tus curas y escudos y te da maná. Para soportes.": "Strengthens your heals and shields and gives you mana. For supports.",
   "Cercenador Divino": "Divine Sunderer",
-  "Tu ataque tras una habilidad hace daño según la vida del rival. Contra tanques.": "Your attack after a spell deals damage based on the target's health. Against tanks.",
   "Ocaso y Alba": "Dusk and Dawn",
   "Poder de habilidad y velocidad de ataque; tras una habilidad, tu siguiente ataque se potencia.": "Ability power and attack speed; after a spell, your next attack is empowered.",
   "Hoja Crepuscular de Draktharr": "Duskblade of Draktharr",
@@ -3294,11 +3292,9 @@
   "Ecos de Helia": "Echoes of Helia",
   "Parte de tu daño y tus curas se convierte en curación para tus aliados. Para soportes.": "Part of your damage and heals becomes healing for your allies. For supports.",
   "Saqueador de Esencias": "Essence Reaver",
-  "Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná. Para luchadores y tiradores.": "After a spell, your next attack hits hard and returns mana. For fighters and marksmen.",
   "Placa Hexperimental": "Experimental Hexplate",
   "Más velocidad de ataque y vida, con un impulso al usar tu definitiva. Para luchadores.": "More attack speed and health, with a boost when you use your ultimate. For fighters.",
   "Proyectiles Cazademonios": "Fiendhunter Bolts",
-  "Velocidad de ataque y crítico con más alcance. Para tiradores.": "Attack speed and crit with extra range. For marksmen.",
   "Invierno Nórdico": "Fimbulwinter",
   "Mucha vida y maná, y un escudo al gastar maná. Para magos y tanques.": "Lots of health and mana, and a shield when you spend mana. For mages and tanks.",
   "Fuerza del Viento": "Galeforce",
@@ -3366,7 +3362,6 @@
   "Staff of Flowing Waters": "Staff of Flowing Waters",
   "Ítem de soporte que potencia curas y escudos.": "Support item that strengthens heals and shields.",
   "Filo de la Tormenta": "Stormrazor",
-  "Velocidad de ataque y crítico; el primer golpe tras moverte hace daño extra. Para tiradores.": "Attack speed and crit; the first hit after moving deals extra damage. For marksmen.",
   "Descarga Tormentosa": "Stormsurge",
   "Penetración mágica y velocidad; tras mucho daño cae una tormenta. Para magos.": "Magic penetration and speed; after lots of damage a storm strikes. For mages.",
   "Rompeavances": "Stridebreaker",
@@ -3396,7 +3391,12 @@
   "Boots of Mana": "Boots of Mana",
   "Botas con maná y movimiento. Las más usadas por los magos.": "Boots with mana and movement speed. The most used by mages.",
   "Boots of Dynamism": "Boots of Dynamism",
-  "Botas de movilidad para asesinos y tiradores de habilidades.": "Mobility boots for assassins and ability-based marksmen."
+  "Botas de movilidad para asesinos y tiradores de habilidades.": "Mobility boots for assassins and ability-based marksmen.",
+  "Cuesta 3300 de oro. Tu ataque tras una habilidad hace daño según la vida del rival.": "Costs 3300 gold. Your attack after a spell deals damage based on the target’s health.",
+  "Otorga 55 de daño de ataque. Tras una habilidad, tu siguiente ataque pega fuerte y te devuelve maná.": "Grants 55 attack damage. After a spell, your next attack hits hard and returns mana.",
+  "Para tiradores. Tras usar la definitiva, Ráfaga Inicial aplica daño verdadero adicional.": "For marksmen. After casting your ultimate, Opening Barrage applies additional true damage.",
+  "Otorga 6% de poder de curación y escudos y te da maná. Para soportes.": "Grants 6% heal and shield power and gives you mana. For supports.",
+  "El golpe cargado inflige 100 de daño adicional y otorga 35% de velocidad de movimiento.": "The charged hit deals 100 bonus damage and grants 35% movement speed."
  },
  "timers": [
   {

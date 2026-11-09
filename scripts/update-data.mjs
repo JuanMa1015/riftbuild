@@ -1,7 +1,7 @@
 // Refreshes public/data/game.json and the bundled icons.
 //   node scripts/update-data.mjs
 // - roster + Spanish names : official Wild Rift site (es-mx)
-// - patch label            : latest "Patch Notes X.Y" on the official news page
+// - ranked patch label     : set by hand after reviewing the applicable balance notes
 // - icons                  : Riot Data Dragon (champions, items, runes, spells), only files that are missing
 // Build templates (public/data/game.json -> builds/items) are curated by hand: nothing public tells us the meta.
 import { shrink } from './optimize-images.mjs'
@@ -51,13 +51,6 @@ for (const [slug, titleEs] of Object.entries(es)) {
   added.push(name)
 }
 if (added.length) { game.champions.sort((a, b) => a.n.localeCompare(b.n)); changed = true }
-
-// ── Patch label ───────────────────────────────────────────────────────────────
-const news = await text('https://wildrift.leagueoflegends.com/en-us/news/game-updates/')
-const patches = [...news.matchAll(/Patch Notes (\d+\.\d+[a-z]?)/g)].map(m => m[1])
-patches.sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
-const patch = patches.at(-1)
-if (patch && patch !== game.patch) { game.patch = patch; changed = true }
 
 // ── Icons (download only what is missing) ─────────────────────────────────────
 async function save(dir, file, url) {

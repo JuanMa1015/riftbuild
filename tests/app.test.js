@@ -5,12 +5,24 @@ import { ITEMS, groupsOf } from '../src/data/builds'
 import { CHAMPIONS } from '../src/data/game'
 import { ROLE_OPTIONS } from '../src/data/champions'
 import { localBuild, generateBuild, resetPauses, isPaused, listModels } from '../src/lib/aiService'
-import { recommend, evaluatePick, SWITCH_DELTA } from '../src/lib/recommend'
+import { recommend, recommendBans, evaluatePick, SWITCH_DELTA } from '../src/lib/recommend'
 import { useMatchStore } from '../src/store'
 import { record, vsClass, champTable, historyBonus, MIN_GAMES } from '../src/lib/stats'
 
 const clone = () => structuredClone(game)
 const E = names => names.map((name, i) => ({ lane: 'top', name }))
+
+describe('ban recommendations', () => {
+  it('shows the reviewed Gwen matchup before draft picks and filters unavailable champions', () => {
+    const draft = { name: 'Gwen', lane: 'top' }
+    const options = recommendBans(draft)
+    expect(options[0].c.n).toBe('Jax')
+    expect(options[0].matchup.source).toContain('wildrift.leagueoflegends.com')
+    const available = recommendBans({ ...draft, allies: ['Jax'], enemies: ['Kennen'] })
+    expect(available.every(({ c }) => c.r.includes('Solo') && !['Jax', 'Kennen', 'Gwen'].includes(c.n))).toBe(true)
+    expect(recommendBans({ ...draft, lane: 'jg' }).every(option => !option.matchup)).toBe(true)
+  })
+})
 
 describe('validator', () => {
   it('accepts the bundled game.json', () => expect(isValidGame(game)).toBe(true))

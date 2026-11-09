@@ -1,6 +1,6 @@
 import { CHAMPIONS } from '../data/champions'
 import { historyBonus } from './stats'
-import { TIERS } from '../data/game'
+import { GAME, TIERS } from '../data/game'
 
 // Rule-based "who should I pick": class matchups + damage balance. NOT win-rate statistics (none are public for Wild Rift).
 // MATRIX[mine][theirs] > 0 means "my class does well against theirs".
@@ -18,6 +18,35 @@ export const SWITCH_DELTA = 1.5   // a better option must beat my pick by this m
 
 const find = n => CHAMPIONS.find(c => c.n === n)
 
+// Ability interactions are reviewed for the ranked patch, independently of class estimates.
+const BAN_MATCHUPS = {
+  Gwen: {
+    top: [{
+      name: 'Jax',
+      patch: '7.3d',
+      reason: 'banGwenJax',
+      source: 'https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-6-1b/',
+    }],
+  },
+}
+
+export function recommendBans({ name, lane, enemies = [], allies = [] }) {
+  const pick = find(name)
+  if (!pick || !LANE_ROLE[lane]) return []
+  const unavailable = new Set([name, ...enemies, ...allies])
+  const reviewed = (BAN_MATCHUPS[name]?.[lane] ?? []).filter(matchup => matchup.patch === GAME.patch)
+  return CHAMPIONS
+    .filter(c => !unavailable.has(c.n) && c.r.includes(LANE_ROLE[lane]))
+    .map(c => ({
+      c,
+      matchup: reviewed.find(entry => entry.name === c.n),
+      score: Math.max(MATRIX[c.t]?.[pick.t] ?? 0, -(MATRIX[pick.t]?.[c.t] ?? 0)),
+    }))
+    .filter(entry => entry.matchup || entry.score > 0)
+    .sort((a, b) => Number(!!b.matchup) - Number(!!a.matchup) || byScore(a, b))
+    .slice(0, 3)
+}
+
 // Scores every champion of the lane (plus `keep`, so my own pick is always in the list, even off-lane).
 // enemies/allies are the names known so far: drafts reveal them one by one, so this works with 1 or 2 of them.
 function scoreAll({ enemies, allies, lane, pool = [], recents = [], history = [], keep = null }) {
@@ -25,6 +54,7 @@ function scoreAll({ enemies, allies, lane, pool = [], recents = [], history = []
   const mates = allies.map(find).filter(Boolean)
   const taken = new Set([...enemies, ...allies])
   const ad = mates.filter(m => m.d === 'ad').length, ap = mates.filter(m => m.d === 'ap').length
+  const currentTiers = TIERS.patch === GAME.patch ? TIERS.lanes?.[lane] : null
   const list = CHAMPIONS
     .filter(c => !taken.has(c.n) && (c.n === keep || lane === 'all' || c.r.includes(LANE_ROLE[lane])))
     .map(c => {
@@ -40,7 +70,7 @@ function scoreAll({ enemies, allies, lane, pool = [], recents = [], history = []
       if (pool.includes(c.n)) score += 0.75
       if (recents.includes(c.n)) score += 0.25
       // patch meta (reference tier list): a small push, the class rules still decide
-      const tier = lane !== 'all' ? (TIERS.lanes?.[lane]?.['S+']?.includes(c.n) ? 0.5 : TIERS.lanes?.[lane]?.S?.includes(c.n) ? 0.25 : 0) : 0
+      const tier = currentTiers?.['S+']?.includes(c.n) ? 0.5 : currentTiers?.S?.includes(c.n) ? 0.25 : 0
       score += tier
       if (tier >= 0.5 && !why) why = { v: tier, key: 'why.meta' }
       // your own results with this champion (only once there are enough games)
