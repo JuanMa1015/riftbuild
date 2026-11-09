@@ -34,7 +34,7 @@ export const SpellImg = ({ name, size = 34, className = '' }) => <Img path={`spe
 
 // One drawn glyph per lane, used everywhere a lane appears
 export const LANE_ICON = { top: Shield, jg: TreePine, mid: Zap, adc: Crosshair, sup: HeartHandshake }
-export const ROLE_LANE = { 'Solo / Baron': 'top', Jungla: 'jg', Mid: 'mid', 'ADC / Duo': 'adc', Support: 'sup' }
+export { ROLE_LANE } from '../../data/champions'
 
 export function LaneGlyph({ lane, size = 16, className = '' }) {
   const Icon = LANE_ICON[lane]

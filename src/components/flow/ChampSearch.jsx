@@ -11,14 +11,17 @@ const LANE_ROLE = { top: 'Solo', jg: 'Jungla', mid: 'Mid', adc: 'ADC', sup: 'Sup
 
 // Live search: the grid filters on every keystroke; Enter picks the first match.
 // `ring` maps a champion name to a ring class when it is already on the board.
-export default function ChampSearch({ placeholder, onPick, ring = () => '', occupiedLane = () => null, recents = [], pools = null, label, header, between = null, closedMessage }) {
+export default function ChampSearch({ placeholder, onPick, ring = () => '', occupiedLane = () => null, recents = [], pools = null, label, header, between = null, closedMessage, autoLane }) {
   const { t, tr, lang } = useT()
   const rev = useDataStore(s => s.rev)
   const [q, setQ] = useState('')
   const searching = Boolean(q.trim())
   const top = useRef(null)
   // Typing searches the entire roster, even when a lane filter is selected.
-  const [lane, setLane] = useState('all')
+  const followsSlot = autoLane !== undefined
+  const [filter, setFilter] = useState(followsSlot ? 'auto' : 'all')
+  const lane = filter === 'auto' ? autoLane || 'all' : filter
+  const filters = [...(followsSlot ? ['auto'] : []), 'all', ...LANES.map(l => l.id)]
 
   const list = useMemo(() => {
     const f = fold(q.trim())
@@ -79,14 +82,14 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
           )}
         </span>
         </label>
-        {!searching && <div role="group" aria-label={t('showLane')} className="mt-1 flex flex-wrap gap-1.5 tiny:hidden">
-          {['all', ...LANES.map(l => l.id)].map(id => {
-            const on = lane === id
+        {!searching && <div role="group" aria-label={t('showLane')} className={`mt-1 flex flex-wrap gap-1.5 ${followsSlot ? 'tiny:flex-nowrap tiny:overflow-x-auto' : 'tiny:hidden'}`}>
+          {filters.map(id => {
+            const on = filter === id
             return (
-              <button key={id} type="button" aria-pressed={on} onClick={() => setLane(id)}
+              <button key={id} type="button" aria-pressed={on} onClick={() => setFilter(id)}
                 className={`flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-semibold ${on ? 'border-marker bg-marker text-marker-ink' : 'border-line text-chalk-dim'}`}>
-                {id !== 'all' && <LaneGlyph lane={id} size={14} />}
-                {id === 'all' ? t('all') : t('lane.' + id)}
+                {id !== 'all' && id !== 'auto' && <LaneGlyph lane={id} size={14} />}
+                {id === 'auto' ? t('draftAutoLane', { lane: t('lane.' + autoLane) }) : id === 'all' ? t('all') : t('lane.' + id)}
               </button>
             )
           })}
@@ -101,7 +104,7 @@ export default function ChampSearch({ placeholder, onPick, ring = () => '', occu
       {!closedMessage && (list.length === 0 ? (
         <p className="py-8 text-center text-chalk-dim">{t('noMatch')} “{q}”</p>
       ) : (
-        <ul className={searching ? 'grid gap-1' : 'grid grid-cols-4 gap-x-1 gap-y-2 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5'}>
+        <ul className={searching ? 'grid gap-1' : 'grid grid-cols-4 gap-x-1 gap-y-2 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-[repeat(auto-fill,minmax(56px,1fr))]'}>
           {list.map(c => {
             const position = occupiedLane(c.n)
             return (

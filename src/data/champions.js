@@ -18,4 +18,5 @@ export const ROLE_OPTIONS = [
   {value:"Support",      label:"Support"},
 ]
 export const ROLE_MAP = { Solo:"Solo / Baron", Jungla:"Jungla", Mid:"Mid", ADC:"ADC / Duo", Support:"Support" }
+export const ROLE_LANE = { 'Solo / Baron': 'top', Jungla: 'jg', Mid: 'mid', 'ADC / Duo': 'adc', Support: 'sup' }
 

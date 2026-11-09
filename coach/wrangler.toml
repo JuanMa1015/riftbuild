@@ -1,0 +1,14 @@
+name = "riftbuild-coach"
+main = "worker.js"
+compatibility_date = "2026-11-08"
+
+[vars]
+COACH_ORIGINS = "https://juanma1015.github.io,https://localhost,http://localhost:5173"
+
+[[durable_objects.bindings]]
+name = "QUOTA"
+class_name = "Quota"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Quota"]
