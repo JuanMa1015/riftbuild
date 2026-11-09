@@ -19,7 +19,7 @@
     "compare:ai": "vitest run --config vitest.compare.config.js"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.3",
+    "@capacitor/android": "^8.6.0",
     "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.5.3",
     "@fontsource/barlow-semi-condensed": "^5.3.0",
