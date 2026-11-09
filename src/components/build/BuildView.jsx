@@ -44,7 +44,7 @@ function ItemRow({ item, index, last }) {
   )
 }
 
-function ItemsTab({ r, sharedCoach }) {
+function ItemsTab({ r, sharedCoach, aiOn }) {
   const { t } = useT()
   return (
     <>
@@ -53,7 +53,7 @@ function ItemsTab({ r, sharedCoach }) {
         {r.build.map(b => <ItemImg key={b.en} en={b.en} alt={b.nombre} size={40} className="mx-auto max-w-full rounded-md" />)}
         {r.botas && <ItemImg en={r.botas.en} alt={r.botas.nombre} size={40} className="mx-auto max-w-full rounded-md" />}
       </div>
-      {sharedCoach && <CoachCard sharedCoach={sharedCoach} />}
+      {aiOn && <CoachCard sharedCoach={sharedCoach} />}
       {r.botas && (
         <div className="rounded-xl border border-line bg-felt-2 p-3">
           <p className="mb-2 text-sm font-medium text-chalk-dim">{t('boots')}</p>
@@ -304,7 +304,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
       </div>
 
       {r.via && <p className="mb-2 text-sm text-chalk-dim">{t(r.aiChangedPurchases ? 'aiPurchaseChanges' : 'aiSamePurchases')}</p>}
-      {tab === 'items' && <ItemsTab r={r} sharedCoach={shared ? sharedCoach : null} />}
+      {tab === 'items' && <ItemsTab r={r} aiOn={aiOn} sharedCoach={shared ? sharedCoach : null} />}
       {tab === 'runes' && <RunesTab r={r} />}
       {tab === 'plan' && <PlanTab r={r} />}
 
@@ -312,7 +312,7 @@ export default function BuildView({ result: r, loading, error, onImprove, canImp
         <p className="text-sm text-chalk-dim">{t(OVERRIDES[r.campeon] ? 'buildGuide' : 'buildTemplate')}</p>
         <Basis r={r} />
         <MyRecord />
-        {aiOn ? !shared && <CoachCard /> : <AiOffRow />}
+        {aiOn ? !shared && tab !== 'items' && <CoachCard /> : <AiOffRow />}
         <ResultLog key={r.campeon + JSON.stringify(useMatchStore.getState().enemies)} r={r} />
       </div>
 

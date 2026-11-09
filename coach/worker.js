@@ -55,12 +55,16 @@ Use only listed opponents. No skill letters, ability effects, numbers, or claims
         body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], ...limits }),
         signal: AbortSignal.timeout(4500),
       })
-      if (!response.ok) continue
+      if (!response.ok) {
+        console.warn('coach_provider_http', via, response.status)
+        continue
+      }
       const data = await response.json()
       const coach = coachNotes(data.choices?.[0]?.message?.content || '')
       if (coach) return { coach, via }
-    } catch {
-      // A timeout or invalid response gives the next provider a chance.
+      console.warn('coach_provider_invalid', via)
+    } catch (error) {
+      console.warn('coach_provider_error', via, error?.name)
     }
   }
   return null
@@ -79,13 +83,13 @@ export class Quota {
     const minute = Math.floor(now / 60000)
     this.sql.exec('DELETE FROM counts WHERE expires <= ?', now)
     const limits = [
-      [`client:${day}:${client}`, 12, (day + 1) * DAY],
-      [`day:${day}`, 200, (day + 1) * DAY],
-      [`minute:${minute}`, 8, (minute + 1) * 60000],
+      [`client:${day}:${client}`, 12, (day + 1) * DAY, 'client_daily'],
+      [`day:${day}`, 200, (day + 1) * DAY, 'global_daily'],
+      [`minute:${minute}`, 8, (minute + 1) * 60000, 'global_minute'],
     ]
-    for (const [key, max] of limits) {
+    for (const [key, max, expires, scope] of limits) {
       const count = this.sql.exec('SELECT n FROM counts WHERE key = ?', key).toArray()[0]?.n || 0
-      if (count >= max) return new Response(null, { status: 429 })
+      if (count >= max) return Response.json({ scope, retryAt: expires }, { status: 429 })
     }
     for (const [key, , expires] of limits) {
       this.sql.exec('INSERT INTO counts VALUES (?, 1, ?) ON CONFLICT(key) DO UPDATE SET n = n + 1', key, expires)
@@ -141,7 +145,12 @@ export default {
     const client = await hash(`${Math.floor(Date.now() / DAY)}:${ip}`)
     const quota = env.QUOTA.get(env.QUOTA.idFromName('shared'))
     const permit = await quota.fetch('https://quota.internal/', { method: 'POST', body: JSON.stringify({ client }) })
-    if (!permit.ok) return new Response(null, { status: 429, headers })
+    if (permit.status === 429) {
+      const limit = await permit.json()
+      console.warn('coach_quota', limit.scope)
+      return Response.json(limit, { status: 429, headers })
+    }
+    if (!permit.ok) return new Response(null, { status: 503, headers })
     const result = await ask(env, draft)
     if (!result) return new Response(null, { status: 503, headers })
     ctx.waitUntil(caches.default.put(cacheKey, Response.json(result, { headers: { 'Cache-Control': 'public, max-age=3600' } })))
