@@ -5,6 +5,13 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 
 ## [Sin publicar]
 
+## [0.9.3] - 2026-11-09
+
+- El selector compacto permite elegir cualquier carril y alternar entre rivales y aliados mientras aparecen los picks.
+- La build se puede consultar durante el draft. El Coach aparece junto al orden de compra y prioriza el rival directo.
+- El Coach compartido distingue los límites de solicitudes y muestra cuándo volver a intentarlo.
+- En Android, arrastra la burbuja a la X para ocultarla. Antes de elegir campeón, la burbuja abre RiftBuild.
+
 ## [0.9.2] - 2026-10-20
 
 ### Añadido
@@ -239,7 +246,8 @@ Mientras la versión sea `0.x`, un cambio de *minor* puede romper cosas.
 ### Añadido
 - Primera versión: asesor de builds por toques, motor local, IA opcional, APK con Capacitor y burbuja flotante.
 
-[Sin publicar]: https://github.com/JuanMa1015/riftbuild/compare/v0.7.0...HEAD
+[Sin publicar]: https://github.com/JuanMa1015/riftbuild/compare/v0.9.3...HEAD
+[0.9.3]: https://github.com/JuanMa1015/riftbuild/compare/v0.9.2...v0.9.3
 [0.7.0]: https://github.com/JuanMa1015/riftbuild/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/JuanMa1015/riftbuild/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/JuanMa1015/riftbuild/compare/v0.4.0...v0.5.0

@@ -1,0 +1,58 @@
+name: RiftBuild Signed APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.1
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check:i18n
+      - run: npm run check:game
+      - run: npm test
+      - run: npm run android
+        env:
+          VITE_COACH_URL: ${{ vars.VITE_COACH_URL }}
+      - name: Build signed APK
+        working-directory: android
+        env:
+          RIFTBUILD_KEYSTORE_BASE64: ${{ secrets.RIFTBUILD_KEYSTORE_BASE64 }}
+          RIFTBUILD_STORE_PASSWORD: ${{ secrets.RIFTBUILD_STORE_PASSWORD }}
+          RIFTBUILD_KEY_ALIAS: ${{ secrets.RIFTBUILD_KEY_ALIAS }}
+          RIFTBUILD_KEY_PASSWORD: ${{ secrets.RIFTBUILD_KEY_PASSWORD }}
+        run: |
+          : "${RIFTBUILD_KEYSTORE_BASE64:?Missing RIFTBUILD_KEYSTORE_BASE64}"
+          : "${RIFTBUILD_STORE_PASSWORD:?Missing RIFTBUILD_STORE_PASSWORD}"
+          : "${RIFTBUILD_KEY_ALIAS:?Missing RIFTBUILD_KEY_ALIAS}"
+          : "${RIFTBUILD_KEY_PASSWORD:?Missing RIFTBUILD_KEY_PASSWORD}"
+          export JAVA_HOME="$JAVA_HOME_21_X64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+          umask 077
+          RIFTBUILD_KEYSTORE="$(mktemp)"
+          export RIFTBUILD_KEYSTORE
+          trap 'rm -f -- "$RIFTBUILD_KEYSTORE"' EXIT
+          printf '%s' "$RIFTBUILD_KEYSTORE_BASE64" | base64 --decode > "$RIFTBUILD_KEYSTORE"
+          unset RIFTBUILD_KEYSTORE_BASE64
+          bash ./gradlew --no-daemon :app:assembleRelease
+          apk="app/build/outputs/apk/release/app-release.apk"
+          apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          "$apksigner" verify --print-certs "$apk"
+          version="$(node -p "require('../package.json').version")"
+          cp "$apk" "../riftbuild-$version.apk"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: RiftBuild-Signed
+          path: riftbuild-*.apk
+          if-no-files-found: error
+          retention-days: 14
