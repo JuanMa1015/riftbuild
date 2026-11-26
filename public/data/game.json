@@ -4350,6 +4350,18 @@
    "win": "Descarga Tormentosa",
    "boots": "Boots of Mana",
    "fixed": 3
+  },
+  "Sylas": {
+   "core": [
+    "Maldición del Liche",
+    "Orbe del Infinito",
+    "Sombrero Mortífero de Rabadon",
+    "Báculo del Vacío"
+   ],
+   "win": "Reloj de Arena de Zhonya",
+   "boots": "Boots of Mana",
+   "ks": "Electrocutar",
+   "fixed": 3
   }
  },
  "traits": {
@@ -4672,24 +4684,27 @@
   ]
  },
  "tiers": {
-  "patch": "7.3b",
+  "patch": "7.3g",
   "source": "wildriftfire.com/tier-list",
   "lanes": {
    "top": {
     "S+": [
-     "Shen",
-     "Malphite",
      "Mordekaiser",
      "Ambessa",
+     "Shen",
+     "Malphite",
      "K'Sante",
      "Gwen",
      "Jax",
      "Poppy",
-     "Ornn",
-     "Cho'Gath",
-     "Riven"
+     "Ornn"
     ],
     "S": [
+     "Sion",
+     "Rumble",
+     "Riven",
+     "Cho'Gath",
+     "Renekton",
      "Dr. Mundo",
      "Jayce",
      "Aatrox",
@@ -4698,11 +4713,8 @@
      "Camille",
      "Gnar",
      "Volibear",
-     "Sion",
      "Darius",
-     "Irelia",
      "Teemo",
-     "Singed",
      "Sett",
      "Olaf",
      "Vayne",
@@ -4712,25 +4724,28 @@
    },
    "jg": {
     "S+": [
+     "Nidalee",
+     "Lee Sin",
+     "Shyvana",
+     "Gwen",
      "Rammus",
      "Nocturne",
      "Skarner",
      "Cho'Gath",
      "Ambessa",
      "Zed",
-     "Gwen",
      "Lillia",
      "Hecarim",
-     "Ekko",
-     "Nidalee",
      "Jarvan IV",
      "Amumu",
-     "Nunu y Willump"
+     "Nunu y Willump",
+     "Ekko"
     ],
     "S": [
+     "Volibear",
+     "Dr. Mundo",
      "Darius",
      "Kayn",
-     "Aatrox",
      "Camille",
      "Fiddlesticks",
      "Nilah",
@@ -4739,7 +4754,6 @@
      "Diana",
      "Vi",
      "Olaf",
-     "Lee Sin",
      "Xin Zhao",
      "Rengar",
      "Kha'Zix",
@@ -4747,28 +4761,35 @@
      "Talon",
      "Kindred",
      "Riven",
-     "Yone",
      "Evelynn"
     ]
    },
    "mid": {
     "S+": [
-     "Lissandra",
      "Hwei",
      "Syndra",
+     "Akali",
+     "Aurora",
+     "Vladimir",
+     "Viktor",
+     "Lissandra",
      "Ahri",
      "Annie",
      "Galio",
      "Taliyah",
+     "Kassadin",
      "Aurelion Sol",
      "Orianna"
     ],
     "S": [
+     "Swain",
+     "Yasuo",
+     "Sylas",
+     "Vel'Koz",
+     "Veigar",
      "Ryze",
      "Vex",
      "Kennen",
-     "Vladimir",
-     "Katarina",
      "Ekko",
      "Heimerdinger",
      "Jayce",
@@ -4776,30 +4797,34 @@
      "Yone",
      "Zoe",
      "Morgana",
-     "Aurora",
-     "Akali",
      "Brand",
-     "Teemo"
+     "Teemo",
+     "Zyra",
+     "Zed",
+     "Norra"
     ]
    },
    "adc": {
     "S+": [
+     "Smolder",
+     "Zeri",
+     "Kai'Sa",
      "Xayah",
-     "Samira",
      "Ashe",
      "Kog'Maw",
-     "Smolder",
-     "Ezreal",
-     "Varus"
+     "Ezreal"
     ],
     "S": [
+     "Twitch",
+     "Sivir",
+     "Tristana",
+     "Samira",
      "Jhin",
+     "Varus",
      "Senna",
      "Yunara",
      "Caitlyn",
-     "Zeri",
      "Vayne",
-     "Kai'Sa",
      "Corki",
      "Kalista",
      "Jinx"
@@ -4807,6 +4832,7 @@
    },
    "sup": {
     "S+": [
+     "Senna",
      "Galio",
      "Leona",
      "Rakan",
@@ -4821,17 +4847,15 @@
      "Zilean"
     ],
     "S": [
-     "Senna",
+     "Morgana",
      "Pyke",
      "Yuumi",
-     "Alistar",
      "Bard",
      "Lulu",
      "Milio",
      "Nautilus",
      "Seraphine",
      "Karma",
-     "Zyra",
      "Blitzcrank",
      "Maokai"
     ]
