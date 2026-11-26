@@ -18,6 +18,9 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
+          cache: npm
+      # update-data.mjs imports sharp (scripts/optimize-images.mjs): without the install every weekly run failed
+      - run: npm ci
       - run: node scripts/update-data.mjs
       - run: node scripts/check-i18n.mjs
       - run: node scripts/check-game.mjs

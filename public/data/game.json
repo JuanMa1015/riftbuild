@@ -1,5 +1,5 @@
 {
- "version": "2026-11-08T20:00",
+ "version": "2026-11-26",
  "patch": "7.3d",
  "champions": [
   {
@@ -909,6 +909,15 @@
    ],
    "t": "mage",
    "d": "ap"
+  },
+  {
+   "n": "Sylas",
+   "r": [
+    "Mid"
+   ],
+   "t": "mage",
+   "d": "ap",
+   "auto": true
   },
   {
    "n": "Syndra",
