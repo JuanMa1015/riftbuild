@@ -51,4 +51,9 @@ for (const dir of readdirSync(RES).filter(n => n.startsWith('drawable'))) { cons
 // web favicon + a 1024 png for store listings
 copyFileSync('assets/icons/app-icon.svg', 'public/favicon.svg')
 await png(svg('app-icon'), 1024).png().toFile('assets/icons/app-icon-1024.png')
+// web: PWA / iOS home-screen / legacy favicon icons (referenced by index.html and public/manifest.webmanifest)
+await png(svg('app-icon'), 180).png().toFile('public/apple-touch-icon.png')
+await png(svg('app-icon'), 192).png().toFile('public/icon-192.png')
+await png(svg('app-icon'), 512).png().toFile('public/icon-512.png')
+await png(svg('app-icon'), 32).png().toFile('public/favicon-32.png')
 console.log('icons ok')
