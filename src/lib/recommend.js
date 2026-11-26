@@ -23,7 +23,7 @@ const BAN_MATCHUPS = {
   Gwen: {
     top: [{
       name: 'Jax',
-      patch: '7.3d',
+      patch: '7.3g',
       reason: 'banGwenJax',
       source: 'https://wildrift.leagueoflegends.com/en-sg/news/game-updates/wild-rift-patch-notes-6-1b/',
     }],
